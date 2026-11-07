@@ -149,3 +149,16 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,ddbf60b,fast,par,B11,count --rows 4 --cols 6,7.5294,4952123756,solutions=37812638,7.444309,last-row search (failed)
 2026-11-07,ddbf60b,fast,par,B12,find --rows 6 --cols 8,3.8536,1514240914,found,3.734040,last-row search (failed)
 2026-11-07,ddbf60b,fast,par,B13,find --rows 5 --cols 10,3.7031,1432466342,no solution: 5x10 exhausted,3.607154,last-row search (failed)
+2026-11-07,1f12ee3,fast,par,B1,count --rows 3 --cols 3,0.1760,1049457,solutions=1909732,0.003242,const-generic width
+2026-11-07,1f12ee3,fast,par,B2,find --rows 5 --cols 6,0.1736,12444,found,0.000492,const-generic width
+2026-11-07,1f12ee3,fast,par,B3,find --rows 6 --cols 6,0.1741,26012,found,0.000896,const-generic width
+2026-11-07,1f12ee3,fast,par,B4,count --rows 4 --cols 4,0.6399,559509989,solutions=136245247,0.485721,const-generic width
+2026-11-07,1f12ee3,fast,par,B5,count --rows 4 --cols 5,4.0444,3364600156,solutions=114846713,3.887168,const-generic width
+2026-11-07,1f12ee3,fast,par,B6,count --rows 3 --cols 7,0.4158,182615542,solutions=4453472,0.326073,const-generic width
+2026-11-07,1f12ee3,fast,par,B7,find --rows 7 --cols 7,0.4660,54535752,found,0.370241,const-generic width
+2026-11-07,1f12ee3,fast,par,B8,find --rows 6 --cols 7,0.3963,45679334,found,0.281749,const-generic width
+2026-11-07,1f12ee3,fast,par,B9,find --rows 5 --cols 9,0.7019,238417829,found,0.608030,const-generic width
+2026-11-07,1f12ee3,fast,par,B10,count --rows 5 --cols 5,12.5675,9533780804,solutions=80364530,12.485073,const-generic width
+2026-11-07,1f12ee3,fast,par,B11,count --rows 4 --cols 6,7.1024,4952123756,solutions=37812638,7.012964,const-generic width
+2026-11-07,1f12ee3,fast,par,B12,find --rows 6 --cols 8,3.5585,1514323680,found,3.410620,const-generic width
+2026-11-07,1f12ee3,fast,par,B13,find --rows 5 --cols 10,3.2831,1432485110,no solution: 5x10 exhausted,3.189362,const-generic width

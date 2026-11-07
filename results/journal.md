@@ -327,3 +327,27 @@ row trie keeps `next` and `next2`. Node counts are unchanged.
 
 **Verdict:** kept: small but consistent. B4 is still behind its symmetry-step 0.471 s, because the
 4-letter row trie is still 94 KiB.
+
+### 2026-11-07: const-generic row width (`1f12ee3`) ✅
+
+**Idea:** monomorphize the kernels per row width: `Kernel<'t, const W>`, dispatched once per job by
+a `by_width!` macro (1..=32). With W known at compile time:
+- `c + 2 < W` and `c == W - 1` compare against constants;
+- column state is `[CNode; W]` and last-row masks are `[u32; W]` (no Vec, no 32-slot copy);
+- most bounds checks disappear.
+
+Node counts are unchanged.
+
+| Benchmark | Before (compact col trie) | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 0.508 s | 0.486 s | 1.05× |
+| B5 count 4×5 | 4.14 s | 3.89 s | 1.06× |
+| B7 find 7×7 | 0.413 s | 0.370 s | 1.12× |
+| B8 find 6×7 | 0.354 s | 0.282 s | 1.26× |
+| B9 find 5×9 | 0.691 s | 0.608 s | 1.14× |
+| B10 count 5×5 | 13.83 s | 12.49 s | 1.11× |
+| B11 count 4×6 | 7.43 s | 7.01 s | 1.06× |
+| B12 find 6×8 | 3.74 s | 3.41 s | 1.10× |
+| B13 no 5×10 | 3.53 s | 3.19 s | 1.11× |
+
+**Verdict:** kept. Every benchmark improves (5–14%, B8 more).
