@@ -38,6 +38,10 @@ Search time for each optimization step (log scale, shorter is better). Full tabl
 ![B12](results/charts/B12.svg)
 ![B13](results/charts/B13.svg)
 
+**Tall shape** (added at "next-row forward check"; baseline = that code, before tall counts were transposed):
+
+![B14](results/charts/B14.svg)
+
 ---
 
 ## ⚡ Quick start
