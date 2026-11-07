@@ -1,3 +1,4 @@
+pub mod dawg;
 pub mod dict;
 pub mod naive;
 pub mod par;
