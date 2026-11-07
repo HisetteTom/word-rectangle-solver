@@ -8,11 +8,11 @@
 //! `first + popcount(mask & ((1 << l) - 1))` — no 26-entry child table.
 
 #[derive(Clone, Copy, Default)]
-struct Node {
+pub struct Node {
     /// Bit `l` set <=> child for letter `l` exists.
-    mask: u32,
+    pub mask: u32,
     /// Index of the first (lowest-letter) child. Meaningless when `mask == 0`.
-    first: u32,
+    pub first: u32,
 }
 
 pub struct Trie {
@@ -65,6 +65,18 @@ impl Trie {
     pub fn child(&self, node: u32, letter: usize) -> u32 {
         let n = self.nodes[node as usize];
         n.first + (n.mask & ((1u32 << letter) - 1)).count_ones()
+    }
+
+    /// The node itself (by value), for searches that carry nodes instead of indices.
+    #[inline(always)]
+    pub fn node(&self, node: u32) -> Node {
+        self.nodes[node as usize]
+    }
+
+    /// Child node (by value) of `n` for `letter`; only valid if bit `letter` is set in `n.mask`.
+    #[inline(always)]
+    pub fn step(&self, n: Node, letter: u32) -> Node {
+        self.nodes[(n.first + (n.mask & ((1u32 << letter) - 1)).count_ones()) as usize]
     }
 
     pub fn len(&self) -> usize {

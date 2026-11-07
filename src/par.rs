@@ -1,4 +1,5 @@
 //! Level 6: parallel version of the row-major trie search (`search.rs`), std threads only.
+//! The hot loops (`Kernel`) carry trie nodes by value and track (row, col) directly.
 //!
 //! 0. `find` first tries a short sequential search (`FIND_SEQ_BUDGET` nodes): small cases stay cheap.
 //! 1. Split: expand the first cells breadth-first (lexicographic order) until there are
@@ -9,7 +10,7 @@
 //!    skip / abort any job after it, so the answer is the lexicographically first grid,
 //!    exactly what the sequential solver returns.
 
-use crate::trie::Trie;
+use crate::trie::{Node, Trie};
 use crate::{Grid, Solver, Stats};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
@@ -67,51 +68,124 @@ impl<'a> Worker<'a> {
         (r, c, rn, cn, self.s.row_trie.mask(rn) & self.s.col_trie.mask(cn))
     }
 
-    fn count_rec(&mut self, cell: usize) -> u64 {
-        self.nodes += 1;
-        let (r, c, rn, cn, mut allowed) = self.allowed(cell);
-        if cell + 1 == self.s.rows * self.s.cols {
-            return allowed.count_ones() as u64;
-        }
-        let mut total = 0;
-        while allowed != 0 {
-            let l = allowed.trailing_zeros() as usize;
-            allowed &= allowed - 1;
-            self.row_state[r] = self.s.row_trie.child(rn, l);
-            self.col_state[c] = self.s.col_trie.child(cn, l);
-            total += self.count_rec(cell + 1);
-        }
-        self.row_state[r] = rn;
-        self.col_state[c] = cn;
+    /// Count all completions of the loaded job prefix (`cell` = first empty cell).
+    fn count_job(&mut self, cell: usize) -> u64 {
+        let (cols, s) = (self.s.cols, self.s);
+        let (r, c) = (cell / cols, cell % cols);
+        let mut colv: Vec<Node> = self.col_state.iter().map(|&n| s.col_trie.node(n)).collect();
+        let k = Kernel { rt: &s.row_trie, ct: &s.col_trie, last_r: s.rows - 1, last_c: cols - 1 };
+        let mut nodes = 0;
+        let total = k.count(r, c, s.row_trie.node(self.row_state[r]), &mut colv, &mut nodes);
+        self.nodes += nodes;
         total
     }
 
-    /// Calls `on_solution` on every solution; returns false to stop (solution
-    /// callback said stop, or `stop()` became true).
+    /// Calls `on` on every solution of the loaded job prefix (`cell` = first empty cell);
+    /// returns false if stopped (`on` returned false, `stop()` became true, or the node limit hit).
     fn search<F: FnMut(&[u8]) -> bool, S: Fn() -> bool>(&mut self, cell: usize, on: &mut F, stop: &S) -> bool {
-        self.nodes += 1;
-        if cell == self.s.rows * self.s.cols {
+        let s = self.s;
+        if cell == s.rows * s.cols {
             return on(&self.grid);
         }
-        if self.nodes > self.limit || stop() {
+        let (r, c) = (cell / s.cols, cell % s.cols);
+        let k = Kernel { rt: &s.row_trie, ct: &s.col_trie, last_r: s.rows - 1, last_c: s.cols - 1 };
+        let mut st = SearchState {
+            colv: self.col_state.iter().map(|&n| s.col_trie.node(n)).collect(),
+            grid: std::mem::take(&mut self.grid),
+            cols: s.cols,
+            nodes: self.nodes,
+            limit: self.limit,
+        };
+        let done = k.search(r, c, s.row_trie.node(self.row_state[r]), &mut st, on, stop);
+        self.grid = st.grid;
+        self.nodes = st.nodes;
+        done
+    }
+}
+
+/// Hot counting recursion. Carries trie nodes *by value*: `allowed` needs no memory
+/// load, only the two child steps do. (r, c) are tracked directly (no `/` or `%`), and
+/// the row state is a single node (finished rows are never needed again).
+struct Kernel<'t> {
+    rt: &'t Trie,
+    ct: &'t Trie,
+    last_r: usize,
+    last_c: usize,
+}
+
+/// Mutable state of `Kernel::search`.
+struct SearchState {
+    colv: Vec<Node>,
+    grid: Vec<u8>,
+    cols: usize,
+    nodes: u64,
+    limit: u64,
+}
+
+impl Kernel<'_> {
+    /// Same order as `count`, writes letters to the grid; false = stop.
+    fn search<F: FnMut(&[u8]) -> bool, S: Fn() -> bool>(&self, r: usize, c: usize, row: Node, st: &mut SearchState, on: &mut F, stop: &S) -> bool {
+        st.nodes += 1;
+        if st.nodes > st.limit || stop() {
             return false;
         }
-        let (r, c, rn, cn, mut allowed) = self.allowed(cell);
+        let col = st.colv[c];
+        let mut allowed = row.mask & col.mask;
+        let cell = r * st.cols + c;
         let mut keep_going = true;
         while allowed != 0 {
-            let l = allowed.trailing_zeros() as usize;
+            let l = allowed.trailing_zeros();
             allowed &= allowed - 1;
-            self.row_state[r] = self.s.row_trie.child(rn, l);
-            self.col_state[c] = self.s.col_trie.child(cn, l);
-            self.grid[cell] = b'a' + l as u8;
-            if !self.search(cell + 1, on, stop) {
+            st.grid[cell] = b'a' + l as u8;
+            let ok = if c == self.last_c {
+                if r == self.last_r {
+                    on(&st.grid)
+                } else {
+                    st.colv[c] = self.ct.step(col, l);
+                    self.search(r + 1, 0, self.rt.node(0), st, on, stop)
+                }
+            } else {
+                st.colv[c] = self.ct.step(col, l);
+                self.search(r, c + 1, self.rt.step(row, l), st, on, stop)
+            };
+            if !ok {
                 keep_going = false;
                 break;
             }
         }
-        self.row_state[r] = rn;
-        self.col_state[c] = cn;
+        st.colv[c] = col;
         keep_going
+    }
+
+    fn count(&self, r: usize, c: usize, row: Node, colv: &mut [Node], nodes: &mut u64) -> u64 {
+        *nodes += 1;
+        let col = colv[c];
+        let mut allowed = row.mask & col.mask;
+        if c == self.last_c {
+            if r == self.last_r {
+                return allowed.count_ones() as u64; // each letter completes the grid
+            }
+            // the letter completes this row: next cell is (r + 1, 0) with a fresh row
+            let root = self.rt.node(0);
+            let mut total = 0;
+            while allowed != 0 {
+                let l = allowed.trailing_zeros();
+                allowed &= allowed - 1;
+                colv[c] = self.ct.step(col, l);
+                total += self.count(r + 1, 0, root, colv, nodes);
+            }
+            colv[c] = col;
+            return total;
+        }
+        let mut total = 0;
+        while allowed != 0 {
+            let l = allowed.trailing_zeros();
+            allowed &= allowed - 1;
+            colv[c] = self.ct.step(col, l);
+            total += self.count(r, c + 1, self.rt.step(row, l), colv, nodes);
+        }
+        colv[c] = col;
+        total
     }
 }
 
@@ -257,7 +331,7 @@ impl Solver for ParSearch {
 
     fn count(&mut self) -> u64 {
         let (depth, jobs) = self.jobs(COUNT_JOBS_PER_THREAD);
-        let total: u64 = self.run(depth, &jobs, |w, _, _| Some(w.count_rec(depth))).iter().map(|(_, c)| c).sum();
+        let total: u64 = self.run(depth, &jobs, |w, _, _| Some(w.count_job(depth))).iter().map(|(_, c)| c).sum();
         self.stats.solutions = total;
         total
     }
