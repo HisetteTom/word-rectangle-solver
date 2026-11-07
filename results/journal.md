@@ -367,3 +367,29 @@ lowest job index still wins, and a job only aborts a little later. Counts don't 
 | counts | — | — | ≈ (untouched) |
 
 **Verdict:** kept. B13, the cleanest find measurement (exhaustive, no early exit), gains 8%.
+
+### 2026-11-07: branch-free look-ahead filter (`c8af9d0`) ✅
+
+**Profile first:** `perf stat` on count 4×6 showed ~9.7 G branch misses for ~5 G nodes, about 2 per
+node. One of them was the look-ahead `if … { continue }`: data-dependent, so mispredicted often.
+
+**Idea:** `Kernel::good(row, allowed, …)` runs one straight-line pass over the allowed letters and
+builds a "good letters" mask. A letter is good when its row child has `mask & col[c+1]`,
+`next & col[c+2]` and `next2 & col[c+3]` all nonzero; it uses `&`/`|` on bools and a shift,
+with no branches. The recursion loop then runs only over good letters, re-stepping the child, which
+is now an L1 hit. The `col[c+1]` test is new: a dead child is now skipped before the call instead
+of inside it, so node counts drop 20–30% (counts and solutions unchanged). It is used in `count`,
+`count_last` (general cells) and `search`.
+
+| Benchmark | Before (throttled stop) | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 0.488 s | 0.454 s | 1.07× |
+| B5 count 4×5 | 3.89 s | 3.51 s | 1.11× |
+| B6 count 3×7 | 0.324 s | 0.254 s | **1.27×** |
+| B9 find 5×9 | 0.606 s | 0.506 s | 1.20× |
+| B10 count 5×5 | 12.62 s | 11.42 s | 1.10× |
+| B11 count 4×6 | 6.94 s | 6.21 s | 1.12× |
+| B12 find 6×8 | 3.18 s | 2.51 s | **1.27×** |
+| B13 no 5×10 | 2.96 s | 2.66 s | 1.11× |
+
+**Verdict:** kept. 7–27% everywhere.

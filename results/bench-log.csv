@@ -175,3 +175,16 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,d8a5b29,fast,par,B11,count --rows 4 --cols 6,7.0259,4952123756,solutions=37812638,6.940897,throttled stop check
 2026-11-07,d8a5b29,fast,par,B12,find --rows 6 --cols 8,3.2744,1514229284,found,3.179645,throttled stop check
 2026-11-07,d8a5b29,fast,par,B13,find --rows 5 --cols 10,3.0546,1432485237,no solution: 5x10 exhausted,2.960715,throttled stop check
+2026-11-07,c8af9d0,fast,par,B1,count --rows 3 --cols 3,0.1572,1001786,solutions=1909732,0.003725,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B2,find --rows 5 --cols 6,0.1979,9611,found,0.000447,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B3,find --rows 6 --cols 6,0.1810,19902,found,0.000799,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B4,count --rows 4 --cols 4,0.6122,434317924,solutions=136245247,0.454310,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B5,count --rows 4 --cols 5,3.6552,2436976174,solutions=114846713,3.505780,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B6,count --rows 3 --cols 7,0.3925,136298665,solutions=4453472,0.254391,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B7,find --rows 7 --cols 7,0.3833,43868432,found,0.291099,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B8,find --rows 6 --cols 7,0.3886,36415982,found,0.272813,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B9,find --rows 5 --cols 9,0.6204,186928429,found,0.506473,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B10,count --rows 5 --cols 5,11.5716,6875817435,solutions=80364530,11.421116,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B11,count --rows 4 --cols 6,6.3602,3714990647,solutions=37812638,6.207043,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B12,find --rows 6 --cols 8,2.6614,1160859256,found,2.510368,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B13,find --rows 5 --cols 10,2.7680,1139376699,no solution: 5x10 exhausted,2.657035,branch-free look-ahead
