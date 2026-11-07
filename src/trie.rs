@@ -40,24 +40,23 @@ impl Trie {
                 n = tmp[n][l] as usize;
             }
         }
-        // 2. BFS renumbering: queue position = new index
-        let mut queue = vec![0usize];
-        let mut nodes = Vec::with_capacity(tmp.len());
-        let mut i = 0;
-        while i < queue.len() {
-            let old = queue[i];
-            let first = queue.len() as u32;
-            let mut mask = 0;
-            for (l, &c) in tmp[old].iter().enumerate() {
-                if c != 0 {
-                    mask |= 1 << l;
-                    queue.push(c as usize);
-                }
+        // 2. renumbering, sibling groups in depth-first (pre-order) order: a node's children
+        //    are contiguous (so child = first + rank) and a whole subtree sits in one region of
+        //    the array (cache locality along search paths).
+        let mut nodes = vec![Node::default(); tmp.len()];
+        fn place(tmp: &[[u32; 26]], nodes: &mut [Node], old: usize, new: usize, next: &mut usize) {
+            let kids: Vec<(usize, usize)> = tmp[old].iter().enumerate().filter(|&(_, &c)| c != 0).map(|(l, &c)| (l, c as usize)).collect();
+            let first = *next;
+            *next += kids.len();
+            let mask = kids.iter().fold(0u32, |m, &(l, _)| m | 1 << l);
+            nodes[new] = Node { mask, first: first as u32, next: 0, next2: 0 };
+            for (j, &(_, c)) in kids.iter().enumerate() {
+                place(tmp, nodes, c, first + j, next);
             }
-            nodes.push(Node { mask, first, next: 0, next2: 0 });
-            i += 1;
         }
-        // children come after their parent in BFS order: fill `next` bottom-up
+        let mut next = 1;
+        place(&tmp, &mut nodes, 0, 0, &mut next);
+        // children come after their parent: fill `next` bottom-up
         for i in (0..nodes.len()).rev() {
             let n = nodes[i];
             nodes[i].next = (0..n.mask.count_ones()).fold(0, |a, j| a | nodes[(n.first + j) as usize].mask);
