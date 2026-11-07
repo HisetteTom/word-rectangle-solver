@@ -600,3 +600,21 @@ so the bound is close to "all letters": 0.1% fewer nodes on 4-row grids, 6.5% on
 per-row-start work (one column-child step per letter, W table lookups) costs more than that.
 The pruning that matters has to depend on the letters actually placed in row r. The forward
 check already does that.
+
+### 2026-11-07: thread scaling measured (no code change, no bar)
+
+Count 5×5 (B10 task) pinned to CPU subsets with `taskset`. `available_parallelism` follows the
+affinity mask, so the thread count matches. Core Ultra 9 185H: 6 P-cores with 2 hyperthreads each
+(CPUs 0–11), 8 E-cores (12–19), 2 low-power E-cores (20–21).
+
+| CPUs | threads | time |
+|---|---|---|
+| all (0–21) | 22 | **10.34 s** |
+| no LP-E (0–19) | 20 | 11.23 s |
+| P-cores only, with HT (0–11) | 12 | 17.64 s |
+| 1 thread per P-core + 8 E (0,1,3,6,8,10,12–19) | 14 | 12.75 s |
+| E-cores only (12–19) | 8 | 26.26 s |
+
+**Verdict:** every thread helps, even hyperthreads and the slow LP-E cores, because the kernel
+is latency-bound (branch misses, dependent loads), not throughput-bound. The dynamic job queue
+already balances P and E cores. No change.

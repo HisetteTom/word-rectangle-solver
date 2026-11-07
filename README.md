@@ -319,6 +319,8 @@ All states start at the root (`0`). When the last cell is filled, every row and 
 
 ## 8. Optimization roadmap
 
+> Current to-do list with measurements and next ideas: [`PLAN.md`](PLAN.md).
+
 Each step gets its own entry in the [optimization journal](#16-optimization-journal), with before/after numbers.
 
 ### Level 0: baseline
