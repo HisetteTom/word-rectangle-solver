@@ -32,3 +32,51 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 |---|---|---|---|---:|---:|---:|---:|---|
 | naive | `60c0927` | 2026-11-07 | fast | 5.65 s | — | — | 4,505 | found |
 | trie + masks | `60c0927` | 2026-11-07 | fast | 1.91 ms | 2,958× | 2,958× | 49,782 | found |
+
+## B4 · count all 4×4 (exhaustive)
+
+![B4](charts/B4.svg)
+
+| Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
+|---|---|---|---|---:|---:|---:|---:|---|
+| trie + masks | `166edb9` | 2026-11-07 | fast | 37.52 s | — | — | 1,435,800,420 | solutions=136245247 |
+
+## B5 · count all 4×5 (exhaustive)
+
+![B5](charts/B5.svg)
+
+| Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
+|---|---|---|---|---:|---:|---:|---:|---|
+| trie + masks | `166edb9` | 2026-11-07 | fast | 153.06 s | — | — | 5,169,522,478 | solutions=114846713 |
+
+## B6 · count all 3×7 (exhaustive)
+
+![B6](charts/B6.svg)
+
+| Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
+|---|---|---|---|---:|---:|---:|---:|---|
+| trie + masks | `166edb9` | 2026-11-07 | fast | 16.31 s | — | — | 489,739,310 | solutions=4453472 |
+
+## B7 · find first 7×7
+
+![B7](charts/B7.svg)
+
+| Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
+|---|---|---|---|---:|---:|---:|---:|---|
+| trie + masks | `166edb9` | 2026-11-07 | fast | 5.02 s | — | — | 141,510,783 | found |
+
+## B8 · find first 6×7
+
+![B8](charts/B8.svg)
+
+| Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
+|---|---|---|---|---:|---:|---:|---:|---|
+| trie + masks | `166edb9` | 2026-11-07 | fast | 4.04 s | — | — | 117,670,090 | found |
+
+## B9 · find first 5×9
+
+![B9](charts/B9.svg)
+
+| Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
+|---|---|---|---|---:|---:|---:|---:|---|
+| trie + masks | `166edb9` | 2026-11-07 | fast | 23.79 s | — | — | 604,041,773 | found |

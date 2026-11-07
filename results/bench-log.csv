@@ -11,3 +11,9 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,60c0927,fast,trie,B1,count --rows 3 --cols 3,0.2442,4031868,solutions=1909732,0.077146,trie + masks
 2026-11-07,60c0927,fast,trie,B2,find --rows 5 --cols 6,0.1897,22841,found,0.000900,trie + masks
 2026-11-07,60c0927,fast,trie,B3,find --rows 6 --cols 6,0.1928,49782,found,0.001911,trie + masks
+2026-11-07,166edb9,fast,trie,B4,count --rows 4 --cols 4,37.6937,1435800420,solutions=136245247,37.524040,trie + masks
+2026-11-07,166edb9,fast,trie,B5,count --rows 4 --cols 5,153.2303,5169522478,solutions=114846713,153.063593,trie + masks
+2026-11-07,166edb9,fast,trie,B6,count --rows 3 --cols 7,16.4808,489739310,solutions=4453472,16.314218,trie + masks
+2026-11-07,166edb9,fast,trie,B7,find --rows 7 --cols 7,5.2025,141510783,found,5.023361,trie + masks
+2026-11-07,166edb9,fast,trie,B8,find --rows 6 --cols 7,4.2111,117670090,found,4.035408,trie + masks
+2026-11-07,166edb9,fast,trie,B9,find --rows 5 --cols 9,23.9872,604041773,found,23.794776,trie + masks
