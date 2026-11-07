@@ -14,6 +14,21 @@ Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal
 
 ## ⚡ Quick start
 
+**Braindead mode** — `./wr` builds automatically, you never call cargo yourself:
+
+```bash
+./wr              # do EVERYTHING: build, test, benchmark
+./wr 6x6          # find one 6×6   (./wr 6 works too)
+./wr count 3x3    # count all 3×3
+./wr test         # tests
+./wr bench        # benchmark suite (./wr bench B2 for one)
+./wr release      # benchmark with full release build (official numbers)
+./wr info         # dictionary stats
+./wr help
+```
+
+Underneath, it runs:
+
 ```bash
 # Build (fast profile: ~2 s, binary nearly as fast as full release)
 cargo build --profile fast

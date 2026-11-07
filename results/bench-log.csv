@@ -1,0 +1,4 @@
+date,commit,profile,solver,bench,args,mean_s,nodes,result
+2026-11-07,6701267,fast,naive,B1,count --rows 3 --cols 3,12.2535,2034829,solutions=1909732
+2026-11-07,6701267,fast,naive,B2,find --rows 5 --cols 6,2.5542,1919,found (validated):
+2026-11-07,6701267,fast,naive,B3,find --rows 6 --cols 6,5.8121,4505,found (validated):
