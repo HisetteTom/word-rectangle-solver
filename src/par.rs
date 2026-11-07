@@ -281,73 +281,43 @@ impl<const W: usize> Kernel<'_, W> {
 
     fn count(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64) -> u64 {
         if r == self.last_r {
-            return self.count_last_row(c, row, colv, nodes);
+            // Last row: columns only need their masks (their children are never used).
+            let mut masks = [0u32; W];
+            for (m, n) in masks.iter_mut().zip(colv.iter()) {
+                *m = n.mask;
+            }
+            return self.count_last(c, row, &masks, nodes);
         }
-        self.count_iter(r * W + c, row, colv, nodes)
-    }
-
-    /// Last row: columns only need their masks (their children are never used).
-    #[inline(always)]
-    fn count_last_row(&self, c: usize, row: Node, colv: &[CNode; W], nodes: &mut u64) -> u64 {
-        let mut masks = [0u32; W];
-        for (m, n) in masks.iter_mut().zip(colv.iter()) {
-            *m = n.mask;
+        *nodes += 1;
+        let col = colv[c];
+        let mut allowed = row.mask & col.mask;
+        if c == (W - 1) {
+            if r == self.last_r {
+                return allowed.count_ones() as u64; // each letter completes the grid
+            }
+            // the letter completes this row: next cell is (r + 1, 0) with a fresh row
+            let root = self.rt.node(0);
+            let mut total = 0;
+            while allowed != 0 {
+                let l = allowed.trailing_zeros();
+                allowed &= allowed - 1;
+                colv[c] = self.ct.step(col, l);
+                total += self.count(r + 1, 0, root, colv, nodes);
+            }
+            colv[c] = col;
+            return total;
         }
-        self.count_last(c, row, &masks, nodes)
-    }
-
-    /// Rows above the last one, as an iterative depth-first search with explicit per-cell
-    /// stacks (no call per cell). Cell `d` runs from `start` to `end` = first last-row cell.
-    fn count_iter(&self, start: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64) -> u64 {
-        let end = self.last_r * W;
-        let n = end - start;
-        // per depth: letters still to try, row node before the cell, column node before the cell
-        let mut pend = vec![0u32; n];
-        let mut rown = vec![Node::default(); n];
-        let mut cols = vec![CNode::default(); n];
-        let root = self.rt.node(0);
         let mut total = 0;
-        let (mut i, mut c) = (0usize, start % W);
-        let mut cur = row;
-        'enter: loop {
-            // enter cell i (column c) with row node `cur`
-            if start + i == end {
-                total += self.count_last_row(0, root, colv, nodes);
-            } else {
-                *nodes += 1;
-                let col = colv[c];
-                let mut allowed = cur.mask & col.mask;
-                if c < W - 1 {
-                    let m = |k: usize| if k < W { colv[k].mask } else { !0 };
-                    allowed = self.good(cur, allowed, c, m(c + 1), m(c + 2), m(c + 3));
-                }
-                pend[i] = allowed;
-                rown[i] = cur;
-                cols[i] = col;
-                i += 1;
-                c = if c == W - 1 { 0 } else { c + 1 };
-            }
-            // backtrack until some cell has a letter left, then descend with it
-            loop {
-                if i == 0 {
-                    return total;
-                }
-                let j = i - 1;
-                let pc = if c == 0 { W - 1 } else { c - 1 };
-                let p = pend[j];
-                if p == 0 {
-                    colv[pc] = cols[j];
-                    i = j;
-                    c = pc;
-                    continue;
-                }
-                let l = p.trailing_zeros();
-                pend[j] = p & (p - 1);
-                colv[pc] = self.ct.step(cols[j], l);
-                cur = if pc == W - 1 { root } else { self.rt.step(rown[j], l) };
-                continue 'enter;
-            }
+        let m = |k: usize| if k < W { colv[k].mask } else { !0 };
+        let mut good = self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3));
+        while good != 0 {
+            let l = good.trailing_zeros();
+            good &= good - 1;
+            colv[c] = self.ct.step(col, l);
+            total += self.count(r, c + 1, self.rt.step(row, l), colv, nodes);
         }
+        colv[c] = col;
+        total
     }
 
     /// Branch-free look-ahead filter: the letters of `allowed` whose row child can still match
