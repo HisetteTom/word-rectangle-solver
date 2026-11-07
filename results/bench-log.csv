@@ -136,3 +136,16 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,86cf07a,fast,par,B11,count --rows 4 --cols 6,7.5172,4952123756,solutions=37812638,7.430516,compact column trie
 2026-11-07,86cf07a,fast,par,B12,find --rows 6 --cols 8,3.8336,1514358809,found,3.737755,compact column trie
 2026-11-07,86cf07a,fast,par,B13,find --rows 5 --cols 10,3.6197,1432485110,no solution: 5x10 exhausted,3.525200,compact column trie
+2026-11-07,ddbf60b,fast,par,B1,count --rows 3 --cols 3,0.1678,1049457,solutions=1909732,0.003822,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B2,find --rows 5 --cols 6,0.1985,12381,found,0.000552,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B3,find --rows 6 --cols 6,0.1746,26011,found,0.000967,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B4,count --rows 4 --cols 4,0.6602,559509989,solutions=136245247,0.524685,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B5,count --rows 4 --cols 5,4.2532,3364600156,solutions=114846713,4.169045,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B6,count --rows 3 --cols 7,0.4280,182615542,solutions=4453472,0.340233,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B7,find --rows 7 --cols 7,0.5199,55190603,found,0.407927,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B8,find --rows 6 --cols 7,0.6360,45614993,found,0.466725,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B9,find --rows 5 --cols 9,0.8647,237573187,found,0.708833,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B10,count --rows 5 --cols 5,13.8362,9533780804,solutions=80364530,13.752099,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B11,count --rows 4 --cols 6,7.5294,4952123756,solutions=37812638,7.444309,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B12,find --rows 6 --cols 8,3.8536,1514240914,found,3.734040,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B13,find --rows 5 --cols 10,3.7031,1432466342,no solution: 5x10 exhausted,3.607154,last-row search (failed)

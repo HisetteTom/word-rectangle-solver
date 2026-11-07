@@ -25,6 +25,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 3.54 ms | 3,348× | 1.68× | 1,102,846 | solutions=1909732 |
 | row look-ahead | `e5a081e` | 2026-11-07 | fast | 3.45 ms | 3,434× | 1.03× | 1,049,457 | solutions=1909732 |
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 3.47 ms | 3,419× | 1.00× | 1,049,457 | solutions=1909732 |
+| last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 3.82 ms | 3,101× | 0.91× | 1,049,457 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -45,6 +46,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 393 µs | 5,954× | 1.50× | 22,840 | found |
 | row look-ahead | `e5a081e` | 2026-11-07 | fast | 354 µs | 6,610× | 1.11× | 12,444 | found |
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 510 µs | 4,588× | 0.69× | 12,444 | found |
+| last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 552 µs | 4,239× | 0.92× | 12,381 | found |
 
 ## B3 · find first 6×6
 
@@ -65,6 +67,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 1.22 ms | 4,641× | 0.99× | 49,781 | found |
 | row look-ahead | `e5a081e` | 2026-11-07 | fast | 718 µs | 7,873× | 1.70× | 26,012 | found |
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 977 µs | 5,786× | 0.73× | 26,012 | found |
+| last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 967 µs | 5,846× | 1.01× | 26,011 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -84,6 +87,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 471 ms | 79.6× | 1.96× | 660,528,401 | solutions=136245247 |
 | row look-ahead | `e5a081e` | 2026-11-07 | fast | 520 ms | 72.2× | 0.91× | 559,509,989 | solutions=136245247 |
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 508 ms | 73.9× | 1.02× | 559,509,989 | solutions=136245247 |
+| last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 525 ms | 71.5× | 0.97× | 559,509,989 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -103,6 +107,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 4.32 s | 35.4× | 0.99× | 5,054,675,765 | solutions=114846713 |
 | row look-ahead | `e5a081e` | 2026-11-07 | fast | 4.21 s | 36.3× | 1.03× | 3,364,600,156 | solutions=114846713 |
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 4.14 s | 37.0× | 1.02× | 3,364,600,156 | solutions=114846713 |
+| last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 4.17 s | 36.7× | 0.99× | 3,364,600,156 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -122,6 +127,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 398 ms | 41.0× | 1.00× | 485,285,838 | solutions=4453472 |
 | row look-ahead | `e5a081e` | 2026-11-07 | fast | 343 ms | 47.6× | 1.16× | 182,615,542 | solutions=4453472 |
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 335 ms | 48.7× | 1.02× | 182,615,542 | solutions=4453472 |
+| last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 340 ms | 48.0× | 0.98× | 182,615,542 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -141,6 +147,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 608 ms | 8.27× | 0.79× | 159,148,928 | found |
 | row look-ahead | `e5a081e` | 2026-11-07 | fast | 439 ms | 11.4× | 1.38× | 55,119,689 | found |
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 413 ms | 12.2× | 1.06× | 56,870,056 | found |
+| last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 408 ms | 12.3× | 1.01× | 55,190,603 | found |
 
 ## B8 · find first 6×7
 
@@ -160,6 +167,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 552 ms | 7.31× | 1.02× | 120,887,650 | found |
 | row look-ahead | `e5a081e` | 2026-11-07 | fast | 413 ms | 9.77× | 1.34× | 46,110,613 | found |
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 354 ms | 11.4× | 1.17× | 45,624,156 | found |
+| last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 467 ms | 8.65× | 0.76× | 45,614,993 | found |
 
 ## B9 · find first 5×9
 
@@ -179,6 +187,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 875 ms | 27.2× | 1.04× | 608,152,499 | found |
 | row look-ahead | `e5a081e` | 2026-11-07 | fast | 748 ms | 31.8× | 1.17× | 237,520,689 | found |
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 691 ms | 34.5× | 1.08× | 237,653,498 | found |
+| last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 709 ms | 33.6× | 0.97× | 237,573,187 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -191,6 +200,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 15.9 s | 1.92× | 1.94× | 15,549,963,977 | solutions=80364530 |
 | row look-ahead | `e5a081e` | 2026-11-07 | fast | 14.4 s | 2.12× | 1.11× | 9,533,780,804 | solutions=80364530 |
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 13.8 s | 2.21× | 1.04× | 9,533,780,804 | solutions=80364530 |
+| last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 13.8 s | 2.23× | 1.01× | 9,533,780,804 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -203,6 +213,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 9.12 s | 1.04× | 0.98× | 9,588,114,365 | solutions=37812638 |
 | row look-ahead | `e5a081e` | 2026-11-07 | fast | 7.64 s | 1.24× | 1.19× | 4,952,123,756 | solutions=37812638 |
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 7.43 s | 1.28× | 1.03× | 4,952,123,756 | solutions=37812638 |
+| last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 7.44 s | 1.28× | 1.00× | 4,952,123,756 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -215,6 +226,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 5.24 s | 0.97× | 1.00× | 4,132,541,447 | found |
 | row look-ahead | `e5a081e` | 2026-11-07 | fast | 3.87 s | 1.32× | 1.35× | 1,514,385,525 | found |
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 3.74 s | 1.36× | 1.04× | 1,514,358,809 | found |
+| last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 3.73 s | 1.37× | 1.00× | 1,514,240,914 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -227,3 +239,4 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 5.04 s | 0.98× | 0.97× | 3,802,792,308 | no solution: 5x10 exhausted |
 | row look-ahead | `e5a081e` | 2026-11-07 | fast | 3.68 s | 1.34× | 1.37× | 1,432,485,110 | no solution: 5x10 exhausted |
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 3.53 s | 1.40× | 1.04× | 1,432,485,110 | no solution: 5x10 exhausted |
+| last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 3.61 s | 1.37× | 0.98× | 1,432,466,342 | no solution: 5x10 exhausted |
