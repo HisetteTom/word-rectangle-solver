@@ -106,6 +106,9 @@ fn empty_and_tiny() {
         assert!(all(s, &d, 3, 3).is_empty(), "{s}");
         assert!(all(s, &d, 5, 5).is_empty(), "{s}: no words of that length");
         assert!(find(s, &d, 5, 5).is_none(), "{s}");
+        let d = Dict::from_words(["a", "b"]);
+        assert_eq!(count(s, &d, 1, 1), 2, "{s}: 1x1");
+        assert_eq!(all(s, &d, 1, 1).len(), 2, "{s}: 1x1");
     }
 }
 

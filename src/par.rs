@@ -9,10 +9,8 @@
 //!    skip / abort any job after it, so the answer is the lexicographically first grid,
 //!    exactly what the sequential solver returns.
 
-use crate::dawg::Dawg;
+use crate::trie::Trie;
 use crate::{Grid, Solver, Stats};
-use std::collections::HashMap;
-use std::hash::{BuildHasherDefault, Hasher};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
 
@@ -24,35 +22,13 @@ const FIND_JOBS_PER_THREAD: usize = 4096;
 /// there without paying for threads and job expansion.
 const FIND_SEQ_BUDGET: u64 = 2_000_000;
 
-/// Memo entries per thread before it stops inserting (bounds memory: ~40 B/entry).
-const MEMO_CAP: usize = 1 << 20;
-
-/// Multiply-xorshift hasher for the packed u128 memo keys (std's SipHash is overkill here).
-#[derive(Default)]
-struct KeyHasher(u64);
-impl Hasher for KeyHasher {
-    fn finish(&self) -> u64 {
-        self.0
-    }
-    fn write(&mut self, _: &[u8]) {
-        unreachable!("only u128 keys")
-    }
-    fn write_u128(&mut self, k: u128) {
-        let x = (k as u64 ^ ((k >> 64) as u64).rotate_left(29)).wrapping_mul(0x9e37_79b9_7f4a_7c15);
-        self.0 = x ^ (x >> 32);
-    }
-}
-type Memo = HashMap<u128, u64, BuildHasherDefault<KeyHasher>>;
-
 pub struct ParSearch {
     rows: usize,
     cols: usize,
-    row_trie: Dawg,
-    col_trie: Dawg,
+    row_trie: Trie,
+    col_trie: Trie,
     threads: usize,
     seq_budget: u64,
-    /// Memoize counts at the start of rows >= this (usize::MAX = off).
-    memo_from_row: usize,
     stats: Stats,
 }
 
@@ -65,12 +41,11 @@ struct Worker<'a> {
     nodes: u64,
     /// `search` gives up once `nodes` exceeds this.
     limit: u64,
-    memo: Memo,
 }
 
 impl<'a> Worker<'a> {
     fn new(s: &'a ParSearch) -> Self {
-        Worker { s, row_state: vec![0; s.rows], col_state: vec![0; s.cols], grid: vec![0; s.rows * s.cols], nodes: 0, limit: u64::MAX, memo: Memo::default() }
+        Worker { s, row_state: vec![0; s.rows], col_state: vec![0; s.cols], grid: vec![0; s.rows * s.cols], nodes: 0, limit: u64::MAX }
     }
 
     /// Reset to the empty grid and replay a job prefix.
@@ -92,35 +67,7 @@ impl<'a> Worker<'a> {
         (r, c, rn, cn, self.s.row_trie.mask(rn) & self.s.col_trie.mask(cn))
     }
 
-    /// Column states packed into one key (16 bits per column + row index on top).
-    #[inline]
-    fn key(&self, r: usize) -> u128 {
-        let mut k = r as u128;
-        for &n in &self.col_state {
-            k = (k << 16) | n as u128;
-        }
-        k
-    }
-
     fn count_rec(&mut self, cell: usize) -> u64 {
-        let (r, c) = (cell / self.s.cols, cell % self.s.cols);
-        if c == 0 && r >= self.s.memo_from_row {
-            // The rows still to fill only see the column states: memoize on them.
-            let k = self.key(r);
-            if let Some(&n) = self.memo.get(&k) {
-                return n;
-            }
-            let n = self.count_cell(cell);
-            if self.memo.len() < MEMO_CAP {
-                self.memo.insert(k, n);
-            }
-            return n;
-        }
-        self.count_cell(cell)
-    }
-
-    #[inline(always)]
-    fn count_cell(&mut self, cell: usize) -> u64 {
         self.nodes += 1;
         let (r, c, rn, cn, mut allowed) = self.allowed(cell);
         if cell + 1 == self.s.rows * self.s.cols {
@@ -179,16 +126,10 @@ impl ParSearch {
         ParSearch {
             rows,
             cols,
-            row_trie: Dawg::new(row_words),
-            col_trie: Dawg::new(col_words),
+            row_trie: Trie::new(row_words),
+            col_trie: Trie::new(col_words),
             threads,
             seq_budget: FIND_SEQ_BUDGET,
-            memo_from_row: {
-                // keys pack 16 bits per column + row on top: needs cols <= 7 and < 65536 states
-                let fits = cols <= 7 && Dawg::new(col_words).len() < 1 << 16;
-                let from = std::env::var("WR_MEMO").ok().and_then(|v| v.parse().ok()).unwrap_or(3);
-                if fits { from } else { usize::MAX }
-            },
             stats: Stats::default(),
         }
     }
