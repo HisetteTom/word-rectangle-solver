@@ -39,6 +39,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 3.46 ms | 3,428× | 0.90× | 994,996 | solutions=1909732 |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 3.35 ms | 3,540× | 0.93× | 994,996 | solutions=1909732 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 3.5 ms | 3,389× | 0.96× | 994,996 | solutions=1909732 |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 3.12 ms | 3,799× | 1.07× | 994,995 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -70,6 +71,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 404 µs | 5,792× | 0.97× | 7,220 | found |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 390 µs | 6,000× | 1.01× | 7,220 | found |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 394 µs | 5,939× | 0.99× | 7,220 | found |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 391 µs | 5,984× | 1.00× | 7,220 | found |
 
 ## B3 · find first 6×6
 
@@ -101,6 +103,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 601 µs | 9,406× | 1.00× | 12,839 | found |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 593 µs | 9,533× | 1.02× | 12,839 | found |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 614 µs | 9,206× | 0.97× | 12,839 | found |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 632 µs | 8,944× | 0.94× | 12,839 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -131,6 +134,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 434 ms | 86.6× | 1.04× | 397,315,658 | solutions=136245247 |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 437 ms | 85.8× | 1.03× | 397,315,658 | solutions=136245247 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 426 ms | 88.1× | 1.03× | 221,286,896 | solutions=136245247 |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 437 ms | 85.8× | 1.00× | 396,848,007 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -161,6 +165,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 3.25 s | 47.0× | 1.03× | 2,142,627,416 | solutions=114846713 |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 3.26 s | 47.0× | 1.03× | 2,142,627,416 | solutions=114846713 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 3.51 s | 43.6× | 0.93× | 946,918,563 | solutions=114846713 |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 3.30 s | 46.4× | 0.99× | 2,139,564,798 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -191,6 +196,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 258 ms | 63.2× | 0.97× | 132,592,160 | solutions=4453472 |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 247 ms | 66.0× | 1.01× | 132,592,160 | solutions=4453472 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 732 ms | 22.3× | 0.34× | 238,449,733 | solutions=4453472 |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 260 ms | 62.8× | 0.95× | 132,590,961 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -221,6 +227,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 432 ms | 11.6× | 0.66× | 36,737,933 | found |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 300 ms | 16.8× | 0.95× | 35,926,381 | found |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 282 ms | 17.8× | 1.06× | 34,977,454 | found |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 396 ms | 12.7× | 0.76× | 35,869,980 | found |
 
 ## B8 · find first 6×7
 
@@ -251,6 +258,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 408 ms | 9.88× | 0.63× | 31,333,531 | found |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 231 ms | 17.5× | 1.11× | 31,362,556 | found |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 234 ms | 17.2× | 0.98× | 31,620,121 | found |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 305 ms | 13.2× | 0.76× | 31,315,893 | found |
 
 ## B9 · find first 5×9
 
@@ -281,6 +289,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 538 ms | 44.2× | 0.96× | 157,538,338 | found |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 534 ms | 44.6× | 0.97× | 157,771,656 | found |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 506 ms | 47.0× | 1.06× | 157,785,037 | found |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 531 ms | 44.8× | 1.00× | 157,552,124 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -304,6 +313,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 10.3 s | 2.97× | 1.01× | 5,393,001,298 | solutions=80364530 |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 10.3 s | 2.97× | 1.01× | 5,393,001,298 | solutions=80364530 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 12.7 s | 2.40× | 0.81× | 4,069,141,452 | solutions=80364530 |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 11.7 s | 2.61× | 0.88× | 5,039,898,387 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -327,6 +337,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 5.85 s | 1.62× | 0.99× | 3,243,793,909 | solutions=37812638 |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 5.69 s | 1.67× | 1.02× | 3,243,793,909 | solutions=37812638 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 6.96 s | 1.36× | 0.82× | 1,629,669,482 | solutions=37812638 |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 5.88 s | 1.62× | 0.97× | 3,239,551,826 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -350,6 +361,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 2.47 s | 2.07× | 1.01× | 1,009,905,272 | found |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 2.43 s | 2.10× | 1.02× | 1,009,922,905 | found |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 2.43 s | 2.10× | 1.00× | 1,009,948,684 | found |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 2.60 s | 1.96× | 0.94× | 1,009,858,645 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -373,6 +385,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 2.54 s | 1.95× | 1.00× | 976,239,922 | no solution: 5x10 exhausted |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 2.57 s | 1.92× | 0.99× | 976,239,922 | no solution: 5x10 exhausted |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 2.51 s | 1.97× | 1.02× | 976,239,922 | no solution: 5x10 exhausted |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 2.54 s | 1.95× | 1.01× | 976,239,922 | no solution: 5x10 exhausted |
 
 ## B14 · count all 6×4 (exhaustive)
 
@@ -383,3 +396,4 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | B14 baseline (tall count) | `c539608` | 2026-11-07 | fast | 14.3 s | — | — | 7,691,811,606 | solutions=37812638 |
 | ⭐ | **tall grids transposed** | `e9dd7bb` | 2026-11-07 | fast | 5.69 s | 2.51× | 2.51× | 3,243,793,909 | solutions=37812638 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 6.94 s | 2.06× | 0.82× | 1,629,669,482 | solutions=37812638 |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 5.76 s | 2.48× | 0.99× | 3,239,551,826 | solutions=37812638 |

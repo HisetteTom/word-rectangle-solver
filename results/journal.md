@@ -580,3 +580,23 @@ the letters each column can still end with.
 two filters, so it costs 2–2.4× more, and the old last-row kernel counted its leaves very
 cheaply. On 3×7 the row-at-a-time order with the bigram check prunes much better.
 The dead-end numbers stay useful: the second-to-last row is where the waste is.
+
+### 2026-11-07: backward next-row bound (`7901ad2`) ❌ reverted
+
+**Idea:** a cheap stand-in for the paired rows. At every row start, bound row r + 1 from the
+right: `bk[k]` = letters column k could give it (union over the letters row r might put
+there), narrowed by backward bigram tables so that a suffix k..W is still possible. Then each
+node pays one extra AND in the forward check, and an empty `bk[k]` kills the whole row at once.
+
+| Benchmark | Before (tall grids transposed) | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 0.437 s · 397.3 M nodes | 0.437 s · 396.8 M | ≈ |
+| B5 count 4×5 | 3.26 s · 2.143 G | 3.30 s · 2.140 G | 0.99× |
+| B10 count 5×5 | 10.30 s · 5.39 G | 11.73 s · 5.04 G | 0.88× |
+| B11 count 4×6 | 5.69 s · 3.244 G | 5.88 s · 3.240 G | 0.97× |
+
+**Verdict:** reverted. Before row r is placed, a column allows almost any letter one row down,
+so the bound is close to "all letters": 0.1% fewer nodes on 4-row grids, 6.5% on 5×5. The
+per-row-start work (one column-child step per letter, W table lookups) costs more than that.
+The pruning that matters has to depend on the letters actually placed in row r. The forward
+check already does that.
