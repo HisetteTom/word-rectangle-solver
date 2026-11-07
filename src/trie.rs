@@ -3,7 +3,7 @@
 //! All words in one trie have the same length, so reaching depth `L` means a
 //! complete word: no terminal flags needed.
 //!
-//! Layout: 8 bytes per node. Nodes are stored in BFS order, and the children of a
+//! Layout: 16 bytes per node (mask, first child, two look-ahead masks). Nodes are stored in BFS order, and the children of a
 //! node are contiguous and sorted by letter, so the child for letter `l` is
 //! `first + popcount(mask & ((1 << l) - 1))` — no 26-entry child table.
 
@@ -13,6 +13,11 @@ pub struct Node {
     pub mask: u32,
     /// Index of the first (lowest-letter) child. Meaningless when `mask == 0`.
     pub first: u32,
+    /// Look-ahead: union of the children's masks = letters some completion has one position
+    /// further. Lets a search prune a letter whose row can't match the next-but-one column.
+    pub next: u32,
+    /// Same, two positions further.
+    pub next2: u32,
 }
 
 pub struct Trie {
@@ -49,8 +54,14 @@ impl Trie {
                     queue.push(c as usize);
                 }
             }
-            nodes.push(Node { mask, first });
+            nodes.push(Node { mask, first, next: 0, next2: 0 });
             i += 1;
+        }
+        // children come after their parent in BFS order: fill `next` bottom-up
+        for i in (0..nodes.len()).rev() {
+            let n = nodes[i];
+            nodes[i].next = (0..n.mask.count_ones()).fold(0, |a, j| a | nodes[(n.first + j) as usize].mask);
+            nodes[i].next2 = (0..n.mask.count_ones()).fold(0, |a, j| a | nodes[(n.first + j) as usize].next);
         }
         Trie { nodes }
     }
@@ -77,6 +88,12 @@ impl Trie {
     #[inline(always)]
     pub fn step(&self, n: Node, letter: u32) -> Node {
         self.nodes[(n.first + (n.mask & ((1u32 << letter) - 1)).count_ones()) as usize]
+    }
+
+    /// Index of the child of `n` for `letter` (same rule as `step`).
+    #[inline(always)]
+    pub fn child_idx(n: Node, letter: u32) -> u32 {
+        n.first + (n.mask & ((1u32 << letter) - 1)).count_ones()
     }
 
     pub fn len(&self) -> usize {

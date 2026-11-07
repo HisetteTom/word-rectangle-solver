@@ -1,6 +1,8 @@
 //! Level 6: parallel version of the row-major trie search (`search.rs`), std threads only.
 //! The hot loops (`Kernel`) carry trie nodes by value and track (row, col) directly.
 //! Square counts use transpose symmetry (`Kernel::count_sym`): about half the nodes.
+//! Row look-ahead: a letter is skipped when the row node it leads to (`next`, `next2` masks)
+//! can't fit the columns two and three cells further right (forward checking).
 //!
 //! 0. `find` first tries a short sequential search (`FIND_SEQ_BUDGET` nodes): small cases stay cheap.
 //! 1. Split: expand the first cells breadth-first (lexicographic order) until there are
@@ -149,7 +151,13 @@ impl Kernel<'_> {
         while allowed != 0 {
             let l = allowed.trailing_zeros();
             allowed &= allowed - 1;
-            total += self.count_last(c + 1, self.rt.step(row, l), masks, nodes);
+            let idx = Trie::child_idx(row, l);
+            let w = self.last_c + 1;
+            let nrow = self.rt.node(idx);
+            if c + 2 < w && (nrow.next & masks[c + 2] == 0 || (c + 3 < w && nrow.next2 & masks[c + 3] == 0)) {
+                continue;
+            }
+            total += self.count_last(c + 1, nrow, masks, nodes);
         }
         total
     }
@@ -239,8 +247,13 @@ impl Kernel<'_> {
                     self.search(r + 1, 0, self.rt.node(0), st, on, stop)
                 }
             } else {
+                let nrow = self.rt.step(row, l);
+                let w = self.last_c + 1;
+                if c + 2 < w && (nrow.next & st.colv[c + 2].mask == 0 || (c + 3 < w && nrow.next2 & st.colv[c + 3].mask == 0)) {
+                    continue; // look-ahead: this row can't fit the columns further right
+                }
                 st.colv[c] = self.ct.step(col, l);
-                self.search(r, c + 1, self.rt.step(row, l), st, on, stop)
+                self.search(r, c + 1, nrow, st, on, stop)
             };
             if !ok {
                 keep_going = false;
@@ -280,11 +293,17 @@ impl Kernel<'_> {
             return total;
         }
         let mut total = 0;
+        let w = self.last_c + 1;
         while allowed != 0 {
             let l = allowed.trailing_zeros();
             allowed &= allowed - 1;
+            let idx = Trie::child_idx(row, l);
+            let nrow = self.rt.node(idx);
+            if c + 2 < w && (nrow.next & colv[c + 2].mask == 0 || (c + 3 < w && nrow.next2 & colv[c + 3].mask == 0)) {
+                continue;
+            }
             colv[c] = self.ct.step(col, l);
-            total += self.count(r, c + 1, self.rt.step(row, l), colv, nodes);
+            total += self.count(r, c + 1, nrow, colv, nodes);
         }
         colv[c] = col;
         total
