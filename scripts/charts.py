@@ -22,12 +22,16 @@ CHARTS = ROOT / "results" / "charts"
 REPORT = ROOT / "results" / "BENCHMARKS.md"
 
 
-def describe(args: str) -> str:
+def describe(args: str, result: str = "") -> str:
     m = re.match(r"(\w+) --rows (\d+) --cols (\d+)", args)
     if not m:
         return args
     cmd, r, c = m.groups()
-    return f"count all {r}×{c} (exhaustive)" if cmd == "count" else f"find first {r}×{c}"
+    if cmd == "count":
+        return f"count all {r}×{c} (exhaustive)"
+    if result.startswith("no solution"):
+        return f"prove no {r}×{c} exists (exhaustive)"
+    return f"find first {r}×{c}"
 
 
 def fmt_time(s: float) -> str:
@@ -75,7 +79,7 @@ def load():
                 steps[label].update(row)  # keep first-seen position, latest numbers
             else:
                 steps[label] = row
-    return {b: list(s.values()) for b, s in sorted(benches.items())}
+    return {b: list(s.values()) for b, s in sorted(benches.items(), key=lambda kv: int(kv[0][1:]) if kv[0][1:].isdigit() else 0)}
 
 
 def svg(bench: str, steps: list[dict]) -> str:
@@ -123,7 +127,7 @@ def svg(bench: str, steps: list[dict]) -> str:
   }
 </style>""",
         f'<rect class="bg" width="{width}" height="{height}" rx="8"/>',
-        f'<text class="t" x="20" y="30" font-size="17" font-weight="700">{escape(bench)} · {escape(describe(steps[0]["args"]))}</text>',
+        f'<text class="t" x="20" y="30" font-size="17" font-weight="700">{escape(bench)} · {escape(describe(steps[0]["args"], steps[0].get("result", "")))}</text>',
         f'<text class="m" x="20" y="50" font-size="12">search time{", log scale" if log_scale else ""} · shorter is better · speedup vs {escape(steps[0]["label"])}</text>',
     ]
     for tv in ticks:
@@ -159,7 +163,7 @@ def report(data: dict[str, list[dict]]) -> str:
         "",
     ]
     for bench, steps in data.items():
-        lines += [f"## {bench} · {describe(steps[0]['args'])}", "", f"![{bench}](charts/{bench}.svg)", ""]
+        lines += [f"## {bench} · {describe(steps[0]['args'], steps[0].get('result', ''))}", "", f"![{bench}](charts/{bench}.svg)", ""]
         lines += ["| Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |",
                   "|---|---|---|---|---:|---:|---:|---:|---|"]
         prev = None

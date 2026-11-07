@@ -31,6 +31,13 @@ Search time for each optimization step (log scale, shorter is better). Full tabl
 ![B8](results/charts/B8.svg)
 ![B9](results/charts/B9.svg)
 
+**Huge suite** (added when the heavy suite dropped to ~8 s; baseline = by-value node kernel, 22 threads):
+
+![B10](results/charts/B10.svg)
+![B11](results/charts/B11.svg)
+![B12](results/charts/B12.svg)
+![B13](results/charts/B13.svg)
+
 ---
 
 ## ⚡ Quick start
@@ -42,8 +49,8 @@ Search time for each optimization step (log scale, shorter is better). Full tabl
 ./wr 6x6          # find one 6×6   (./wr 6 works too)
 ./wr count 3x3    # count all 3×3
 ./wr test         # tests
-./wr bench        # full benchmark suite (~4 min)
-./wr bench quick  # B1–B3 only (seconds); ./wr bench heavy = B4–B9; ./wr bench B2 = one
+./wr bench        # full benchmark suite (~1 min now)
+./wr bench quick  # B1–B3 only (seconds); ./wr bench heavy = B4–B9; ./wr bench huge = B10–B13; ./wr bench B2 = one
 ./wr bench --label "my step"   # record an optimization step → charts
 ./wr charts       # regenerate charts from results/bench-log.csv
 ./wr release      # benchmark with full release build (official numbers)
@@ -388,6 +395,15 @@ Target suite (once the trie solver exists):
 | `B7` | `find --rows 7 --cols 7` | 5 s |
 | `B8` | `find --rows 6 --cols 7` | 4 s |
 | `B9` | `find --rows 5 --cols 9` | 24 s |
+
+**Huge suite** (added when the heavy suite hit ~8 s total; each runs once; sized at "by-value node kernel", 22 threads):
+
+| ID | Task | By-value kernel time |
+|---|---|---|
+| `B10` | `count --rows 5 --cols 5` | 31 s (80,364,530 solutions) |
+| `B11` | `count --rows 4 --cols 6` | 9.6 s |
+| `B12` | `find --rows 6 --cols 8` | 5.2 s |
+| `B13` | `find --rows 5 --cols 10` | 4.9 s (no 5×10 exists: exhaustive proof) |
 
 Every run is appended to `results/bench-log.csv` (`search_s` = median search time, dictionary load
 excluded; `label` = optimization step). `scripts/charts.py` turns it into `results/charts/*.svg` and

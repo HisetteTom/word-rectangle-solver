@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Usage: scripts/bench.sh [all|quick|heavy|B<n>] [--release] [--solver NAME] [--runs N] [--label TEXT]
+# Usage: scripts/bench.sh [all|quick|heavy|huge|B<n>] [--release] [--solver NAME] [--runs N] [--label TEXT]
 #   default: all benchmarks, `fast` profile, par solver (the CLI default).
 #   quick = B1–B3 (seconds): 1 warmup run (shown) + N timed runs (default 5).
-#   heavy = B4+ (minutes): ONE timed run each, no warmup.
+#   heavy = B4–B9, huge = B10+ : ONE timed run each, no warmup.
 #   --release  : build with the full release profile (LTO), use for journal numbers.
 #   --label    : name of this step in the charts (default: solver name),
 #                e.g. --label "trie + masks". Use a new label for every improvement.
@@ -26,7 +26,7 @@ while [[ $# -gt 0 ]]; do
     --solver)  solver="$2"; shift ;;
     --runs)    runs="$2"; shift ;;
     --label)   label="$2"; shift ;;
-    B*|all|quick|heavy) which_b="$1" ;;
+    B*|all|quick|heavy|huge) which_b="$1" ;;
     *) echo "${RD}unknown arg $1${R}"; exit 1 ;;
   esac
   shift
@@ -50,6 +50,11 @@ BENCHES=(
   "B7|find --rows 7 --cols 7|first 7x7|heavy"
   "B8|find --rows 6 --cols 7|first 6x7|heavy"
   "B9|find --rows 5 --cols 9|first 5x9|heavy"
+  # huge suite, sized at "by-value node kernel" (parallel, ~50 s total there)
+  "B10|count --rows 5 --cols 5|count all 5x5 (exhaustive)|huge"
+  "B11|count --rows 4 --cols 6|count all 4x6 (exhaustive)|huge"
+  "B12|find --rows 6 --cols 8|first 6x8|huge"
+  "B13|find --rows 5 --cols 10|prove no 5x10 exists (exhaustive)|huge"
 )
 
 commit=$(git rev-parse --short HEAD 2>/dev/null || echo unknown)
@@ -65,7 +70,8 @@ for b in "${BENCHES[@]}"; do
   case $which_b in
     all) ;;
     quick) [[ -z $heavy ]] || continue ;;
-    heavy) [[ -n $heavy ]] || continue ;;
+    heavy) [[ $heavy == heavy ]] || continue ;;
+    huge) [[ $heavy == huge ]] || continue ;;
     *) [[ $which_b == "$id" ]] || continue ;;
   esac
   echo "${B}${CY}=== $id: $desc${R}   ${D}($BIN $args --solver $solver)  [$label]${R}"

@@ -27,7 +27,7 @@ The benchmark history is the point of this project; it is published on GitHub as
 Reverted experiments: still run step 3 on the experimental commit (the bar documents it), then revert.
 
 Suites: `./wr bench quick` (B1–B3, seconds) for fast iteration while developing; the recorded step
-must be a full `./wr bench` (~4 min) so every chart gets the new bar.
+must be a full `./wr bench` (~1 min now) so every chart gets the new bar.
 Use `./wr release --label ...` for official numbers; `fast` profile is fine day to day.
 When a benchmark drops below ~1 ms, add a bigger benchmark (`B4`, …) to `BENCHES` in
 `scripts/bench.sh` instead of changing existing ones — old IDs must keep meaning the same task.
