@@ -113,6 +113,35 @@ struct Kernel<'t> {
     last_c: usize,
 }
 
+impl Kernel<'_> {
+    /// Last row, cell `c`: completions of `row` with letter `c'` in `masks[c']` for every c' >= c.
+    fn count_last(&self, c: usize, row: Node, masks: &[u32; 32], nodes: &mut u64) -> u64 {
+        *nodes += 1;
+        let mut allowed = row.mask & masks[c];
+        if c == self.last_c {
+            return allowed.count_ones() as u64;
+        }
+        let mut total = 0;
+        if c + 1 == self.last_c {
+            // unrolled: the next cell is the last one, count it by popcount directly
+            let last = masks[c + 1];
+            *nodes += allowed.count_ones() as u64;
+            while allowed != 0 {
+                let l = allowed.trailing_zeros();
+                allowed &= allowed - 1;
+                total += (self.rt.step(row, l).mask & last).count_ones() as u64;
+            }
+            return total;
+        }
+        while allowed != 0 {
+            let l = allowed.trailing_zeros();
+            allowed &= allowed - 1;
+            total += self.count_last(c + 1, self.rt.step(row, l), masks, nodes);
+        }
+        total
+    }
+}
+
 /// Mutable state of `Kernel::search`.
 struct SearchState {
     colv: Vec<Node>,
@@ -158,6 +187,14 @@ impl Kernel<'_> {
     }
 
     fn count(&self, r: usize, c: usize, row: Node, colv: &mut [Node], nodes: &mut u64) -> u64 {
+        if r == self.last_r {
+            // Last row: columns only need their masks (their children are never used).
+            let mut masks = [0u32; 32];
+            for (m, n) in masks.iter_mut().zip(colv.iter()) {
+                *m = n.mask;
+            }
+            return self.count_last(c, row, &masks, nodes);
+        }
         *nodes += 1;
         let col = colv[c];
         let mut allowed = row.mask & col.mask;
@@ -192,6 +229,7 @@ impl Kernel<'_> {
 impl ParSearch {
     /// `threads == 0` = all available cores.
     pub fn new(rows: usize, cols: usize, row_words: &[String], col_words: &[String], threads: usize) -> Self {
+        assert!(cols <= 32, "par supports at most 32 columns (last-row mask array)");
         let threads = if threads == 0 {
             std::thread::available_parallelism().map(|n| n.get()).unwrap_or(1)
         } else {
