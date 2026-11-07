@@ -55,6 +55,8 @@ BENCHES=(
   "B11|count --rows 4 --cols 6|count all 4x6 (exhaustive)|huge"
   "B12|find --rows 6 --cols 8|first 6x8|huge"
   "B13|find --rows 5 --cols 10|prove no 5x10 exists (exhaustive)|huge"
+  # tall shape (more rows than columns), added at "next-row forward check"
+  "B14|count --rows 6 --cols 4|count all 6x4 (tall, exhaustive)|huge"
 )
 
 commit=$(git rev-parse --short HEAD 2>/dev/null || echo unknown)
