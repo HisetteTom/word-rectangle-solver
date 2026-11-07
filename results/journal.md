@@ -548,3 +548,35 @@ to naive's answer). New benchmark **B14 = count 6×4**, with a baseline bar reco
 | others | | | unchanged (noise) |
 
 **Verdict:** kept.
+
+### 2026-11-07: paired last two rows (`864443e`) ❌ reverted
+
+**Measurement first.** A throwaway probe counted, per row, the count-kernel calls whose subtree
+holds zero solutions:
+
+| Shape | row 1 dead | row 2 dead | row 3 dead |
+|---|---|---|---|
+| 4×5 | 36% | **79%** (second-to-last) | — |
+| 4×6 | 64% | **94%** (second-to-last) | — |
+| 5×5 | 52% | 94% | **97%** (second-to-last, 3.27 G nodes) |
+
+Even at the *last* column of the second-to-last row, 92% of calls are dead. The last row only
+appears through the approximate bigram check until the row above it is complete.
+
+**Idea:** fill the last two rows together, column by column (letter `a` of row R−2, then letter `b`
+of row R−1, which must end the column). Both rows walk their trie, so an impossible last row
+is seen at the first column where it fails. The last row also gets `good()` look-ahead against
+the letters each column can still end with.
+
+| Benchmark | Before (tall grids transposed) | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 0.437 s · 397 M nodes | 0.426 s · 221 M | 1.03× |
+| B5 count 4×5 | 3.26 s · 2.14 G | 3.51 s · 0.95 G | 0.93× |
+| B6 count 3×7 | 0.247 s · 133 M | 0.732 s · 238 M | 0.34× |
+| B10 count 5×5 | 10.30 s · 5.39 G | 12.73 s · 4.07 G | 0.81× |
+| B11 count 4×6 | 5.69 s · 3.24 G | 6.96 s · 1.63 G | 0.82× |
+
+**Verdict:** reverted. Nodes drop by up to 2.2×, but each node branches on two letters and runs
+two filters, so it costs 2–2.4× more, and the old last-row kernel counted its leaves very
+cheaply. On 3×7 the row-at-a-time order with the bigram check prunes much better.
+The dead-end numbers stay useful: the second-to-last row is where the waste is.

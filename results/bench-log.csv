@@ -268,3 +268,17 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,e9dd7bb,fast,par,B12,find --rows 6 --cols 8,2.5365,1009922905,found,2.434040,tall grids transposed
 2026-11-07,e9dd7bb,fast,par,B13,find --rows 5 --cols 10,2.6929,976239922,no solution: 5x10 exhausted,2.570258,tall grids transposed
 2026-11-07,e9dd7bb,fast,par,B14,count --rows 6 --cols 4,5.7804,3243793909,solutions=37812638,5.686319,tall grids transposed
+2026-11-07,864443e,fast,par,B1,count --rows 3 --cols 3,0.1570,994996,solutions=1909732,0.003497,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B2,find --rows 5 --cols 6,0.1861,7220,found,0.000394,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B3,find --rows 6 --cols 6,0.1880,12839,found,0.000614,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B4,count --rows 4 --cols 4,0.5768,221286896,solutions=136245247,0.426163,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B5,count --rows 4 --cols 5,3.5979,946918563,solutions=114846713,3.510497,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B6,count --rows 3 --cols 7,0.8455,238449733,solutions=4453472,0.731848,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B7,find --rows 7 --cols 7,0.3856,34977454,found,0.281647,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B8,find --rows 6 --cols 7,0.3619,31620121,found,0.234074,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B9,find --rows 5 --cols 9,0.6110,157785037,found,0.505739,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B10,count --rows 5 --cols 5,12.8182,4069141452,solutions=80364530,12.733996,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B11,count --rows 4 --cols 6,7.0539,1629669482,solutions=37812638,6.963922,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B12,find --rows 6 --cols 8,2.5521,1009948684,found,2.429971,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B13,find --rows 5 --cols 10,2.6097,976239922,no solution: 5x10 exhausted,2.510960,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B14,count --rows 6 --cols 4,7.0532,1629669482,solutions=37812638,6.942869,paired last two rows (failed)
