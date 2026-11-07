@@ -341,6 +341,7 @@ Each step gets its own entry in the [optimization journal](#16-optimization-jour
 
 ### Level 5: symmetry and duplicates
 - [ ] For perfect squares, exploit symmetry: filling cell `(r, c)` also fills `(c, r)`. Roughly halves the work.
+- [x] For *counting* squares (rows and columns from one word list): transposition symmetry. Search only row₀ ≤ col₀ and count = 2·#{row₀ < col₀} + #{row₀ = col₀}: half the nodes.
 - [ ] For rectangles, only search `R ≤ C`.
 - [ ] For "all words distinct" variants, track used words cheaply (e.g. a bitset over word IDs at full depth).
 

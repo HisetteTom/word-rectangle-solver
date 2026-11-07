@@ -248,3 +248,25 @@ so 4-row counts gain most. 5×5 has its weight in the middle rows and gains noth
 
 **Verdict:** kept. Note for the future: parallel `find` timings vary ±30 % between runs, because which job
 wins and how much of later jobs is explored depends on thread timing. Treat single-run find gains below ~1.3× as noise.
+
+### 2026-11-07: Level 5 — transpose symmetry for square counts (`43cfaf9`) ✅
+
+**Idea:** in an R×R square whose rows and columns use the same word list, the transpose of a solution is a
+solution, and transposing swaps (first row, first column). So
+
+  count = 2 · #{row₀ < col₀} + #{row₀ = col₀}
+
+`Kernel::count_sym` runs only on the "tied" path, where column 0 equals row 0 so far. At each (r, 0) it cuts
+letters < row₀[r]. The equal letter stays tied. Greater letters drop into the unchanged hot kernel with
+weight ×2. Job prefixes are capped to row 0, because they are expanded without the tie rule. Rectangles
+(R ≠ C) are unaffected. Exact counts are unchanged: 1,909,732 / 136,245,247 / 80,364,530. Random-dictionary
+2×2 and 3×3 cases are cross-checked against naive.
+
+| Benchmark | Before (last-row) | After (symmetry) | Nodes | Change |
+|---|---|---|---|---|
+| B1 count 3×3 | 5.9 ms | 3.5 ms | 2.12 M → 1.10 M | 1.68× |
+| B4 count 4×4 | 0.92 s | 0.47 s | 1.30 G → 0.66 G | **1.96×** |
+| B10 count 5×5 | 30.9 s | 15.9 s | 30.7 G → 15.5 G | **1.94×** |
+| rectangles / finds | — | — | — | ≈ (unchanged) |
+
+**Verdict:** kept.
