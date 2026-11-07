@@ -5,3 +5,9 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,def6187-dirty,fast,naive,B1,count --rows 3 --cols 3,11.9734,2034829,solutions=1909732,,
 2026-11-07,def6187-dirty,fast,naive,B2,find --rows 5 --cols 6,2.5275,1919,found,,
 2026-11-07,def6187-dirty,fast,naive,B3,find --rows 6 --cols 6,5.7346,4505,found,,
+2026-11-07,60c0927,fast,naive,B1,count --rows 3 --cols 3,12.0839,2034829,solutions=1909732,11.851750,naive
+2026-11-07,60c0927,fast,naive,B2,find --rows 5 --cols 6,2.5390,1919,found,2.339885,naive
+2026-11-07,60c0927,fast,naive,B3,find --rows 6 --cols 6,5.7295,4505,found,5.652774,naive
+2026-11-07,60c0927,fast,trie,B1,count --rows 3 --cols 3,0.2442,4031868,solutions=1909732,0.077146,trie + masks
+2026-11-07,60c0927,fast,trie,B2,find --rows 5 --cols 6,0.1897,22841,found,0.000900,trie + masks
+2026-11-07,60c0927,fast,trie,B3,find --rows 6 --cols 6,0.1928,49782,found,0.001911,trie + masks

@@ -37,6 +37,14 @@ def fmt_time(s: float) -> str:
     return f"{s * 1e6:.3g} µs"
 
 
+def fmt_tick(s: float) -> str:
+    if s >= 1:
+        return f"{s:g} s"
+    if s >= 1e-3:
+        return f"{s * 1e3:g} ms"
+    return f"{s * 1e6:g} µs"
+
+
 def fmt_x(x: float) -> str:
     if x >= 100:
         return f"{x:,.0f}×"
@@ -103,7 +111,7 @@ def svg(bench: str, steps: list[dict]) -> str:
     while d <= math.log10(hi) + 1e-9:
         gx = left + (d - math.log10(lo)) / span * plot_w
         out.append(f'<line class="g" x1="{gx:.1f}" x2="{gx:.1f}" y1="{top - 6}" y2="{height - 28}" stroke-dasharray="2 3"/>')
-        out.append(f'<text class="m" x="{gx:.1f}" y="{height - 12}" font-size="11" text-anchor="middle">{fmt_time(10 ** d)}</text>')
+        out.append(f'<text class="m" x="{gx:.1f}" y="{height - 12}" font-size="11" text-anchor="middle">{fmt_tick(round(10 ** d, 9))}</text>')
         d += 1
     for i, s in enumerate(steps):
         y = top + i * row_h
