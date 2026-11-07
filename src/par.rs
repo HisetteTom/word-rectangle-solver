@@ -227,21 +227,10 @@ struct SearchState {
 impl Kernel<'_> {
     /// Same order as `count`, writes letters to the grid; false = stop.
     fn search<F: FnMut(&[u8]) -> bool, S: Fn() -> bool>(&self, r: usize, c: usize, row: Node, st: &mut SearchState, on: &mut F, stop: &S) -> bool {
-        if st.nodes >= st.limit || stop() {
-            st.nodes += 1;
+        st.nodes += 1;
+        if st.nodes > st.limit || stop() {
             return false;
         }
-        if r == self.last_r {
-            // last row: columns only need their masks (like `count_last`); stop is not
-            // checked again inside one last row (it is small)
-            let mut masks = [0u32; 32];
-            for (m, n) in masks.iter_mut().zip(st.colv.iter()) {
-                *m = n.mask;
-            }
-            let base = r * st.cols;
-            return self.search_last(c, row, &masks, &mut st.grid, base, &mut st.nodes, on);
-        }
-        st.nodes += 1;
         let col = st.colv[c];
         let mut allowed = row.mask & col.mask;
         let cell = r * st.cols + c;
@@ -251,8 +240,12 @@ impl Kernel<'_> {
             allowed &= allowed - 1;
             st.grid[cell] = b'a' + l as u8;
             let ok = if c == self.last_c {
-                st.colv[c] = self.ct.step(col, l);
-                self.search(r + 1, 0, self.rt.node(0), st, on, stop)
+                if r == self.last_r {
+                    on(&st.grid)
+                } else {
+                    st.colv[c] = self.ct.step(col, l);
+                    self.search(r + 1, 0, self.rt.node(0), st, on, stop)
+                }
             } else {
                 let nrow = self.rt.step(row, l);
                 let w = self.last_c + 1;
@@ -269,32 +262,6 @@ impl Kernel<'_> {
         }
         st.colv[c] = col;
         keep_going
-    }
-
-    /// Last row of `search`, cell `c` (grid index `base + c`): same order as `count_last`.
-    #[allow(clippy::too_many_arguments)]
-    fn search_last<F: FnMut(&[u8]) -> bool>(&self, c: usize, row: Node, masks: &[u32; 32], grid: &mut [u8], base: usize, nodes: &mut u64, on: &mut F) -> bool {
-        *nodes += 1;
-        let mut allowed = row.mask & masks[c];
-        let w = self.last_c + 1;
-        while allowed != 0 {
-            let l = allowed.trailing_zeros();
-            allowed &= allowed - 1;
-            grid[base + c] = b'a' + l as u8;
-            let ok = if c == self.last_c {
-                on(grid)
-            } else {
-                let nrow = self.rt.step(row, l);
-                if nrow.mask & masks[c + 1] == 0 || (c + 2 < w && (nrow.next & masks[c + 2] == 0 || (c + 3 < w && nrow.next2 & masks[c + 3] == 0))) {
-                    continue;
-                }
-                self.search_last(c + 1, nrow, masks, grid, base, nodes, on)
-            };
-            if !ok {
-                return false;
-            }
-        }
-        true
     }
 
     fn count(&self, r: usize, c: usize, row: Node, colv: &mut [CNode], nodes: &mut u64) -> u64 {
