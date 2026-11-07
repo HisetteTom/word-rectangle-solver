@@ -226,3 +226,25 @@ The heavy suite was down to ~8 s, and single runs of 0.4–1 s are noisy, so I a
 | B13 | find 5×10 | 4.94 s | **no 5×10 exists** (3.8 G nodes, exhaustive) |
 
 Probe: find 7×8 did not finish in 150 s; a future target.
+
+### 2026-11-07: Level 7 — last-row count kernel (`04bbb6c`) ✅ (small)
+
+**Idea:** in the last row, the column children are never used, only their masks. So copy the column masks into
+a fixed array once per last-row entry and skip all column steps. Unroll the second-to-last cell as
+`Σ popcount(step(row, l).mask & last_mask)`. Node counts are unchanged.
+
+Instrumented 4×4 (temporary): rows 1/2/3 = 1.9 M / 244 M / 779 M nodes. **60 % of nodes are in the last row**,
+so 4-row counts gain most. 5×5 has its weight in the middle rows and gains nothing.
+
+| Benchmark | Before (kernel) | After (last-row) | Change |
+|---|---|---|---|
+| B1 count 3×3 | 6.4 ms | 5.9 ms | 1.07× |
+| B4 count 4×4 | 1.12 s | 0.92 s | 1.21× |
+| B5 count 4×5 | 4.84 s | 4.30 s | 1.13× |
+| B6 count 3×7 | 0.48 s | 0.40 s | 1.22× |
+| B10 count 5×5 | 30.6 s | 30.9 s | ≈ |
+| B11 count 4×6 | 9.50 s | 8.96 s | 1.06× |
+| B7–B9, B12–B13 find | — | — | ≈ (unchanged code; B8 0.39 → 0.56 s is parallel-find run-to-run noise) |
+
+**Verdict:** kept. Note for the future: parallel `find` timings vary ±30 % between runs, because which job
+wins and how much of later jobs is explored depends on thread timing. Treat single-run find gains below ~1.3× as noise.

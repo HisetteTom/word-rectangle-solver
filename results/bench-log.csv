@@ -84,3 +84,16 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,1449b66,fast,par,B11,count --rows 4 --cols 6,9.6109,9588114365,solutions=37812638,9.499298,by-value node kernel
 2026-11-07,1449b66,fast,par,B12,find --rows 6 --cols 8,5.1969,4132728056,found,5.101496,by-value node kernel
 2026-11-07,1449b66,fast,par,B13,find --rows 5 --cols 10,5.0374,3802792308,no solution: 5x10 exhausted,4.943884,by-value node kernel
+2026-11-07,04bbb6c,fast,par,B1,count --rows 3 --cols 3,0.0989,2122136,solutions=1909732,0.005939,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B2,find --rows 5 --cols 6,0.1274,22840,found,0.000588,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B3,find --rows 6 --cols 6,0.1678,49781,found,0.001201,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B4,count --rows 4 --cols 4,1.0726,1299555173,solutions=136245247,0.922769,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B5,count --rows 4 --cols 5,4.4530,5054675765,solutions=114846713,4.297200,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B6,count --rows 3 --cols 7,0.5577,485285838,solutions=4453472,0.397356,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B7,find --rows 7 --cols 7,0.6198,158604931,found,0.477230,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B8,find --rows 6 --cols 7,0.6823,120838089,found,0.563942,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B9,find --rows 5 --cols 9,1.0790,607918285,found,0.905993,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B10,count --rows 5 --cols 5,31.0496,30730973507,solutions=80364530,30.886714,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B11,count --rows 4 --cols 6,9.1170,9588114365,solutions=37812638,8.957842,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B12,find --rows 6 --cols 8,5.4209,4132932128,found,5.254856,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B13,find --rows 5 --cols 10,5.0607,3802792308,no solution: 5x10 exhausted,4.894108,last-row count kernel
