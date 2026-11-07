@@ -1,27 +1,35 @@
 //! Every optimized solver must agree exactly with the naive reference.
+//! New solver? It is picked up automatically from `wordrect::SOLVERS`.
 
 use std::collections::HashSet;
-use wordrect::Solver;
 use wordrect::dict::Dict;
-use wordrect::naive::Naive;
-use wordrect::search::TrieSearch;
 use wordrect::validate::validate;
+use wordrect::{Grid, SOLVERS, make_solver};
 
-fn sorted(mut v: Vec<Vec<String>>) -> Vec<Vec<String>> {
+fn optimized() -> impl Iterator<Item = &'static str> {
+    SOLVERS.iter().copied().filter(|&s| s != "naive")
+}
+
+fn all(name: &str, d: &Dict, r: usize, c: usize) -> Vec<Grid> {
+    let mut v = make_solver(name, r, c, d.words(c), d.words(r)).unwrap().all();
     v.sort();
     v
 }
 
-fn naive_all(d: &Dict, r: usize, c: usize) -> Vec<Vec<String>> {
-    sorted(Naive::new(r, c, d.words(c), d.words(r)).all())
+fn count(name: &str, d: &Dict, r: usize, c: usize) -> u64 {
+    make_solver(name, r, c, d.words(c), d.words(r)).unwrap().count()
 }
 
-fn trie_all(d: &Dict, r: usize, c: usize) -> Vec<Vec<String>> {
-    sorted(TrieSearch::new(r, c, d.words(c), d.words(r)).all())
+fn find(name: &str, d: &Dict, r: usize, c: usize) -> Option<Grid> {
+    make_solver(name, r, c, d.words(c), d.words(r)).unwrap().find()
+}
+
+fn set(d: &Dict) -> HashSet<String> {
+    d.by_len.iter().flatten().cloned().collect()
 }
 
 #[test]
-fn trie_matches_naive_on_pseudo_random_dicts() {
+fn match_naive_on_pseudo_random_dicts() {
     let mut seed: u64 = 987654321;
     let mut next = || {
         seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
@@ -36,41 +44,63 @@ fn trie_matches_naive_on_pseudo_random_dicts() {
             .collect();
         let d = Dict::from_words(words.iter().map(String::as_str));
         for (r, c) in [(2, 2), (2, 3), (3, 2), (3, 3), (2, 4), (4, 3)] {
-            assert_eq!(trie_all(&d, r, c), naive_all(&d, r, c), "dict={words:?} size={r}x{c}");
+            let want = all("naive", &d, r, c);
+            for s in optimized() {
+                assert_eq!(all(s, &d, r, c), want, "solver={s} dict={words:?} size={r}x{c}");
+                assert_eq!(count(s, &d, r, c), want.len() as u64, "solver={s} count");
+                assert_eq!(find(s, &d, r, c).is_some(), !want.is_empty(), "solver={s} find");
+            }
         }
     }
 }
 
 #[test]
-fn trie_matches_naive_on_enable_small_sizes() {
+fn match_naive_on_enable_small_sizes() {
     let d = Dict::load("dicts/enable.txt".as_ref()).unwrap();
-    let all: HashSet<String> = d.by_len.iter().flatten().cloned().collect();
+    let dict = set(&d);
     for (r, c) in [(2, 2), (2, 3), (3, 2)] {
-        let t = trie_all(&d, r, c);
-        assert!(!t.is_empty());
-        assert_eq!(t, naive_all(&d, r, c), "size={r}x{c}");
-        for g in &t {
-            validate(g, &all).unwrap();
+        let want = all("naive", &d, r, c);
+        assert!(!want.is_empty());
+        for s in optimized() {
+            let got = all(s, &d, r, c);
+            assert_eq!(got, want, "solver={s} size={r}x{c}");
+            for g in &got {
+                validate(g, &dict).unwrap();
+            }
         }
     }
 }
 
 #[test]
-fn trie_finds_same_first_solution_as_naive() {
+fn enable_3x3_count_and_finds_validate() {
+    let d = Dict::load("dicts/enable.txt".as_ref()).unwrap();
+    let dict = set(&d);
+    for s in optimized() {
+        assert_eq!(count(s, &d, 3, 3), 1_909_732, "solver={s}");
+        for (r, c) in [(3, 4), (4, 4), (5, 5)] {
+            let g = find(s, &d, r, c).unwrap_or_else(|| panic!("solver={s} found nothing for {r}x{c}"));
+            validate(&g, &dict).unwrap();
+        }
+    }
+}
+
+#[test]
+fn row_major_trie_finds_same_first_solution_as_naive() {
     // Both explore in lexicographic order, so the first grid must be identical.
     let d = Dict::load("dicts/enable.txt".as_ref()).unwrap();
     for (r, c) in [(3, 3), (3, 4), (4, 4)] {
-        let n = Naive::new(r, c, d.words(c), d.words(r)).find();
-        let t = TrieSearch::new(r, c, d.words(c), d.words(r)).find();
-        assert_eq!(t, n, "size={r}x{c}");
+        assert_eq!(find("trie", &d, r, c), find("naive", &d, r, c), "size={r}x{c}");
     }
 }
 
 #[test]
-fn trie_empty_and_tiny() {
-    let d = Dict::from_words(["cat", "ape", "ten"]);
-    assert_eq!(trie_all(&d, 3, 3), vec![vec!["cat".to_string(), "ape".into(), "ten".into()]]);
-    let d = Dict::from_words(["cat", "dog"]);
-    assert!(trie_all(&d, 3, 3).is_empty());
-    assert!(trie_all(&d, 5, 5).is_empty()); // no words of that length at all
+fn empty_and_tiny() {
+    for s in optimized() {
+        let d = Dict::from_words(["cat", "ape", "ten"]);
+        assert_eq!(all(s, &d, 3, 3), vec![vec!["cat".to_string(), "ape".into(), "ten".into()]], "{s}");
+        let d = Dict::from_words(["cat", "dog"]);
+        assert!(all(s, &d, 3, 3).is_empty(), "{s}");
+        assert!(all(s, &d, 5, 5).is_empty(), "{s}: no words of that length");
+        assert!(find(s, &d, 5, 5).is_none(), "{s}");
+    }
 }
