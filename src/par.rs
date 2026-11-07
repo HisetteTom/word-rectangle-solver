@@ -328,15 +328,12 @@ impl<const W: usize> Kernel<'_, W> {
         }
         let mut total = 0;
         let m = |k: usize| if k < W { colv[k].mask } else { !0 };
-        let mut good = self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3));
+        let mut good = self.good_fw(row, col, allowed, c, m(c + 1), m(c + 2), m(c + 3), base);
         while good != 0 {
             let l = good.trailing_zeros();
             good &= good - 1;
             let cn = self.ct.step(col, l);
             let fc = base & cn.mask;
-            if fc == 0 {
-                continue; // next row can't fit the columns
-            }
             colv[c] = cn;
             total += self.count(r, c + 1, self.rt.step(row, l), colv, nodes, fc);
         }
@@ -364,6 +361,24 @@ impl<const W: usize> Kernel<'_, W> {
             a &= a - 1;
             let n = self.rt.step(row, l);
             let ok = (n.mask & m1 != 0) & (e2 | (n.next & m2 != 0)) & (e3 | (n.next2 & m3 != 0));
+            good |= (ok as u32) << l;
+        }
+        good
+    }
+
+    /// `good` plus the next-row forward check (`base & column child mask != 0`), all branch-free.
+    #[allow(clippy::too_many_arguments)]
+    #[inline(always)]
+    fn good_fw(&self, row: Node, col: CNode, allowed: u32, c: usize, m1: u32, m2: u32, m3: u32, base: u32) -> u32 {
+        let (e2, e3) = (c + 2 >= W, c + 3 >= W);
+        let mut a = allowed;
+        let mut good = 0;
+        while a != 0 {
+            let l = a.trailing_zeros();
+            a &= a - 1;
+            let n = self.rt.step(row, l);
+            let cn = self.ct.step(col, l);
+            let ok = (n.mask & m1 != 0) & (e2 | (n.next & m2 != 0)) & (e3 | (n.next2 & m3 != 0)) & (base & cn.mask != 0);
             good |= (ok as u32) << l;
         }
         good
