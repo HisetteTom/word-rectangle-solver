@@ -1,0 +1,7 @@
+[build]
+rustflags = ["-C", "target-cpu=native"]
+
+# lld links much faster than the default GNU ld.
+[target.x86_64-unknown-linux-gnu]
+linker = "clang"
+rustflags = ["-C", "target-cpu=native", "-C", "link-arg=-fuse-ld=lld"]

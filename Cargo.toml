@@ -1,0 +1,36 @@
+[package]
+name = "wordrect"
+version = "0.1.0"
+edition = "2024"
+description = "Ultra-optimized word rectangle solver"
+publish = false
+
+# Zero dependencies on purpose: keeps `cargo build` near-instant.
+
+[[bin]]
+name = "wordrect"
+path = "src/main.rs"
+
+# Official numbers (records, journal): slow to build, fastest binary.
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+debug = true
+
+# Everyday iteration: fast build, binary within a few % of release.
+# Use with: cargo build --profile fast
+[profile.fast]
+inherits = "release"
+lto = false
+codegen-units = 16
+incremental = true
+debug = false
+
+# Debug builds still optimize a bit so tests on real dicts aren't painfully slow.
+[profile.dev]
+opt-level = 1
+
+[profile.test]
+opt-level = 1
