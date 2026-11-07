@@ -59,7 +59,7 @@ struct Worker<'a> {
     col_state: Vec<u32>,
     grid: Vec<u8>,
     nodes: u64,
-    /// `search` gives up once `nodes` exceeds this.
+    /// `search` gives up once `nodes` exceeds this (checked every 256 nodes, with `stop`).
     limit: u64,
 }
 
@@ -247,7 +247,7 @@ impl<const W: usize> Kernel<'_, W> {
     /// Same order as `count`, writes letters to the grid; false = stop.
     fn search<F: FnMut(&[u8]) -> bool, S: Fn() -> bool>(&self, r: usize, c: usize, row: Node, st: &mut SearchState<W>, on: &mut F, stop: &S) -> bool {
         st.nodes += 1;
-        if st.nodes > st.limit || stop() {
+        if st.nodes & 255 == 0 && (st.nodes > st.limit || stop()) {
             return false;
         }
         let col = st.colv[c];
