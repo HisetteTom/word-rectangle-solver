@@ -6,6 +6,8 @@ One bar per *label* (= one optimization step), oldest at the top, using the
 latest run of that label. Time axis is logarithmic when steps span > 20x (so 1000x
 speedups stay readable), linear from 0 otherwise (so 1.2x gains stay visible).
 Speedup "x faster" is relative to the first step (the naive baseline).
+Steps whose label says "(failed)" were reverted: drawn grey and hatched, never highlighted.
+The highlighted bar is the code that is in the tree now (the latest kept step).
 
 Usage: python3 scripts/charts.py      (bench.sh calls it automatically)
 """
@@ -62,6 +64,15 @@ def fmt_x(x: float) -> str:
     return f"{x:.2f}×"
 
 
+def failed(label: str) -> bool:
+    """Reverted experiments are labelled "... (failed)" (see CLAUDE.md)."""
+    return "(failed)" in label
+
+
+def fmt_speed(r: float) -> str:
+    return f"{fmt_x(r)} faster" if r >= 1 else f"{fmt_x(1 / r)} slower"
+
+
 def load():
     """{bench: [step, ...]} where step = latest row of each label, in first-seen order."""
     benches: dict[str, dict[str, dict]] = {}
@@ -83,7 +94,7 @@ def load():
 
 
 def svg(bench: str, steps: list[dict]) -> str:
-    left, right, top, row_h, bar_h = 200, 210, 66, 40, 24
+    left, right, top, row_h, bar_h = 230, 250, 66, 40, 24
     plot_w = 380
     width = left + plot_w + right
     height = top + row_h * len(steps) + 34
@@ -114,21 +125,27 @@ def svg(bench: str, steps: list[dict]) -> str:
         return left + max(3.0, frac(t) * plot_w)
 
     base = times[0]
-    best = min(times)
+    kept = [i for i, s in enumerate(steps) if not failed(s["label"])]
+    current = kept[-1] if kept else None  # the code in the tree now
     out = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
         f'viewBox="0 0 {width} {height}" font-family="ui-sans-serif,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">',
         """<style>
   .bg{fill:#ffffff} .t{fill:#1f2328} .m{fill:#59636e} .g{stroke:#d1d9e0}
   .bar{fill:#8fb8de} .best{fill:#1f6feb} .x{fill:#1a7f37;font-weight:600}
+  .fail{fill:url(#hatch)} .hs{stroke:#afb8c1} .hb{fill:#eaeef2} .f{fill:#cf222e;font-weight:600}
+  .ft{fill:#8c959f} .cur{fill:#1f6feb;font-weight:700}
   @media (prefers-color-scheme: dark){
     .bg{fill:#0d1117} .t{fill:#e6edf3} .m{fill:#9198a1} .g{stroke:#30363d}
     .bar{fill:#2f5f8f} .best{fill:#4493f8} .x{fill:#3fb950}
+    .hs{stroke:#484f58} .hb{fill:#21262d} .f{fill:#f85149} .ft{fill:#6e7681} .cur{fill:#4493f8}
   }
 </style>""",
+        '<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'
+        '<rect class="hb" width="6" height="6"/><line class="hs" x1="0" y1="0" x2="0" y2="6" stroke-width="2.5"/></pattern></defs>',
         f'<rect class="bg" width="{width}" height="{height}" rx="8"/>',
         f'<text class="t" x="20" y="30" font-size="17" font-weight="700">{escape(bench)} · {escape(describe(steps[0]["args"], steps[0].get("result", "")))}</text>',
-        f'<text class="m" x="20" y="50" font-size="12">search time{", log scale" if log_scale else ""} · shorter is better · speedup vs {escape(steps[0]["label"])}</text>',
+        f'<text class="m" x="20" y="50" font-size="12">search time{", log scale" if log_scale else ""} · shorter is better · speedup vs {escape(steps[0]["label"])} · hatched = failed experiment, reverted</text>',
     ]
     for tv in ticks:
         gx = left + frac(tv) * plot_w if tv > 0 else left
@@ -138,15 +155,21 @@ def svg(bench: str, steps: list[dict]) -> str:
         y = top + i * row_h
         cy = y + bar_h / 2 + 4
         bx = x(s["t"])
-        cls = "best" if s["t"] == best else "bar"
-        out.append(f'<text class="t" x="{left - 12}" y="{cy - 3}" font-size="13" font-weight="600" text-anchor="end">{escape(s["label"])}</text>')
+        bad = failed(s["label"])
+        cls = "fail" if bad else "best" if i == current else "bar"
+        name_cls = "ft" if bad else "t"
+        out.append(f'<text class="{name_cls}" x="{left - 12}" y="{cy - 3}" font-size="13" font-weight="600" text-anchor="end">{escape(s["label"])}</text>')
         out.append(f'<text class="m" x="{left - 12}" y="{cy + 11}" font-size="10" text-anchor="end">{escape(s["commit"])} · {escape(s["profile"])}</text>')
         out.append(f'<rect class="{cls}" x="{left}" y="{y}" width="{bx - left:.1f}" height="{bar_h}" rx="3"/>')
-        speed = "baseline" if i == 0 else f"{fmt_x(base / s['t'])} faster"
-        out.append(
-            f'<text class="t" x="{bx + 8:.1f}" y="{cy}" font-size="13">{fmt_time(s["t"])}'
-            f'<tspan class="{"m" if i == 0 else "x"}" dx="8">{speed}</tspan></text>'
-        )
+        if i == 0:
+            tail = '<tspan class="m" dx="8">baseline</tspan>'
+        elif bad:
+            tail = f'<tspan class="m" dx="8">{fmt_speed(base / s["t"])}</tspan><tspan class="f" dx="8">✗ reverted</tspan>'
+        else:
+            tail = f'<tspan class="{"x" if base >= s["t"] else "m"}" dx="8">{fmt_speed(base / s["t"])}</tspan>'
+        if i == current and i != 0:
+            tail += '<tspan class="cur" dx="8">◀ current</tspan>'
+        out.append(f'<text class="{name_cls}" x="{bx + 8:.1f}" y="{cy}" font-size="13">{fmt_time(s["t"])}{tail}</text>')
     out.append("</svg>")
     return "\n".join(out) + "\n"
 
@@ -161,20 +184,29 @@ def report(data: dict[str, list[dict]]) -> str:
         "",
         "> ⚠️ *nodes* are not comparable across solvers: naive counts placed row words, trie counts cells.",
         "",
+        "Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code) · ⭐ the code in the tree now.",
+        "*vs previous* compares with the previous **kept** step, the code each experiment started from.",
+        "",
     ]
     for bench, steps in data.items():
         lines += [f"## {bench} · {describe(steps[0]['args'], steps[0].get('result', ''))}", "", f"![{bench}](charts/{bench}.svg)", ""]
-        lines += ["| Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |",
-                  "|---|---|---|---|---:|---:|---:|---:|---|"]
+        lines += ["| | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |",
+                  "|---|---|---|---|---|---:|---:|---:|---:|---|"]
+        kept = [i for i, s in enumerate(steps) if not failed(s["label"])]
+        current = kept[-1] if kept else None
         prev = None
-        for s in steps:
+        for i, s in enumerate(steps):
+            bad = failed(s["label"])
+            mark = "❌" if bad else "⭐" if i == current else "✅"
             vb = "—" if prev is None else fmt_x(steps[0]["t"] / s["t"])
             vp = "—" if prev is None else fmt_x(prev / s["t"])
+            name = f"~~{s['label']}~~" if bad else f"**{s['label']}**" if i == current else s["label"]
             lines.append(
-                f"| {s['label']} | `{s['commit']}` | {s['date']} | {s['profile']} | {fmt_time(s['t'])} "
+                f"| {mark} | {name} | `{s['commit']}` | {s['date']} | {s['profile']} | {fmt_time(s['t'])} "
                 f"| {vb} | {vp} | {int(s['nodes']):,} | {s['result']} |"
             )
-            prev = s["t"]
+            if not bad:
+                prev = s["t"]
         lines.append("")
     return "\n".join(lines)
 

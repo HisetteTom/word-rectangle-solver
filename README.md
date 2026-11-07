@@ -14,7 +14,10 @@ Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal
 
 ## 📈 Progress
 
-Search time for each optimization step (log scale, shorter is better). Full tables: [`results/BENCHMARKS.md`](results/BENCHMARKS.md).
+Search time for each optimization step, oldest at the top (shorter is better). **Solid blue** = kept,
+**bright blue ◀ current** = the code in the tree now, **grey hatched ✗ reverted** = a failed experiment
+(measured, then undone; it is never part of the code). Full tables: [`results/BENCHMARKS.md`](results/BENCHMARKS.md),
+story of each step: [`results/journal.md`](results/journal.md).
 
 **Quick suite** (seconds, baseline = naive):
 
