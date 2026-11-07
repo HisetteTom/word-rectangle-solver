@@ -18,6 +18,8 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | staircase MRV (failed) | `072145f` | 2026-11-07 | fast | 90.7 ms | 131× | 0.81× | 4,063,089 | solutions=1909732 |
 | leaf counting | `e12b165` | 2026-11-07 | fast | 31.5 ms | 376× | 2.88× | 2,122,136 | solutions=1909732 |
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 7.82 ms | 1,515× | 4.03× | 2,122,136 | solutions=1909732 |
+| DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 6.73 ms | 1,761× | 1.16× | 2,122,136 | solutions=1909732 |
+| DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 7.15 ms | 1,657× | 0.94× | 2,122,136 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -31,6 +33,8 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | staircase MRV (failed) | `072145f` | 2026-11-07 | fast | 2.6 ms | 899× | 0.27× | 67,477 | found |
 | leaf counting | `e12b165` | 2026-11-07 | fast | 718 µs | 3,259× | 3.63× | 22,841 | found |
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 732 µs | 3,197× | 0.98× | 22,841 | found |
+| DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 849 µs | 2,756× | 0.86× | 22,841 | found |
+| DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 811 µs | 2,885× | 1.05× | 22,841 | found |
 
 ## B3 · find first 6×6
 
@@ -44,6 +48,8 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | staircase MRV (failed) | `072145f` | 2026-11-07 | fast | 535 µs | 10,566× | 2.63× | 12,263 | found |
 | leaf counting | `e12b165` | 2026-11-07 | fast | 1.44 ms | 3,917× | 0.37× | 49,782 | found |
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 1.51 ms | 3,736× | 0.95× | 49,782 | found |
+| DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 1.65 ms | 3,428× | 0.92× | 49,782 | found |
+| DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 1.64 ms | 3,449× | 1.01× | 49,782 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -56,6 +62,8 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | staircase MRV (failed) | `072145f` | 2026-11-07 | fast | 37.8 s | 0.99× | 0.89× | 1,232,007,295 | solutions=136245247 |
 | leaf counting | `e12b165` | 2026-11-07 | fast | 26.8 s | 1.40× | 1.41× | 1,299,555,173 | solutions=136245247 |
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 1.48 s | 25.3× | 18.0× | 1,299,555,173 | solutions=136245247 |
+| DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 1.64 s | 22.9× | 0.90× | 1,299,555,173 | solutions=136245247 |
+| DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 2.46 s | 15.2× | 0.67× | 1,186,892,215 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -68,6 +76,8 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | staircase MRV (failed) | `072145f` | 2026-11-07 | fast | 189 s | 0.81× | 0.69× | 5,745,769,138 | solutions=114846713 |
 | leaf counting | `e12b165` | 2026-11-07 | fast | 120 s | 1.27× | 1.57× | 5,054,675,765 | solutions=114846713 |
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 6.43 s | 23.8× | 18.7× | 5,054,675,765 | solutions=114846713 |
+| DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 6.89 s | 22.2× | 0.93× | 5,054,675,765 | solutions=114846713 |
+| DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 8.44 s | 18.1× | 0.82× | 5,005,168,405 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -80,6 +90,8 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | staircase MRV (failed) | `072145f` | 2026-11-07 | fast | 25.8 s | 0.63× | 0.49× | 799,291,031 | solutions=4453472 |
 | leaf counting | `e12b165` | 2026-11-07 | fast | 12.1 s | 1.34× | 2.13× | 485,285,838 | solutions=4453472 |
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 628 ms | 26.0× | 19.3× | 485,285,838 | solutions=4453472 |
+| DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 735 ms | 22.2× | 0.85× | 485,285,838 | solutions=4453472 |
+| DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 721 ms | 22.6× | 1.02× | 485,285,838 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -92,6 +104,8 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | staircase MRV (failed) | `072145f` | 2026-11-07 | fast | 7.89 s | 0.64× | 0.50× | 214,037,348 | found |
 | leaf counting | `e12b165` | 2026-11-07 | fast | 4.10 s | 1.23× | 1.92× | 141,510,783 | found |
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 698 ms | 7.20× | 5.87× | 157,038,815 | found |
+| DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 608 ms | 8.27× | 1.15× | 157,586,299 | found |
+| DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 695 ms | 7.23× | 0.87× | 157,530,723 | found |
 
 ## B8 · find first 6×7
 
@@ -104,6 +118,8 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | staircase MRV (failed) | `072145f` | 2026-11-07 | fast | 6.36 s | 0.63× | 0.51× | 173,754,350 | found |
 | leaf counting | `e12b165` | 2026-11-07 | fast | 3.39 s | 1.19× | 1.87× | 117,670,090 | found |
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 626 ms | 6.45× | 5.42× | 120,820,550 | found |
+| DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 594 ms | 6.80× | 1.05× | 120,691,906 | found |
+| DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 637 ms | 6.33× | 0.93× | 121,022,023 | found |
 
 ## B9 · find first 5×9
 
@@ -116,3 +132,5 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | staircase MRV (failed) | `072145f` | 2026-11-07 | fast | 62.8 s | 0.38× | 0.28× | 1,819,147,498 | found |
 | leaf counting | `e12b165` | 2026-11-07 | fast | 18.0 s | 1.32× | 3.48× | 604,041,773 | found |
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 1.06 s | 22.4× | 17.0× | 610,338,537 | found |
+| DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 1.14 s | 20.9× | 0.93× | 608,074,075 | found |
+| DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 1.14 s | 20.9× | 1.00× | 608,125,901 | found |

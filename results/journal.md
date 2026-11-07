@@ -151,3 +151,34 @@ Tiny finds stay sequential.
 hyper-threads), close to the hardware limit. Finds scale less: work before the solution is partly
 sequential, and parallel workers also explore jobs *after* the winner. The heavy suite now runs in ~11 s, so the next
 big benchmarks (B10+) should be added soon.
+
+### 2026-11-07: note — orientation (R×C vs C×R), not implemented
+
+Probe with `par`: count 4×5 6.48 s vs 5×4 9.40 s, count 3×7 0.64 s vs 7×3 1.38 s, find 6×7 0.46 s vs 7×6 0.95 s,
+find 5×6 0.5 ms vs 6×5 2.7 ms, but find 5×9 1.04 s vs 9×5 0.62 s. **Fewer, longer rows win** in 5 of 6 cases.
+Every benchmark is already in that orientation, and a transposed `find` returns a different grid. So auto-orient
+would gain nothing here. Skipped; no bench row.
+
+### 2026-11-07: Level 2/4 — minimized DAWG (`ad3fb0c`) ❌ and DAWG + row memo (`7a14702`) ❌ reverted
+
+**Idea:** merge trie nodes with identical suffix sets (DAFSA). That gives 6–8× fewer nodes (4-letter words: 6067 → 811;
+9-letter: 108k → 18k). Children are shared, so lookups need an `edges` array: `edges[first + popcount(…)]`.
+In exchange, a node now means only "what can still follow", so different partial grids can reach the
+**same** column-state tuple. Then memoize `tuple → completions` at row starts (per-thread hash map,
+u128 packed key, cap of 1 M entries).
+
+| Benchmark | parallel (trie) | DAWG | DAWG + row memo |
+|---|---|---|---|
+| B1 count 3×3 | 7.8 ms | 6.7 ms | 7.2 ms |
+| B4 count 4×4 | 1.48 s | 1.64 s (0.90×) | 2.46 s (0.60×) |
+| B5 count 4×5 | 6.43 s | 6.89 s (0.93×) | 8.44 s (0.76×) |
+| B6 count 3×7 | 0.63 s | 0.73 s (0.85×) | 0.72 s |
+| B7 find 7×7 | 0.70 s | 0.61 s | 0.69 s |
+| B9 find 5×9 | 1.06 s | 1.14 s (0.93×) | 1.14 s |
+
+Memo node savings (probe): only **1–9 %** for any start row (1, 2, 3). Tuples of 4–5 column states
+almost never repeat, because the merged states are mostly deep (near-final) ones.
+
+**Verdict:** both reverted. The tries already fit in L2, so a smaller automaton buys nothing, and the
+extra edge load costs 5–15 %. Memoizing on column states is the wrong granularity for rectangles of
+this size.

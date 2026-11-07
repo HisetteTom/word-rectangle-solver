@@ -53,3 +53,21 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,ecc8a36,fast,par,B7,find --rows 7 --cols 7,0.7899,157038815,found,0.698162,parallel 22 threads
 2026-11-07,ecc8a36,fast,par,B8,find --rows 6 --cols 7,0.7522,120820550,found,0.625990,parallel 22 threads
 2026-11-07,ecc8a36,fast,par,B9,find --rows 5 --cols 9,1.2119,610338537,found,1.060230,parallel 22 threads
+2026-11-07,ad3fb0c,fast,par,B1,count --rows 3 --cols 3,0.1461,2122136,solutions=1909732,0.006731,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B2,find --rows 5 --cols 6,0.1812,22841,found,0.000849,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B3,find --rows 6 --cols 6,0.2017,49782,found,0.001649,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B4,count --rows 4 --cols 4,1.7895,1299555173,solutions=136245247,1.640952,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B5,count --rows 4 --cols 5,6.9745,5054675765,solutions=114846713,6.888067,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B6,count --rows 3 --cols 7,0.8286,485285838,solutions=4453472,0.734826,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B7,find --rows 7 --cols 7,0.7214,157586299,found,0.607604,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B8,find --rows 6 --cols 7,0.7738,120691906,found,0.593805,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B9,find --rows 5 --cols 9,1.3315,608074075,found,1.139949,DAWG (failed)
+2026-11-07,7a14702,fast,par,B1,count --rows 3 --cols 3,0.0929,2122136,solutions=1909732,0.007154,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B2,find --rows 5 --cols 6,0.1790,22841,found,0.000811,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B3,find --rows 6 --cols 6,0.2006,49782,found,0.001639,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B4,count --rows 4 --cols 4,2.6413,1186892215,solutions=136245247,2.463435,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B5,count --rows 4 --cols 5,8.6122,5005168405,solutions=114846713,8.444984,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B6,count --rows 3 --cols 7,0.8904,485285838,solutions=4453472,0.720550,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B7,find --rows 7 --cols 7,0.8977,157530723,found,0.694814,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B8,find --rows 6 --cols 7,0.8366,121022023,found,0.637492,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B9,find --rows 5 --cols 9,1.3251,608125901,found,1.137499,DAWG + row memo (failed)
