@@ -344,3 +344,11 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 2.53 s | 1.95× | 1.05× | 976,239,922 | no solution: 5x10 exhausted |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 2.49 s | 1.98× | 1.02× | 976,239,922 | no solution: 5x10 exhausted |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 2.54 s | 1.95× | 0.98× | 976,239,922 | no solution: 5x10 exhausted |
+
+## B14 · count all 6×4 (exhaustive)
+
+![B14](charts/B14.svg)
+
+| Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
+|---|---|---|---|---:|---:|---:|---:|---|
+| B14 baseline (tall count) | `c539608` | 2026-11-07 | fast | 14.3 s | — | — | 7,691,811,606 | solutions=37812638 |

@@ -253,3 +253,4 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,1a4c1f0,fast,par,B11,count --rows 4 --cols 6,6.0006,3243793909,solutions=37812638,5.854619,branch-free forward check (failed)
 2026-11-07,1a4c1f0,fast,par,B12,find --rows 6 --cols 8,2.5948,1009905272,found,2.467877,branch-free forward check (failed)
 2026-11-07,1a4c1f0,fast,par,B13,find --rows 5 --cols 10,2.6686,976239922,no solution: 5x10 exhausted,2.536136,branch-free forward check (failed)
+2026-11-07,c539608,fast,par,B14,count --rows 6 --cols 4,14.4519,7691811606,solutions=37812638,14.288183,B14 baseline (tall count)

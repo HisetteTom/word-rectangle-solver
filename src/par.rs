@@ -51,6 +51,10 @@ pub struct ParSearch {
     sym: bool,
     /// Per position k of a row word: which letters can follow at k + 1 (see `Bigram`).
     bigrams: Vec<Bigram>,
+    /// Tall grids (rows > cols): the transposed search, used by `count`. Long rows are much
+    /// cheaper to count (6×4 explores 2.4× the nodes of 4×6). `find` keeps the original
+    /// orientation, because its answer must be the row-major lexicographically first grid.
+    flip: Option<Box<ParSearch>>,
     stats: Stats,
 }
 
@@ -400,9 +404,11 @@ impl ParSearch {
         } else {
             threads
         };
+        let flip = (rows > cols && rows <= 32).then(|| Box::new(ParSearch::new(cols, rows, col_words, row_words, threads)));
         ParSearch {
             rows,
             cols,
+            flip,
             row_trie: Trie::new(row_words),
             col_trie: CTrie::new(&Trie::new(col_words)),
             threads,
@@ -416,6 +422,7 @@ impl ParSearch {
     /// Node budget of `find`'s sequential first attempt (0 = always go parallel; for tests).
     pub fn with_seq_budget(mut self, budget: u64) -> Self {
         self.seq_budget = budget;
+        self.flip = self.flip.map(|t| Box::new(t.with_seq_budget(budget)));
         self
     }
 
@@ -535,6 +542,11 @@ impl Solver for ParSearch {
     }
 
     fn count(&mut self) -> u64 {
+        if let Some(t) = &mut self.flip {
+            let total = t.count();
+            self.stats = t.stats;
+            return total;
+        }
         // with symmetry, job prefixes must stay in row 0 (they are expanded without the tie rule)
         let max_depth = if self.sym { self.cols } else { usize::MAX };
         let (depth, jobs) = self.jobs(COUNT_JOBS_PER_THREAD, max_depth);
