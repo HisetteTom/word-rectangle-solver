@@ -188,3 +188,16 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,c8af9d0,fast,par,B11,count --rows 4 --cols 6,6.3602,3714990647,solutions=37812638,6.207043,branch-free look-ahead
 2026-11-07,c8af9d0,fast,par,B12,find --rows 6 --cols 8,2.6614,1160859256,found,2.510368,branch-free look-ahead
 2026-11-07,c8af9d0,fast,par,B13,find --rows 5 --cols 10,2.7680,1139376699,no solution: 5x10 exhausted,2.657035,branch-free look-ahead
+2026-11-07,e25590c,fast,par,B1,count --rows 3 --cols 3,0.1668,1001786,solutions=1909732,0.003235,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B2,find --rows 5 --cols 6,0.1768,9611,found,0.000456,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B3,find --rows 6 --cols 6,0.1799,19902,found,0.000793,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B4,count --rows 4 --cols 4,0.6388,434317924,solutions=136245247,0.479433,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B5,count --rows 4 --cols 5,3.8038,2436976174,solutions=114846713,3.641601,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B6,count --rows 3 --cols 7,0.4191,136298665,solutions=4453472,0.259495,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B7,find --rows 7 --cols 7,0.5035,44224599,found,0.327081,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B8,find --rows 6 --cols 7,0.6164,36301319,found,0.466985,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B9,find --rows 5 --cols 9,0.5987,187060045,found,0.499010,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B10,count --rows 5 --cols 5,13.0748,6875817435,solutions=80364530,12.963777,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B11,count --rows 4 --cols 6,6.5343,3714990647,solutions=37812638,6.449865,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B12,find --rows 6 --cols 8,2.6328,1160948957,found,2.517669,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B13,find --rows 5 --cols 10,2.6949,1139376699,no solution: 5x10 exhausted,2.599852,iterative DFS (failed)

@@ -393,3 +393,20 @@ of inside it, so node counts drop 20–30% (counts and solutions unchanged). It 
 | B13 no 5×10 | 2.96 s | 2.66 s | 1.11× |
 
 **Verdict:** kept. 7–27% everywhere.
+
+### 2026-11-07: iterative DFS for the counting kernel (`e25590c`) ❌ reverted
+
+**Idea:** the profile split cycles 55% `count` (upper rows) and 45% `count_last`. I replaced the
+per-cell recursion of `count` with an explicit-stack loop (per-cell `pend` / row node / column node
+arrays, `'enter` + backtrack loop) to avoid call overhead and register spills.
+
+| Benchmark | Before (branch-free look-ahead) | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 0.454 s | 0.479 s | 0.95× |
+| B5 count 4×5 | 3.51 s | 3.64 s | 0.96× |
+| B10 count 5×5 | 11.42 s | 12.96 s | 0.88× |
+| B11 count 4×6 | 6.21 s | 6.45 s | 0.96× |
+| finds | — | — | ≈ (untouched; B8 0.58× is noise) |
+
+**Verdict:** reverted. The recursive version keeps `row`, `col` and `allowed` in registers, and
+LLVM's calls are cheap. The explicit stacks add loads and stores and a harder-to-predict control flow.
