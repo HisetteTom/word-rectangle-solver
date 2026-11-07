@@ -96,6 +96,11 @@ impl Trie {
         n.first + (n.mask & ((1u32 << letter) - 1)).count_ones()
     }
 
+    /// All nodes (BFS order), for kernels that index them directly.
+    pub fn nodes(&self) -> &[Node] {
+        &self.nodes
+    }
+
     pub fn len(&self) -> usize {
         self.nodes.len()
     }
@@ -137,6 +142,11 @@ impl CTrie {
     #[inline(always)]
     pub fn node(&self, node: u32) -> CNode {
         self.nodes[node as usize]
+    }
+
+    /// All nodes (same indices as the `Trie` it came from).
+    pub fn nodes(&self) -> &[CNode] {
+        &self.nodes
     }
 
     #[inline(always)]

@@ -14,6 +14,9 @@
 //!    exactly what the sequential solver returns.
 
 use crate::trie::{CNode, CTrie, Node, Trie};
+
+// Layout guard (rust-skills `mem-assert-type-size`): the kernels are tuned for these sizes.
+const _: () = assert!(size_of::<Node>() == 16 && size_of::<CNode>() == 8);
 use crate::{Grid, Solver, Stats};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
@@ -102,7 +105,7 @@ impl<'a> Worker<'a> {
         let s = self.s;
         let (r, c) = (cell / W, cell % W);
         let mut colv: [CNode; W] = std::array::from_fn(|i| s.col_trie.node(self.col_state[i]));
-        let k = Kernel::<W> { rt: &s.row_trie, bi: &s.bigrams, ct: &s.col_trie, last_r: s.rows - 1 };
+        let k = Kernel::<W>::new(s);
         let mut nodes = 0;
         let row = s.row_trie.node(self.row_state[r]);
         let total = if s.sym {
@@ -131,7 +134,7 @@ impl<'a> Worker<'a> {
             return on(&self.grid);
         }
         let (r, c) = (cell / W, cell % W);
-        let k = Kernel::<W> { rt: &s.row_trie, bi: &s.bigrams, ct: &s.col_trie, last_r: s.rows - 1 };
+        let k = Kernel::<W>::new(s);
         let mut st = SearchState::<W> {
             colv: std::array::from_fn(|i| s.col_trie.node(self.col_state[i])),
             grid: std::mem::take(&mut self.grid),
@@ -149,11 +152,47 @@ impl<'a> Worker<'a> {
 /// load, only the two child steps do. (r, c) are tracked directly (no `/` or `%`), and
 /// the row state is a single node (finished rows are never needed again).
 struct Kernel<'t, const W: usize> {
-    rt: &'t Trie,
-    /// `ParSearch::bigrams`
-    bi: &'t [Bigram],
-    ct: &'t CTrie,
+    /// Row trie nodes, as a plain slice (one load less per step than going through `&Trie`).
+    rt: &'t [Node],
+    /// `ParSearch::bigrams`: exactly one table per row position.
+    bi: &'t [Bigram; W],
+    /// Column trie nodes.
+    ct: &'t [CNode],
+    /// Row trie root, cached (no load + bounds check at every row start).
+    root: Node,
     last_r: usize,
+}
+
+impl<'t, const W: usize> Kernel<'t, W> {
+    fn new(s: &'t ParSearch) -> Self {
+        let bi = s.bigrams.as_slice().try_into().expect("one bigram table per column");
+        Kernel { rt: s.row_trie.nodes(), bi, ct: s.col_trie.nodes(), root: s.row_trie.node(0), last_r: s.rows - 1 }
+    }
+
+    /// Row child of `n` for letter `l`, without a bounds check (rust-skills `opt-bounds-check`).
+    ///
+    /// # Safety
+    /// `n` is a node of the row trie and bit `l` of `n.mask` is set. Then the child exists, and
+    /// `Trie::new` stored it at `first + popcount(lower letters)` < `rt.len()`.
+    #[inline(always)]
+    unsafe fn rstep(&self, n: Node, l: u32) -> Node {
+        let i = Trie::child_idx(n, l) as usize;
+        debug_assert!(n.mask >> l & 1 == 1 && i < self.rt.len());
+        // SAFETY: see the function contract above.
+        unsafe { *self.rt.get_unchecked(i) }
+    }
+
+    /// Column child of `n` for letter `l`, without a bounds check.
+    ///
+    /// # Safety
+    /// Same contract as `rstep`, for the column trie.
+    #[inline(always)]
+    unsafe fn cstep(&self, n: CNode, l: u32) -> CNode {
+        let i = (n.first + (n.mask & ((1u32 << l) - 1)).count_ones()) as usize;
+        debug_assert!(n.mask >> l & 1 == 1 && i < self.ct.len());
+        // SAFETY: see the function contract above.
+        unsafe { *self.ct.get_unchecked(i) }
+    }
 }
 
 impl<const W: usize> Kernel<'_, W> {
@@ -172,7 +211,8 @@ impl<const W: usize> Kernel<'_, W> {
             while allowed != 0 {
                 let l = allowed.trailing_zeros();
                 allowed &= allowed - 1;
-                total += (self.rt.step(row, l).mask & last).count_ones() as u64;
+                // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
+                total += (unsafe { self.rstep(row, l) }.mask & last).count_ones() as u64;
             }
             return total;
         }
@@ -181,7 +221,8 @@ impl<const W: usize> Kernel<'_, W> {
         while good != 0 {
             let l = good.trailing_zeros();
             good &= good - 1;
-            total += self.count_last(c + 1, self.rt.step(row, l), masks, nodes);
+            // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
+            total += self.count_last(c + 1, unsafe { self.rstep(row, l) }, masks, nodes);
         }
         total
     }
@@ -226,8 +267,10 @@ impl<const W: usize> Kernel<'_, W> {
             if r == 0 {
                 row0[c] = l as u8;
             }
-            colv[c] = self.ct.step(col, l);
-            let (nr, nc, nrow) = if c == (W - 1) { (r + 1, 0, self.rt.node(0)) } else { (r, c + 1, self.rt.step(row, l)) };
+            // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
+            colv[c] = unsafe { self.cstep(col, l) };
+            // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
+            let (nr, nc, nrow) = if c == (W - 1) { (r + 1, 0, self.root) } else { (r, c + 1, unsafe { self.rstep(row, l) }) };
             total += if tie_cell && l > w {
                 2 * self.count(nr, nc, nrow, colv, nodes, !0)
             } else {
@@ -265,7 +308,7 @@ impl<const W: usize> Kernel<'_, W> {
         }
         let last_row = r == self.last_r;
         // letters row r + 1 could have at position c (no next row in the last row)
-        let base = if last_row { !0 } else if c == 0 { self.rt.node(0).mask } else { self.uni(c - 1, f) };
+        let base = if last_row { !0 } else if c == 0 { self.root.mask } else { self.uni(c - 1, f) };
         let cell = r * W + c;
         let mut keep_going = true;
         while allowed != 0 {
@@ -275,16 +318,18 @@ impl<const W: usize> Kernel<'_, W> {
             let ok = if last_row && c == W - 1 {
                 on(&st.grid)
             } else {
-                let cn = self.ct.step(col, l);
+                // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
+                let cn = unsafe { self.cstep(col, l) };
                 let fc = if last_row { !0 } else { base & cn.mask };
                 if fc == 0 {
                     continue; // next row can't fit the columns
                 }
                 st.colv[c] = cn;
                 if c == W - 1 {
-                    self.search(r + 1, 0, self.rt.node(0), st, on, stop, !0)
+                    self.search(r + 1, 0, self.root, st, on, stop, !0)
                 } else {
-                    self.search(r, c + 1, self.rt.step(row, l), st, on, stop, fc)
+                    // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
+                    self.search(r, c + 1, unsafe { self.rstep(row, l) }, st, on, stop, fc)
                 }
             };
             if !ok {
@@ -312,15 +357,16 @@ impl<const W: usize> Kernel<'_, W> {
         let col = colv[c];
         let mut allowed = row.mask & col.mask;
         // letters row r + 1 could have at position c, before this cell's column constraint
-        let base = if c == 0 { self.rt.node(0).mask } else { self.uni(c - 1, f) };
+        let base = if c == 0 { self.root.mask } else { self.uni(c - 1, f) };
         if c == (W - 1) {
             // the letter completes this row: next cell is (r + 1, 0) with a fresh row
-            let root = self.rt.node(0);
+            let root = self.root;
             let mut total = 0;
             while allowed != 0 {
                 let l = allowed.trailing_zeros();
                 allowed &= allowed - 1;
-                let cn = self.ct.step(col, l);
+                // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
+                let cn = unsafe { self.cstep(col, l) };
                 if base & cn.mask == 0 {
                     continue; // next row can't fit the columns
                 }
@@ -336,13 +382,15 @@ impl<const W: usize> Kernel<'_, W> {
         while good != 0 {
             let l = good.trailing_zeros();
             good &= good - 1;
-            let cn = self.ct.step(col, l);
+            // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
+            let cn = unsafe { self.cstep(col, l) };
             let fc = base & cn.mask;
             if fc == 0 {
                 continue; // next row can't fit the columns
             }
             colv[c] = cn;
-            total += self.count(r, c + 1, self.rt.step(row, l), colv, nodes, fc);
+            // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
+            total += self.count(r, c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc);
         }
         colv[c] = col;
         total
@@ -366,7 +414,8 @@ impl<const W: usize> Kernel<'_, W> {
         while a != 0 {
             let l = a.trailing_zeros();
             a &= a - 1;
-            let n = self.rt.step(row, l);
+            // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
+            let n = unsafe { self.rstep(row, l) };
             let ok = (n.mask & m1 != 0) & (e2 | (n.next & m2 != 0)) & (e3 | (n.next2 & m3 != 0));
             good |= (ok as u32) << l;
         }
