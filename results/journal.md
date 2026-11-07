@@ -618,3 +618,30 @@ affinity mask, so the thread count matches. Core Ultra 9 185H: 6 P-cores with 2 
 **Verdict:** every thread helps, even hyperthreads and the slow LP-E cores, because the kernel
 is latency-bound (branch misses, dependent loads), not throughput-bound. The dynamic job queue
 already balances P and E cores. No change.
+
+### 2026-11-07: unchecked trie steps (rust-skills `opt-bounds-check`, `mem-assert-type-size`)
+
+**Idea:** the asm of `Kernel<5>::count` showed, for every trie step, a load of the `Vec` length,
+a compare and a branch to `panic_bounds_check`, plus an extra pointer hop (`&Trie` → `Vec` →
+data). Same for `rt.node(0)` at every row start and for `bi[k]`. The kernel now holds plain
+slices (`&[Node]`, `&[CNode]`), a `&[Bigram; W]` and a cached root node. Steps go through
+`unsafe fn rstep / cstep` (`get_unchecked`) with a `// SAFETY:` contract: the letter is a bit of
+the node's mask, so the child exists (trie builder invariant). A `debug_assert!` checks it in
+the tests. A `const _: () = assert!(size_of::<Node>() == 16 && size_of::<CNode>() == 8)` guards
+the layout.
+
+| Benchmark | Before (tall grids transposed) | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 0.437 s | 0.402 s | 1.09× faster |
+| B5 count 4×5 | 3.26 s | 3.07 s | 1.06× faster |
+| B9 find 5×9 | 0.534 s | 0.465 s | 1.15× faster |
+| B10 count 5×5 | 10.30 s | 9.81 s | 1.05× faster |
+| B11 count 4×6 | 5.69 s | 5.49 s | 1.04× faster |
+| B13 prove no 5×10 | 2.57 s | 2.40 s | 1.07× faster |
+| B14 count 6×4 | 5.69 s | 5.55 s | 1.02× faster |
+
+A/B before the bench (3 alternating runs each): 4×5 3.20–3.26 → 3.04–3.12 s, 5×5 10.26–10.31 →
+9.62–9.65 s. The node counts are unchanged (same search, cheaper nodes).
+
+**Verdict:** kept. A small, consistent win on every bench. This is the first rust-skills rule
+that paid off directly.

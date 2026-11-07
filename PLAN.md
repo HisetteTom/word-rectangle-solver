@@ -46,13 +46,41 @@ benchmarked step (see CLAUDE.md). Failures too, labelled `(failed)`. Details of 
 | `opt-pgo-profile` | tried, no gain (journal) |
 | `opt-inline-always-rare` | `good`/`uni`/`step` are `inline(always)`. Re-measure each one. |
 | `opt-inline-never-cold` | mark job setup / prefix replay / symmetry path `#[cold]` or `inline(never)`, to keep hot kernels small |
-| `opt-bounds-check` | see idea 3: inspect asm first |
+| `opt-bounds-check` | ✅ done 2026-11-07 ("unchecked trie steps", ~5%). Left to check: `colv[c]`, `masks[c]`, `st.grid[cell]` (runtime `c`; asm shows some checks are already folded) |
 | `opt-simd-portable` | `std::simd` is nightly. Maybe `core::arch` AVX2 for the `good()` loop (8 letters at once via gathers)? Probably not worth it: sets are ~1–5 letters. |
 | `opt-cache-friendly` | tries fit in L2. DFS layout failed (BFS keeps hot levels packed). |
-| `mem-assert-type-size` | add `const _: () = assert!(size_of::<Node>() == 16 && size_of::<CNode>() == 8);` to catch layout regressions |
+| `mem-assert-type-size` | ✅ done (const assert in `par.rs`) |
 | `perf-profile-first` / `anti-premature-optimize` | keep doing: probe → measure → implement |
 | `lint-*` | run `cargo clippy -- -W clippy::perf -W clippy::pedantic` once, fix what's cheap |
-| `unsafe-safety-comment`, `unsafe-miri-ci` | if any `unsafe` gets in (idea 3), add SAFETY comments and run tests under miri on small sizes |
+| `unsafe-safety-comment`, `unsafe-miri-ci` | SAFETY comments ✅ (`rstep`/`cstep`). TODO: run `cargo +nightly miri test` on a tiny dict (3×3) once, since `unsafe` is now in the kernel |
 
 Not relevant here: async, serde, error crates (zero dependencies on purpose), rayon (std threads
 already balance well).
+
+## Next session (written 2026-11-07, after "unchecked trie steps")
+
+Current: B10 count 5×5 9.81 s, B5 4×5 3.07 s, B14 6×4 5.55 s (fast profile).
+Ordered by how much I expect, plus the rust-skills rule behind each one:
+
+1. **Exact last-row check while the set is small** (idea 1 above). Still the biggest lever:
+   94–97% of second-to-last-row nodes are dead. *Skills: `perf-profile-first`: probe how often
+   the set has ≤ 8 nodes before coding it.*
+2. **Reuse `good()`'s children** (idea 3): `good` already does `rstep(row, l)` for every letter,
+   then the loop steps again. Keep the children in a small `[Node; 26]` stack buffer, or do the
+   loop on them directly. *Skills: `mem-arrayvec` idea without the crate (fixed array + len),
+   `opt-cache-friendly`.*
+3. **Remaining bounds checks** on `colv[c]` / `masks[c]`: pass `c` as a const-generic-friendly
+   index, or assert `c < W` once at the top of `count` so LLVM drops later checks.
+   *Skills: `opt-bounds-check` (verify in asm: `objdump -d -C target/fast/wordrect`, look for
+   `call *…(%rip)` panic stubs in `Kernel<5>::count`).*
+4. **`#[cold]` / `#[inline(never)]`** on `jobs`, `load`, `to_grid`, the sym tie path. Then
+   re-measure each `inline(always)` (`good`, `uni`, `rstep`). *Skills: `opt-inline-never-cold`,
+   `opt-cold-unlikely`, `opt-inline-always-rare`.*
+5. **Clippy pass:** `cargo clippy --all-targets -- -W clippy::perf -W clippy::pedantic`, fix only
+   what's cheap and doesn't touch `naive.rs`. Also `-W clippy::undocumented_unsafe_blocks`.
+   *Skills: `lint-warn-perf`, `lint-pedantic-selective`, `lint-unsafe-doc`.*
+6. **Miri** on a tiny instance now that there is `unsafe`. *Skills: `unsafe-miri-ci`.*
+7. **Median of 3 for the huge benches** (idea 5): wins are now ~5%, close to the noise.
+   *Skills: `perf-black-box-bench` mindset: trustworthy measurements first.*
+8. **Release-profile official run** (`./wr release --label ...`) once a few steps have piled
+   up, and a PGO retry, since the kernel changed a lot. *Skills: `opt-pgo-profile`.*

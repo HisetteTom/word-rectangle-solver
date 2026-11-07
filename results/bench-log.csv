@@ -296,3 +296,17 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,7901ad2,fast,par,B12,find --rows 6 --cols 8,2.7949,1009858645,found,2.600683,backward next-row bound (failed)
 2026-11-07,7901ad2,fast,par,B13,find --rows 5 --cols 10,2.7022,976239922,no solution: 5x10 exhausted,2.536833,backward next-row bound (failed)
 2026-11-07,7901ad2,fast,par,B14,count --rows 6 --cols 4,5.8763,3239551826,solutions=37812638,5.758177,backward next-row bound (failed)
+2026-11-07,b1b1b4e,fast,par,B1,count --rows 3 --cols 3,0.1634,994996,solutions=1909732,0.003025,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B2,find --rows 5 --cols 6,0.1661,7220,found,0.000366,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B3,find --rows 6 --cols 6,0.1877,12839,found,0.000626,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B4,count --rows 4 --cols 4,0.5460,397315658,solutions=136245247,0.401723,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B5,count --rows 4 --cols 5,3.1532,2142627416,solutions=114846713,3.067149,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B6,count --rows 3 --cols 7,0.3884,132592160,solutions=4453472,0.237792,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B7,find --rows 7 --cols 7,0.3845,35717482,found,0.285871,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B8,find --rows 6 --cols 7,0.3346,31406853,found,0.218520,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B9,find --rows 5 --cols 9,0.5688,158204160,found,0.465009,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B10,count --rows 5 --cols 5,9.9160,5393001298,solutions=80364530,9.814389,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B11,count --rows 4 --cols 6,5.5807,3243793909,solutions=37812638,5.490885,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B12,find --rows 6 --cols 8,2.5428,1009794563,found,2.437931,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B13,find --rows 5 --cols 10,2.5042,976239922,no solution: 5x10 exhausted,2.401629,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B14,count --rows 6 --cols 4,5.6689,3243793909,solutions=37812638,5.549312,unchecked trie steps
