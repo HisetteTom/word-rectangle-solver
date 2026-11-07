@@ -92,3 +92,20 @@ few letters often commits to a deep, wide subtree. Row-major order already prune
 row is walked inside one trie (prefix sharing). The frontier check almost never fires: trie nodes below
 full depth always have children. Lesson: ordering heuristics need a better cost estimate (e.g. word
 counts under the nodes), not raw popcount.
+
+### 2026-11-07: Level 7 — counting without leaf visits (`e12b165`) ✅
+
+**Idea:** `count` gets its own recursion. At the last cell, every letter in `row_mask & col_mask`
+completes both the last row and the last column, so that cell contributes `popcount(allowed)`. No node
+is visited per solution, no grid writes, no callback.
+
+| Benchmark | Before (compact trie) | After (leaf counting) | Change |
+|---|---|---|---|
+| B1 count 3×3 | 73.9 ms | 31.5 ms | **2.34×** (1.9 M solutions, leaves dominated) |
+| B4 count 4×4 | 33.7 s | 26.8 s | 1.26× |
+| B5 count 4×5 | 129.8 s | 120.2 s | 1.08× |
+| B6 count 3×7 | 12.7 s | 12.1 s | 1.05× |
+| B7–B9 find | 3.96 / 3.27 / 17.8 s | 4.10 / 3.39 / 18.0 s | ≈ (noise; find unchanged) |
+
+**Verdict:** kept. The gain grows with the solutions/nodes ratio. For big counts, most work is in internal
+nodes that die out, so the gain stays small.

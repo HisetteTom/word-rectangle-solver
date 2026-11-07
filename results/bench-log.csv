@@ -35,3 +35,12 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,072145f,fast,mrv,B7,find --rows 7 --cols 7,8.0715,214037348,found,7.891566,staircase MRV (failed)
 2026-11-07,072145f,fast,mrv,B8,find --rows 6 --cols 7,6.5325,173754350,found,6.355779,staircase MRV (failed)
 2026-11-07,072145f,fast,mrv,B9,find --rows 5 --cols 9,62.9769,1819147498,found,62.783765,staircase MRV (failed)
+2026-11-07,e12b165,fast,trie,B1,count --rows 3 --cols 3,0.2181,2122136,solutions=1909732,0.031521,leaf counting
+2026-11-07,e12b165,fast,trie,B2,find --rows 5 --cols 6,0.1780,22841,found,0.000718,leaf counting
+2026-11-07,e12b165,fast,trie,B3,find --rows 6 --cols 6,0.1812,49782,found,0.001443,leaf counting
+2026-11-07,e12b165,fast,trie,B4,count --rows 4 --cols 4,26.9292,1299555173,solutions=136245247,26.761466,leaf counting
+2026-11-07,e12b165,fast,trie,B5,count --rows 4 --cols 5,120.4100,5054675765,solutions=114846713,120.236069,leaf counting
+2026-11-07,e12b165,fast,trie,B6,count --rows 3 --cols 7,12.3435,485285838,solutions=4453472,12.139549,leaf counting
+2026-11-07,e12b165,fast,trie,B7,find --rows 7 --cols 7,4.2818,141510783,found,4.100438,leaf counting
+2026-11-07,e12b165,fast,trie,B8,find --rows 6 --cols 7,3.5757,117670090,found,3.392252,leaf counting
+2026-11-07,e12b165,fast,trie,B9,find --rows 5 --cols 9,18.2561,604041773,found,18.049626,leaf counting
