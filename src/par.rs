@@ -186,7 +186,7 @@ impl ParSearch {
             memo_from_row: {
                 // keys pack 16 bits per column + row on top: needs cols <= 7 and < 65536 states
                 let fits = cols <= 7 && Dawg::new(col_words).len() < 1 << 16;
-                let from = std::env::var("WR_MEMO").ok().and_then(|v| v.parse().ok()).unwrap_or(usize::MAX);
+                let from = std::env::var("WR_MEMO").ok().and_then(|v| v.parse().ok()).unwrap_or(3);
                 if fits { from } else { usize::MAX }
             },
             stats: Stats::default(),
