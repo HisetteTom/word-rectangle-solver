@@ -14,6 +14,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 |---|---|---|---|---:|---:|---:|---:|---|
 | naive | `60c0927` | 2026-11-07 | fast | 11.85 s | — | — | 2,034,829 | solutions=1909732 |
 | trie + masks | `60c0927` | 2026-11-07 | fast | 77.1 ms | 154× | 154× | 4,031,868 | solutions=1909732 |
+| compact trie | `d3df964` | 2026-11-07 | fast | 73.9 ms | 160× | 1.04× | 4,031,868 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -23,6 +24,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 |---|---|---|---|---:|---:|---:|---:|---|
 | naive | `60c0927` | 2026-11-07 | fast | 2.34 s | — | — | 1,919 | found |
 | trie + masks | `60c0927` | 2026-11-07 | fast | 900 µs | 2,600× | 2,600× | 22,841 | found |
+| compact trie | `d3df964` | 2026-11-07 | fast | 691 µs | 3,386× | 1.30× | 22,841 | found |
 
 ## B3 · find first 6×6
 
@@ -32,6 +34,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 |---|---|---|---|---:|---:|---:|---:|---|
 | naive | `60c0927` | 2026-11-07 | fast | 5.65 s | — | — | 4,505 | found |
 | trie + masks | `60c0927` | 2026-11-07 | fast | 1.91 ms | 2,958× | 2,958× | 49,782 | found |
+| compact trie | `d3df964` | 2026-11-07 | fast | 1.41 ms | 4,012× | 1.36× | 49,782 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -40,6 +43,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
 |---|---|---|---|---:|---:|---:|---:|---|
 | trie + masks | `166edb9` | 2026-11-07 | fast | 37.52 s | — | — | 1,435,800,420 | solutions=136245247 |
+| compact trie | `d3df964` | 2026-11-07 | fast | 33.66 s | 1.11× | 1.11× | 1,435,800,420 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -48,6 +52,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
 |---|---|---|---|---:|---:|---:|---:|---|
 | trie + masks | `166edb9` | 2026-11-07 | fast | 153.06 s | — | — | 5,169,522,478 | solutions=114846713 |
+| compact trie | `d3df964` | 2026-11-07 | fast | 129.83 s | 1.18× | 1.18× | 5,169,522,478 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -56,6 +61,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
 |---|---|---|---|---:|---:|---:|---:|---|
 | trie + masks | `166edb9` | 2026-11-07 | fast | 16.31 s | — | — | 489,739,310 | solutions=4453472 |
+| compact trie | `d3df964` | 2026-11-07 | fast | 12.66 s | 1.29× | 1.29× | 489,739,310 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -64,6 +70,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
 |---|---|---|---|---:|---:|---:|---:|---|
 | trie + masks | `166edb9` | 2026-11-07 | fast | 5.02 s | — | — | 141,510,783 | found |
+| compact trie | `d3df964` | 2026-11-07 | fast | 3.96 s | 1.27× | 1.27× | 141,510,783 | found |
 
 ## B8 · find first 6×7
 
@@ -72,6 +79,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
 |---|---|---|---|---:|---:|---:|---:|---|
 | trie + masks | `166edb9` | 2026-11-07 | fast | 4.04 s | — | — | 117,670,090 | found |
+| compact trie | `d3df964` | 2026-11-07 | fast | 3.27 s | 1.24× | 1.24× | 117,670,090 | found |
 
 ## B9 · find first 5×9
 
@@ -80,3 +88,4 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
 |---|---|---|---|---:|---:|---:|---:|---|
 | trie + masks | `166edb9` | 2026-11-07 | fast | 23.79 s | — | — | 604,041,773 | found |
+| compact trie | `d3df964` | 2026-11-07 | fast | 17.75 s | 1.34× | 1.34× | 604,041,773 | found |

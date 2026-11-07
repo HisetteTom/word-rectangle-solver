@@ -16,9 +16,20 @@ Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal
 
 Search time for each optimization step (log scale, shorter is better). Full tables: [`results/BENCHMARKS.md`](results/BENCHMARKS.md).
 
+**Quick suite** (seconds, baseline = naive):
+
 ![B1](results/charts/B1.svg)
 ![B2](results/charts/B2.svg)
 ![B3](results/charts/B3.svg)
+
+**Heavy suite** (minutes, baseline = trie + masks; naive can't finish these):
+
+![B4](results/charts/B4.svg)
+![B5](results/charts/B5.svg)
+![B6](results/charts/B6.svg)
+![B7](results/charts/B7.svg)
+![B8](results/charts/B8.svg)
+![B9](results/charts/B9.svg)
 
 ---
 
@@ -31,7 +42,8 @@ Search time for each optimization step (log scale, shorter is better). Full tabl
 ./wr 6x6          # find one 6×6   (./wr 6 works too)
 ./wr count 3x3    # count all 3×3
 ./wr test         # tests
-./wr bench        # benchmark suite (./wr bench B2 for one)
+./wr bench        # full benchmark suite (~4 min)
+./wr bench quick  # B1–B3 only (seconds); ./wr bench heavy = B4–B9; ./wr bench B2 = one
 ./wr bench --label "my step"   # record an optimization step → charts
 ./wr charts       # regenerate charts from results/bench-log.csv
 ./wr release      # benchmark with full release build (official numbers)
@@ -69,7 +81,7 @@ Build profiles:
 Compile-speed tricks already in place: **zero dependencies**, linking with **lld** (`.cargo/config.toml`),
 incremental `fast` profile. `target-cpu=native` is set globally.
 
-Current status: **M2 done** (trie + mask solver, ~150× faster on B1). Next: M4 (compact trie) / M5 (smart ordering).
+Current status: **M2 + M4 done** (trie + mask solver, compact 8-byte trie nodes). Next: M5 (smart ordering + forward checking).
 
 ---
 
@@ -305,9 +317,9 @@ Each step gets its own entry in the [optimization journal](#16-optimization-jour
 - [x] Iterate letters via `trailing_zeros` + `x & (x - 1)`.
 
 ### Level 2: memory layout
-- [ ] Store nodes in one flat `Vec`, in **BFS order**, so nodes at the same depth sit close together in memory.
-- [ ] Compress children: store only existing children, and find the index of letter `c` with `popcount(mask & ((1 << c) - 1))`. Much smaller trie → better cache behaviour.
-- [ ] Use `u32` indices everywhere (never `usize` in hot data).
+- [x] Store nodes in one flat `Vec`, in **BFS order**, so nodes at the same depth sit close together in memory.
+- [x] Compress children: store only existing children, and find the index of letter `c` with `popcount(mask & ((1 << c) - 1))`. Much smaller trie → better cache behaviour.
+- [x] Use `u32` indices everywhere (never `usize` in hot data).
 - [ ] Keep the per-search state (`row_state`, `col_state`, `grid`) in fixed-size arrays on the stack.
 
 ### Level 3: smarter search order
@@ -365,6 +377,17 @@ Target suite (once the trie solver exists):
 | `B1` | `count --rows 3 --cols 3` | ~12 s |
 | `B2` | `find --rows 5 --cols 6` | ~2.4 s |
 | `B3` | `find --rows 6 --cols 6` | ~5.7 s |
+
+**Heavy suite** (added when B2/B3 hit ~1 ms; each runs once; sized at "trie + masks"):
+
+| ID | Task | Trie + masks time |
+|---|---|---|
+| `B4` | `count --rows 4 --cols 4` | 38 s |
+| `B5` | `count --rows 4 --cols 5` | 153 s |
+| `B6` | `count --rows 3 --cols 7` | 16 s |
+| `B7` | `find --rows 7 --cols 7` | 5 s |
+| `B8` | `find --rows 6 --cols 7` | 4 s |
+| `B9` | `find --rows 5 --cols 9` | 24 s |
 
 Every run is appended to `results/bench-log.csv` (`search_s` = median search time, dictionary load
 excluded; `label` = optimization step). `scripts/charts.py` turns it into `results/charts/*.svg` and
@@ -470,7 +493,7 @@ Output always includes the dictionary fingerprint, the ruleset, the solver, and 
 | M1 | Naive solver | Finds a 3×3 and a 4×4; validator passes ✅ |
 | M2 | Trie + mask solver | Same counts as naive on all small sizes; first big speedup recorded ✅ |
 | M3 | Benchmark harness | `B1`–`B3` scripted with hyperfine; journal started (started ✅) |
-| M4 | Compact trie | Lower memory and faster `B2` |
+| M4 | Compact trie | Lower memory and faster `B2` ✅ |
 | M5 | Smart ordering + forward checking | Big drop in **nodes visited** |
 | M6 | Dictionary pruning | Faster exhaustion of sizes with no solution |
 | M7 | Parallel search | Near-linear scaling on all cores for `B2`/`B3` |
