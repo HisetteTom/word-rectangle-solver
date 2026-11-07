@@ -1,14 +1,18 @@
-//! Per-length trie with a 26-bit child mask on every node (README §6).
+//! Per-length trie with a 26-bit child mask on every node (README §6), compact layout (§8 Level 2).
 //!
 //! All words in one trie have the same length, so reaching depth `L` means a
 //! complete word: no terminal flags needed.
+//!
+//! Layout: 8 bytes per node. Nodes are stored in BFS order, and the children of a
+//! node are contiguous and sorted by letter, so the child for letter `l` is
+//! `first + popcount(mask & ((1 << l) - 1))` — no 26-entry child table.
 
-#[derive(Clone, Default)]
+#[derive(Clone, Copy, Default)]
 struct Node {
-    /// Child index per letter; 0 = missing (0 is the root, never a child).
-    children: [u32; 26],
     /// Bit `l` set <=> child for letter `l` exists.
     mask: u32,
+    /// Index of the first (lowest-letter) child. Meaningless when `mask == 0`.
+    first: u32,
 }
 
 pub struct Trie {
@@ -18,22 +22,35 @@ pub struct Trie {
 impl Trie {
     /// `words` must be lowercase `a–z` (guaranteed by `Dict`).
     pub fn new(words: &[String]) -> Trie {
-        let mut nodes = vec![Node::default()];
+        // 1. plain pointer trie (build-time only)
+        let mut tmp: Vec<[u32; 26]> = vec![[0; 26]];
         for w in words {
             let mut n = 0;
             for b in w.bytes() {
                 let l = (b - b'a') as usize;
-                let child = nodes[n].children[l];
-                n = if child != 0 {
-                    child as usize
-                } else {
-                    let id = nodes.len();
-                    nodes.push(Node::default());
-                    nodes[n].children[l] = id as u32;
-                    nodes[n].mask |= 1 << l;
-                    id
-                };
+                if tmp[n][l] == 0 {
+                    tmp[n][l] = tmp.len() as u32;
+                    tmp.push([0; 26]);
+                }
+                n = tmp[n][l] as usize;
             }
+        }
+        // 2. BFS renumbering: queue position = new index
+        let mut queue = vec![0usize];
+        let mut nodes = Vec::with_capacity(tmp.len());
+        let mut i = 0;
+        while i < queue.len() {
+            let old = queue[i];
+            let first = queue.len() as u32;
+            let mut mask = 0;
+            for (l, &c) in tmp[old].iter().enumerate() {
+                if c != 0 {
+                    mask |= 1 << l;
+                    queue.push(c as usize);
+                }
+            }
+            nodes.push(Node { mask, first });
+            i += 1;
         }
         Trie { nodes }
     }
@@ -43,9 +60,11 @@ impl Trie {
         self.nodes[node as usize].mask
     }
 
+    /// Child for `letter`; only valid if bit `letter` is set in `mask(node)`.
     #[inline(always)]
     pub fn child(&self, node: u32, letter: usize) -> u32 {
-        self.nodes[node as usize].children[letter]
+        let n = self.nodes[node as usize];
+        n.first + (n.mask & ((1u32 << letter) - 1)).count_ones()
     }
 
     pub fn len(&self) -> usize {
