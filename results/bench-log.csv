@@ -44,3 +44,12 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,e12b165,fast,trie,B7,find --rows 7 --cols 7,4.2818,141510783,found,4.100438,leaf counting
 2026-11-07,e12b165,fast,trie,B8,find --rows 6 --cols 7,3.5757,117670090,found,3.392252,leaf counting
 2026-11-07,e12b165,fast,trie,B9,find --rows 5 --cols 9,18.2561,604041773,found,18.049626,leaf counting
+2026-11-07,ecc8a36,fast,par,B1,count --rows 3 --cols 3,0.1709,2122136,solutions=1909732,0.007821,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B2,find --rows 5 --cols 6,0.1720,22841,found,0.000732,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B3,find --rows 6 --cols 6,0.1902,49782,found,0.001513,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B4,count --rows 4 --cols 4,1.6459,1299555173,solutions=136245247,1.483298,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B5,count --rows 4 --cols 5,6.5088,5054675765,solutions=114846713,6.427753,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B6,count --rows 3 --cols 7,0.7151,485285838,solutions=4453472,0.627628,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B7,find --rows 7 --cols 7,0.7899,157038815,found,0.698162,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B8,find --rows 6 --cols 7,0.7522,120820550,found,0.625990,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B9,find --rows 5 --cols 9,1.2119,610338537,found,1.060230,parallel 22 threads

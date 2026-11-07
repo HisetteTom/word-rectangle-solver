@@ -81,7 +81,7 @@ Build profiles:
 Compile-speed tricks already in place: **zero dependencies**, linking with **lld** (`.cargo/config.toml`),
 incremental `fast` profile. `target-cpu=native` is set globally.
 
-Current status: **M2 + M4 done** (trie + mask solver, compact 8-byte trie nodes). Next: M5 (smart ordering + forward checking).
+Current status: **M2 + M4 + Level 6 done** (trie + mask solver, compact 8-byte trie nodes, counting without leaf visits, deterministic parallel search on all cores). Next: dictionary pruning (Level 4) and micro-optimizations.
 
 ---
 
@@ -193,7 +193,7 @@ SHA-256 `3f16130220645692ed49c7134e24a18504c2ca55b3c012f7290e3e77c63b1a89`.
 dictionary ──► preprocessing ──► per-length tries ──► search engine ──► results
                                        │                     │
                                        │                     ├── single-threaded core
-                                       │                     └── parallel driver (rayon)
+                                       │                     └── parallel driver (std::thread)
                                        └── letter masks per node
 ```
 
@@ -338,9 +338,9 @@ Each step gets its own entry in the [optimization journal](#16-optimization-jour
 - [ ] For "all words distinct" variants, track used words cheaply (e.g. a bitset over word IDs at full depth).
 
 ### Level 6: parallelism
-- [ ] Split the search tree at a fixed depth (e.g. all valid first rows) into independent jobs.
-- [ ] Run jobs with `rayon`. Watch out for **load imbalance**: some subtrees are vastly bigger than others. Split deeper, or use work-stealing (rayon already does).
-- [ ] Use an `AtomicBool` to stop all threads as soon as one finds a solution (when only one is needed).
+- [x] Split the search tree at a fixed depth (e.g. all valid first rows) into independent jobs.
+- [x] Run jobs on `std::thread::scope` workers pulling from an atomic job counter (zero dependencies, so no `rayon`). Load imbalance is handled by splitting into many small jobs (256/thread for count, 4096/thread for find).
+- [x] Stop early when one solution is enough, deterministically: the lowest job index with a solution wins (atomic `fetch_min`), so `find` returns the same grid as the sequential solver.
 
 ### Level 7: micro-optimizations (only after profiling!)
 - [ ] `#[inline]` on hot functions; check with `cargo asm` / Compiler Explorer.

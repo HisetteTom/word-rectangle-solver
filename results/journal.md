@@ -109,3 +109,45 @@ is visited per solution, no grid writes, no callback.
 
 **Verdict:** kept. The gain grows with the solutions/nodes ratio. For big counts, most work is in internal
 nodes that die out, so the gain stays small.
+
+### 2026-11-07: Level 6 — parallel search on 22 threads (`ecc8a36`) ✅
+
+**Idea:** new default solver `par` (`src/par.rs`), std threads only.
+1. Expand the first cells breadth-first, in lexicographic order, into a list of job prefixes.
+2. `thread::scope` workers pull job indices from an `AtomicUsize`. This is dynamic load balancing, which
+   matters because subtree sizes vary wildly and this CPU mixes P-cores and E-cores.
+3. Deterministic `find`: the lowest job index with a solution wins (`fetch_min`). Later jobs are skipped or
+   aborted, so the grid is *exactly* the sequential one (checked on B7–B9 and in a new cross-check test
+   that forces the parallel path at 1/3/22 threads).
+
+Tuning (probes, jobs per thread):
+
+| jobs/thread | B7 find 7×7 | B8 find 6×7 | B9 find 5×9 | B3 find 6×6 | B6 count 3×7 |
+|---|---|---|---|---|---|
+| 16 | 3.90 s | 2.50 s | 1.57 s | 2.5 ms | 0.63 s |
+| 256 | 3.63 s | 2.47 s | 1.27 s | 3.5 ms | 0.62 s |
+| 4096 | 0.65 s | 0.51 s | 1.02 s | 16.7 ms | 0.68 s |
+| 65536 | 0.63 s | 0.55 s | 1.26 s | 172 ms | 0.82 s |
+
+With few jobs, the job holding the first 7×7 solution is one huge subtree that a single thread grinds through.
+Many small jobs fix that, but the serial job expansion then costs too much on tiny finds. So:
+count uses 256/thread, and find uses 4096/thread but first tries a **2M-node sequential search** (~10 ms).
+Tiny finds stay sequential.
+
+| Benchmark | Before (leaf counting) | After (parallel) | Change |
+|---|---|---|---|
+| B1 count 3×3 | 31.5 ms | 7.8 ms | **4.0×** |
+| B2 find 5×6 | 0.72 ms | 0.73 ms | ≈ (sequential path) |
+| B3 find 6×6 | 1.44 ms | 1.51 ms | ≈ (sequential path) |
+| B4 count 4×4 | 26.8 s | 1.48 s | **18.0×** |
+| B5 count 4×5 | 120.2 s | 6.43 s | **18.7×** |
+| B6 count 3×7 | 12.1 s | 0.63 s | **19.3×** |
+| B7 find 7×7 | 4.10 s | 0.70 s | **5.9×** |
+| B8 find 6×7 | 3.39 s | 0.63 s | **5.4×** |
+| B9 find 5×9 | 18.0 s | 1.06 s | **17.0×** |
+| heavy total | 184 s | 10.9 s | **16.9×** |
+
+**Verdict:** kept, now the default. Counting scales ~18–19× on 22 threads (6 P + 8 E + 2 LP-E cores,
+hyper-threads), close to the hardware limit. Finds scale less: work before the solution is partly
+sequential, and parallel workers also explore jobs *after* the winner. The heavy suite now runs in ~11 s, so the next
+big benchmarks (B10+) should be added soon.
