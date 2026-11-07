@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Usage: scripts/bench.sh [B1|B2|B3|all] [--release] [--solver NAME] [--runs N] [--label TEXT]
-#   default: all benchmarks, `fast` profile, trie solver, 5 timed runs.
+# Usage: scripts/bench.sh [all|quick|heavy|B<n>] [--release] [--solver NAME] [--runs N] [--label TEXT]
+#   default: all benchmarks, `fast` profile, trie solver.
+#   quick = B1–B3 (seconds): 1 warmup run (shown) + N timed runs (default 5).
+#   heavy = B4+ (minutes): ONE timed run each, no warmup.
 #   --release  : build with the full release profile (LTO), use for journal numbers.
 #   --label    : name of this step in the charts (default: solver name),
 #                e.g. --label "trie + masks". Use a new label for every improvement.
-# Each benchmark: 1 warmup run (shown) + N timed runs.
 # Appends one line per benchmark to results/bench-log.csv, then regenerates the charts.
 #   search_s = median search time reported by the binary (excludes dictionary load)
 #   mean_s   = mean wall time of the whole process
@@ -25,7 +26,7 @@ while [[ $# -gt 0 ]]; do
     --solver)  solver="$2"; shift ;;
     --runs)    runs="$2"; shift ;;
     --label)   label="$2"; shift ;;
-    B*|all)    which_b="$1" ;;
+    B*|all|quick|heavy) which_b="$1" ;;
     *) echo "${RD}unknown arg $1${R}"; exit 1 ;;
   esac
   shift
@@ -36,11 +37,19 @@ label=${label:-$solver}
 cargo build --quiet --profile "$profile"
 BIN="target/$profile/wordrect"
 
-# id | command args | description
+# id | command args | description | heavy (non-empty = run once)
+# NEVER change an existing ID's task: old rows in the log must stay comparable. Add new IDs.
 BENCHES=(
-  "B1|count --rows 3 --cols 3|count all 3x3 (exhaustive)"
-  "B2|find --rows 5 --cols 6|first 5x6"
-  "B3|find --rows 6 --cols 6|first 6x6"
+  "B1|count --rows 3 --cols 3|count all 3x3 (exhaustive)|"
+  "B2|find --rows 5 --cols 6|first 5x6|"
+  "B3|find --rows 6 --cols 6|first 6x6|"
+  # heavy suite, sized at "trie + masks" (~5–10 min total there)
+  "B4|count --rows 4 --cols 4|count all 4x4 (exhaustive)|heavy"
+  "B5|count --rows 4 --cols 5|count all 4x5 (exhaustive)|heavy"
+  "B6|count --rows 3 --cols 7|count all 3x7 (exhaustive)|heavy"
+  "B7|find --rows 7 --cols 7|first 7x7|heavy"
+  "B8|find --rows 6 --cols 7|first 6x7|heavy"
+  "B9|find --rows 5 --cols 9|first 5x9|heavy"
 )
 
 commit=$(git rev-parse --short HEAD 2>/dev/null || echo unknown)
@@ -49,13 +58,20 @@ commit=$(git rev-parse --short HEAD 2>/dev/null || echo unknown)
 log=results/bench-log.csv
 [[ -f $log ]] || echo "date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label" > "$log"
 
+search_time() { grep -o 'time=[0-9.]*' <<< "$1" | head -1 | cut -d= -f2; }
+
 for b in "${BENCHES[@]}"; do
-  IFS='|' read -r id args desc <<< "$b"
-  [[ $which_b == all || $which_b == "$id" ]] || continue
+  IFS='|' read -r id args desc heavy <<< "$b"
+  case $which_b in
+    all) ;;
+    quick) [[ -z $heavy ]] || continue ;;
+    heavy) [[ -n $heavy ]] || continue ;;
+    *) [[ $which_b == "$id" ]] || continue ;;
+  esac
   echo "${B}${CY}=== $id: $desc${R}   ${D}($BIN $args --solver $solver)  [$label]${R}"
 
-  # warmup run: shown, gives nodes + result
-  out=$("$BIN" $args --solver "$solver" --stats)
+  # first run: shown, gives nodes + result (warmup for quick, THE measurement for heavy)
+  s=$(date +%s%N); out=$("$BIN" $args --solver "$solver" --stats); e=$(date +%s%N)
   echo "$out" | tail -n +3 | while IFS= read -r line; do
     case "$line" in
       found*|solutions=*) echo "${GR}${line}${R}" ;;
@@ -68,15 +84,19 @@ for b in "${BENCHES[@]}"; do
   nodes=$(grep -o 'nodes=[0-9]*' <<< "$out" | head -1 | cut -d= -f2)
   result=$(grep -E '^(solutions=|found|no solution)' <<< "$out" | head -1 | tr ',' ' ' | sed 's/ (validated)://')
 
-  wall_ns=0; searches=()
-  for ((i = 0; i < runs; i++)); do
-    s=$(date +%s%N); o=$("$BIN" $args --solver "$solver" --stats); e=$(date +%s%N)
-    wall_ns=$((wall_ns + e - s))
-    searches+=("$(grep -o 'time=[0-9.]*' <<< "$o" | head -1 | cut -d= -f2)")
-  done
-  mean=$(awk -v t="$wall_ns" -v n="$runs" 'BEGIN { printf "%.4f", t / n / 1e9 }')
+  if [[ -n $heavy ]]; then
+    n=1; wall_ns=$((e - s)); searches=("$(search_time "$out")")
+  else
+    n=$runs; wall_ns=0; searches=()
+    for ((i = 0; i < n; i++)); do
+      s=$(date +%s%N); o=$("$BIN" $args --solver "$solver" --stats); e=$(date +%s%N)
+      wall_ns=$((wall_ns + e - s))
+      searches+=("$(search_time "$o")")
+    done
+  fi
+  mean=$(awk -v t="$wall_ns" -v n="$n" 'BEGIN { printf "%.4f", t / n / 1e9 }')
   search=$(printf '%s\n' "${searches[@]}" | sort -g | awk '{ a[NR] = $1 } END { m = (NR % 2) ? a[(NR + 1) / 2] : (a[NR / 2] + a[NR / 2 + 1]) / 2; printf "%.6f", m }')
-  echo "search (median of $runs): ${B}${YE}${search}s${R}   ${D}wall mean ${mean}s${R}"
+  echo "search (median of $n): ${B}${YE}${search}s${R}   ${D}wall mean ${mean}s${R}"
   echo "$(date +%F),$commit,$profile,$solver,$id,$args,$mean,$nodes,$result,$search,$label" >> "$log"
   echo
 done
