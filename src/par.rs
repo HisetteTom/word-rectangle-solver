@@ -51,6 +51,8 @@ pub struct ParSearch {
     sym: bool,
     /// Per position k of a row word: which letters can follow at k + 1 (see `Bigram`).
     bigrams: Vec<Bigram>,
+    /// Backward: which letters can precede (at k) a letter at k + 1.
+    prebigrams: Vec<Bigram>,
     /// Tall grids (rows > cols): the transposed search, used by `count`. Long rows are much
     /// cheaper to count (6×4 explores 2.4× the nodes of 4×6). `find` keeps the original
     /// orientation, because its answer must be the row-major lexicographically first grid.
@@ -102,7 +104,7 @@ impl<'a> Worker<'a> {
         let s = self.s;
         let (r, c) = (cell / W, cell % W);
         let mut colv: [CNode; W] = std::array::from_fn(|i| s.col_trie.node(self.col_state[i]));
-        let k = Kernel::<W> { rt: &s.row_trie, bi: &s.bigrams, ct: &s.col_trie, last_r: s.rows - 1 };
+        let k = Kernel::<W> { rt: &s.row_trie, bi: &s.bigrams, pre: &s.prebigrams, ct: &s.col_trie, last_r: s.rows - 1 };
         let mut nodes = 0;
         let row = s.row_trie.node(self.row_state[r]);
         let total = if s.sym {
@@ -131,7 +133,7 @@ impl<'a> Worker<'a> {
             return on(&self.grid);
         }
         let (r, c) = (cell / W, cell % W);
-        let k = Kernel::<W> { rt: &s.row_trie, bi: &s.bigrams, ct: &s.col_trie, last_r: s.rows - 1 };
+        let k = Kernel::<W> { rt: &s.row_trie, bi: &s.bigrams, pre: &s.prebigrams, ct: &s.col_trie, last_r: s.rows - 1 };
         let mut st = SearchState::<W> {
             colv: std::array::from_fn(|i| s.col_trie.node(self.col_state[i])),
             grid: std::mem::take(&mut self.grid),
@@ -152,6 +154,8 @@ struct Kernel<'t, const W: usize> {
     rt: &'t Trie,
     /// `ParSearch::bigrams`
     bi: &'t [Bigram],
+    /// `ParSearch::prebigrams`
+    pre: &'t [Bigram],
     ct: &'t CTrie,
     last_r: usize,
 }
@@ -308,11 +312,40 @@ impl<const W: usize> Kernel<'_, W> {
             }
             return self.count_last(c, row, &masks, nodes);
         }
+        // Backward bound for row r + 1, set once per row: bk[k] = letters it can have at column k
+        // (some letter of row r there leaves that column a child with it) that also start a
+        // feasible suffix k..W through the backward bigram tables.
+        let mut bk = [!0u32; W];
+        let mut s = !0u32;
+        for k in (c..W).rev() {
+            let n = colv[k];
+            let mut a = n.mask;
+            let mut nk = 0;
+            while a != 0 {
+                let l = a.trailing_zeros();
+                a &= a - 1;
+                nk |= self.ct.step(n, l).mask;
+            }
+            if k + 1 < W {
+                nk &= self.upre(k, s);
+            }
+            if nk == 0 {
+                return 0; // row r + 1 can't exist
+            }
+            bk[k] = nk;
+            s = nk;
+        }
+        self.count_row(r, c, row, colv, nodes, f, &bk)
+    }
+
+    /// Row r < last row, from cell c (see `count`; `bk` = backward bound for row r + 1).
+    #[allow(clippy::too_many_arguments)]
+    fn count_row(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, bk: &[u32; W]) -> u64 {
         *nodes += 1;
         let col = colv[c];
         let mut allowed = row.mask & col.mask;
         // letters row r + 1 could have at position c, before this cell's column constraint
-        let base = if c == 0 { self.rt.node(0).mask } else { self.uni(c - 1, f) };
+        let base = (if c == 0 { self.rt.node(0).mask } else { self.uni(c - 1, f) }) & bk[c];
         if c == (W - 1) {
             // the letter completes this row: next cell is (r + 1, 0) with a fresh row
             let root = self.rt.node(0);
@@ -342,10 +375,17 @@ impl<const W: usize> Kernel<'_, W> {
                 continue; // next row can't fit the columns
             }
             colv[c] = cn;
-            total += self.count(r, c + 1, self.rt.step(row, l), colv, nodes, fc);
+            total += self.count_row(r, c + 1, self.rt.step(row, l), colv, nodes, fc, bk);
         }
         colv[c] = col;
         total
+    }
+
+    /// Letters a row word can have at position k, given its letter at k + 1 is in `s`.
+    #[inline(always)]
+    fn upre(&self, k: usize, s: u32) -> u32 {
+        let t = &self.pre[k];
+        t[0][(s & 127) as usize] | t[1][((s >> 7) & 127) as usize] | t[2][((s >> 14) & 127) as usize] | t[3][((s >> 21) & 31) as usize]
     }
 
     /// Letters a row word can have at position k + 1, given its letter at k is in `f`.
@@ -378,12 +418,13 @@ impl<const W: usize> Kernel<'_, W> {
 /// the 7-bit chunk `v` (letters 7·chunk ..) at k. The union over any letter set `f` is 4 lookups.
 type Bigram = [[u32; 128]; 4];
 
-fn bigrams(words: &[String], len: usize) -> Vec<Bigram> {
+fn bigrams(words: &[String], len: usize, backward: bool) -> Vec<Bigram> {
     let mut t = vec![[[0u32; 128]; 4]; len.max(1)];
     for w in words {
         let b = w.as_bytes();
         for k in 0..len - 1 {
-            let (a, n) = ((b[k] - b'a') as usize, (b[k + 1] - b'a') as u32);
+            let (x, y) = if backward { (k + 1, k) } else { (k, k + 1) };
+            let (a, n) = ((b[x] - b'a') as usize, (b[y] - b'a') as u32);
             let (chunk, bit) = (a / 7, a % 7);
             for v in 0..128 {
                 if v >> bit & 1 == 1 {
@@ -414,7 +455,8 @@ impl ParSearch {
             threads,
             seq_budget: FIND_SEQ_BUDGET,
             sym: rows == cols && row_words == col_words,
-            bigrams: bigrams(row_words, cols),
+            bigrams: bigrams(row_words, cols, false),
+            prebigrams: bigrams(row_words, cols, true),
             stats: Stats::default(),
         }
     }
