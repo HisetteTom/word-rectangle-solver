@@ -25,6 +25,8 @@ The benchmark history is the point of this project; it is published on GitHub as
    so the charts on GitHub show the new step.
 
 Reverted experiments: still run step 3 on the experimental commit (the bar documents it), then revert.
+Their label **must end with `(failed)`** — the charts draw those bars grey and hatched and never
+highlight them; the highlighted "◀ current" bar is the latest kept step.
 
 Suites: `./wr bench quick` (B1–B3, seconds) for fast iteration while developing; the recorded step
 must be a full `./wr bench` (~1 min now) so every chart gets the new bar.
