@@ -306,3 +306,24 @@ Bigger nodes cost the 4×4 square (short rows: few checks to gain) ~6%.
 
 **Verdict:** kept. Node counts drop 1.5–2.9×, but nodes/sec drops too (more work per node and
 bigger nodes), so the wall-clock gain is 1.1–1.4×. Next: make the per-node work cheaper.
+
+### 2026-11-07: compact column trie (`86cf07a`) ✅
+
+**Idea:** the look-ahead masks made every node 16 bytes, but column nodes only need `mask` and
+`first`. Cache math: the 4-letter trie (6,067 nodes) is 47 KiB at 8 B, which fits the 48 KiB L1D,
+but 94 KiB at 16 B. The column trie now uses `CTrie` (8-byte `CNode`, same indices); only the
+row trie keeps `next` and `next2`. Node counts are unchanged.
+
+| Benchmark | Before (look-ahead) | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 0.520 s | 0.508 s | 1.02× |
+| B5 count 4×5 | 4.21 s | 4.14 s | 1.02× |
+| B8 find 6×7 | 0.413 s | 0.354 s | 1.17× (find noise ±) |
+| B9 find 5×9 | 0.748 s | 0.691 s | 1.08× |
+| B10 count 5×5 | 14.43 s | 13.83 s | 1.04× |
+| B11 count 4×6 | 7.64 s | 7.43 s | 1.03× |
+| B12 find 6×8 | 3.87 s | 3.74 s | 1.04× |
+| B13 no 5×10 | 3.68 s | 3.53 s | 1.04× |
+
+**Verdict:** kept: small but consistent. B4 is still behind its symmetry-step 0.471 s, because the
+4-letter row trie is still 94 KiB.
