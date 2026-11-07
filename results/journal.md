@@ -428,3 +428,35 @@ profiles. Steps: `-Cprofile-generate` build, trained on count 3×3/4×4/3×7/4×
 **Verdict:** dropped, within noise. Also, the instrumented binary took 5½ minutes to train, because
 22 threads contend on shared profile counters. The hot kernels are tiny and already well laid out,
 and release (LTO) ≈ fast here too.
+
+### 2026-11-07: last-row memo on column-mask tuples — measured, not built
+
+The last row's count depends only on the tuple of column masks, and different column nodes can
+share a mask, so this could hit more often than the earlier node-tuple memo. I measured it with a
+throwaway probe (calls at last-row start vs distinct mask tuples per thread):
+
+| Instance | last-row calls | distinct | best possible hit rate |
+|---|---|---|---|
+| 3×3 | 52 k | 48 k | 7.6% |
+| 3×7 | 6.1 M | 6.05 M | 1.0% |
+| 4×5 | 350 M | 289 M | 17% |
+
+**Verdict:** not worth a hash table, even unbounded. Mask tuples hardly repeat.
+
+### 2026-11-07: depth-first trie layout (`2c1dbf2`) ❌ reverted
+
+**Idea:** children must be contiguous (child = first + rank), but sibling groups can be in any order.
+Lay them out in DFS pre-order instead of BFS, so each subtree occupies one region and search paths
+stay local.
+
+| Benchmark | Before (branch-free look-ahead) | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 0.454 s | 0.480 s | 0.95× |
+| B5 count 4×5 | 3.51 s | 3.63 s | 0.97× |
+| B10 count 5×5 | 11.42 s | 12.05 s | 0.95× |
+| B11 count 4×6 | 6.21 s | 6.59 s | 0.94× |
+| B12 find 6×8 | 2.51 s | 2.58 s | 0.97× |
+| B13 no 5×10 | 2.66 s | 2.66 s | ≈ |
+
+**Verdict:** reverted. The tries fit in L2 (at most ~270 KiB row + ~135 KiB column), and BFS
+keeps the hot top levels packed together at the start of the array, which matters more.

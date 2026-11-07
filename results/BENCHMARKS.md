@@ -30,6 +30,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 3.72 ms | 3,185× | 0.87× | 1,049,457 | solutions=1909732 |
 | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 3.73 ms | 3,182× | 1.00× | 1,001,786 | solutions=1909732 |
 | iterative DFS (failed) | `e25590c` | 2026-11-07 | fast | 3.23 ms | 3,664× | 1.15× | 1,001,786 | solutions=1909732 |
+| DFS trie layout (failed) | `2c1dbf2` | 2026-11-07 | fast | 2.93 ms | 4,049× | 1.11× | 1,001,786 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -55,6 +56,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 340 µs | 6,882× | 1.45× | 12,444 | found |
 | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 447 µs | 5,235× | 0.76× | 9,611 | found |
 | iterative DFS (failed) | `e25590c` | 2026-11-07 | fast | 456 µs | 5,131× | 0.98× | 9,611 | found |
+| DFS trie layout (failed) | `2c1dbf2` | 2026-11-07 | fast | 438 µs | 5,342× | 1.04× | 9,611 | found |
 
 ## B3 · find first 6×6
 
@@ -80,6 +82,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 909 µs | 6,219× | 0.99× | 26,012 | found |
 | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 799 µs | 7,075× | 1.14× | 19,902 | found |
 | iterative DFS (failed) | `e25590c` | 2026-11-07 | fast | 793 µs | 7,128× | 1.01× | 19,902 | found |
+| DFS trie layout (failed) | `2c1dbf2` | 2026-11-07 | fast | 538 µs | 10,507× | 1.47× | 19,902 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -104,6 +107,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 488 ms | 76.9× | 1.00× | 559,509,989 | solutions=136245247 |
 | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 454 ms | 82.6× | 1.07× | 434,317,924 | solutions=136245247 |
 | iterative DFS (failed) | `e25590c` | 2026-11-07 | fast | 479 ms | 78.3× | 0.95× | 434,317,924 | solutions=136245247 |
+| DFS trie layout (failed) | `2c1dbf2` | 2026-11-07 | fast | 480 ms | 78.1× | 1.00× | 434,317,924 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -128,6 +132,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 3.89 s | 39.4× | 1.00× | 3,364,600,156 | solutions=114846713 |
 | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 3.51 s | 43.7× | 1.11× | 2,436,976,174 | solutions=114846713 |
 | iterative DFS (failed) | `e25590c` | 2026-11-07 | fast | 3.64 s | 42.0× | 0.96× | 2,436,976,174 | solutions=114846713 |
+| DFS trie layout (failed) | `2c1dbf2` | 2026-11-07 | fast | 3.63 s | 42.1× | 1.00× | 2,436,976,174 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -152,6 +157,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 324 ms | 50.4× | 1.01× | 182,615,542 | solutions=4453472 |
 | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 254 ms | 64.1× | 1.27× | 136,298,665 | solutions=4453472 |
 | iterative DFS (failed) | `e25590c` | 2026-11-07 | fast | 259 ms | 62.9× | 0.98× | 136,298,665 | solutions=4453472 |
+| DFS trie layout (failed) | `2c1dbf2` | 2026-11-07 | fast | 268 ms | 60.9× | 0.97× | 136,298,665 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -176,6 +182,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 313 ms | 16.0× | 1.18× | 55,604,492 | found |
 | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 291 ms | 17.3× | 1.08× | 43,868,432 | found |
 | iterative DFS (failed) | `e25590c` | 2026-11-07 | fast | 327 ms | 15.4× | 0.89× | 44,224,599 | found |
+| DFS trie layout (failed) | `2c1dbf2` | 2026-11-07 | fast | 264 ms | 19.0× | 1.24× | 43,428,196 | found |
 
 ## B8 · find first 6×7
 
@@ -200,6 +207,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 294 ms | 13.7× | 0.96× | 46,420,838 | found |
 | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 273 ms | 14.8× | 1.08× | 36,415,982 | found |
 | iterative DFS (failed) | `e25590c` | 2026-11-07 | fast | 467 ms | 8.64× | 0.58× | 36,301,319 | found |
+| DFS trie layout (failed) | `2c1dbf2` | 2026-11-07 | fast | 234 ms | 17.2× | 2.00× | 36,483,160 | found |
 
 ## B9 · find first 5×9
 
@@ -224,6 +232,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 606 ms | 39.3× | 1.00× | 239,671,344 | found |
 | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 506 ms | 47.0× | 1.20× | 186,928,429 | found |
 | iterative DFS (failed) | `e25590c` | 2026-11-07 | fast | 499 ms | 47.7× | 1.01× | 187,060,045 | found |
+| DFS trie layout (failed) | `2c1dbf2` | 2026-11-07 | fast | 501 ms | 47.5× | 1.00× | 187,015,999 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -241,6 +250,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 12.6 s | 2.43× | 0.99× | 9,533,780,804 | solutions=80364530 |
 | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 11.4 s | 2.68× | 1.10× | 6,875,817,435 | solutions=80364530 |
 | iterative DFS (failed) | `e25590c` | 2026-11-07 | fast | 13.0 s | 2.36× | 0.88× | 6,875,817,435 | solutions=80364530 |
+| DFS trie layout (failed) | `2c1dbf2` | 2026-11-07 | fast | 12.1 s | 2.54× | 1.08× | 6,875,817,435 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -258,6 +268,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 6.94 s | 1.37× | 1.01× | 4,952,123,756 | solutions=37812638 |
 | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 6.21 s | 1.53× | 1.12× | 3,714,990,647 | solutions=37812638 |
 | iterative DFS (failed) | `e25590c` | 2026-11-07 | fast | 6.45 s | 1.47× | 0.96× | 3,714,990,647 | solutions=37812638 |
+| DFS trie layout (failed) | `2c1dbf2` | 2026-11-07 | fast | 6.59 s | 1.44× | 0.98× | 3,714,990,647 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -275,6 +286,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 3.18 s | 1.60× | 1.07× | 1,514,229,284 | found |
 | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 2.51 s | 2.03× | 1.27× | 1,160,859,256 | found |
 | iterative DFS (failed) | `e25590c` | 2026-11-07 | fast | 2.52 s | 2.03× | 1.00× | 1,160,948,957 | found |
+| DFS trie layout (failed) | `2c1dbf2` | 2026-11-07 | fast | 2.58 s | 1.98× | 0.98× | 1,160,896,403 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -292,3 +304,4 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 2.96 s | 1.67× | 1.08× | 1,432,485,237 | no solution: 5x10 exhausted |
 | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 2.66 s | 1.86× | 1.11× | 1,139,376,699 | no solution: 5x10 exhausted |
 | iterative DFS (failed) | `e25590c` | 2026-11-07 | fast | 2.60 s | 1.90× | 1.02× | 1,139,376,699 | no solution: 5x10 exhausted |
+| DFS trie layout (failed) | `2c1dbf2` | 2026-11-07 | fast | 2.66 s | 1.86× | 0.98× | 1,139,376,699 | no solution: 5x10 exhausted |
