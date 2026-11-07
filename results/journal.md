@@ -486,3 +486,21 @@ count and the search kernels.
 **Verdict:** kept. It cuts 9–22% of the nodes, but each node costs more (four extra table
 loads), so the time gain is smaller than the node gain. It helps most where rows are many and
 short (5×5).
+
+### 2026-11-07: two-rows-ahead check (`bd0c975`) ❌ reverted
+
+**Idea:** extend the forward check to row r + 2: column nodes get `next` (letters two rows down,
+CNode 8 → 12 B), and a second forward mask `g` runs through the bigram tables.
+
+| Benchmark | Before (next-row forward check) | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 0.452 s · 397.3 M nodes | 0.443 s · 397.3 M | ≈ |
+| B5 count 4×5 | 3.36 s · 2.143 G | 3.40 s · 2.142 G | 0.99× |
+| B10 count 5×5 | 10.44 s · 5.39 G | 10.81 s · 5.15 G | 0.97× |
+| B11 count 4×6 | 5.81 s | 5.93 s | 0.98× |
+| B12 find 6×8 | 2.49 s | 2.56 s | 0.97× |
+| B13 no 5×10 | 2.53 s | 2.49 s | 1.02× |
+
+**Verdict:** reverted. When row r + 2 exists, the next-row check plus `good()` already catch
+nearly every dead end. It prunes 0.03% of nodes on 4-row grids and 4.5% on 5×5, which doesn't
+pay for the bigger column nodes and the extra lookups.
