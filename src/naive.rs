@@ -4,7 +4,7 @@
 //! column read so far is a prefix of some column word (via a `HashSet` of prefixes).
 //! Slow on purpose: it is the ground truth for correctness and the speed baseline.
 
-use crate::{Grid, Stats};
+use crate::{Grid, Solver, Stats};
 use std::collections::HashSet;
 
 pub struct Naive<'a> {
@@ -77,5 +77,20 @@ impl<'a> Naive<'a> {
             true
         });
         out
+    }
+}
+
+impl Solver for Naive<'_> {
+    fn find(&mut self) -> Option<Grid> {
+        Naive::find(self)
+    }
+    fn count(&mut self) -> u64 {
+        Naive::count(self)
+    }
+    fn all(&mut self) -> Vec<Grid> {
+        Naive::all(self)
+    }
+    fn stats(&self) -> Stats {
+        self.stats
     }
 }

@@ -5,11 +5,30 @@
 #   ./wr 6x6          find one 6×6 rectangle   (also: ./wr 5x7, ./wr 4)
 #   ./wr count 3x3    count all 3×3 rectangles
 #   ./wr test         run the tests
-#   ./wr bench        run the benchmark suite (add B1/B2/B3 for just one)
+#   ./wr bench        run the benchmark suite (add B1/B2/B3, --label "step name", --solver naive)
+#   ./wr charts       regenerate results/charts/*.svg + results/BENCHMARKS.md from the log
 #   ./wr release      benchmark with the full release build (official numbers)
 #   ./wr info         words per length in the dictionary
 set -euo pipefail
 cd "$(dirname "$0")"
+
+# colors only when writing to a terminal (and NO_COLOR is unset)
+if [[ -t 1 && -z ${NO_COLOR:-} ]]; then
+  B=$'\e[1m' R=$'\e[0m' MA=$'\e[35m' GR=$'\e[32m' RD=$'\e[31m'
+else
+  B= R= MA= GR= RD=
+fi
+step() { echo "${B}${MA}▶ $1${R}"; }
+
+# print total wall time at the end (for the long-running commands)
+START=$EPOCHREALTIME
+total() {
+  local rc=$? el
+  el=$(awk -v s="$START" -v e="$EPOCHREALTIME" 'BEGIN {
+    t = e - s; m = int(t / 60)
+    if (m > 0) printf "%dm %.1fs", m, t - 60 * m; else printf "%.2fs", t }')
+  if ((rc == 0)); then echo "${B}${GR}✔ done in $el${R}"; else echo "${B}${RD}✘ failed after $el (exit $rc)${R}"; fi
+}
 
 BIN=target/fast/wordrect
 build() { cargo build --quiet --profile fast; }
@@ -25,16 +44,18 @@ size() {
 cmd="${1:-all}"
 case "$cmd" in
   all)
-    echo "▶ build";  build
-    echo "▶ test";   cargo test --quiet 2>&1 | grep -E "test result|FAILED|panicked" | grep -v " 0 passed"
-    echo "▶ bench";  scripts/bench.sh
+    trap total EXIT
+    step build;  build
+    step test;   cargo test --quiet 2>&1 | grep -E "test result|FAILED|panicked" | grep -v " 0 passed"
+    step bench;  scripts/bench.sh
     ;;
-  test)    cargo test --quiet ;;
-  bench)   shift; scripts/bench.sh "$@" ;;
-  release) shift; scripts/bench.sh --release "$@" ;;
+  test)    trap total EXIT; cargo test --quiet ;;
+  bench)   trap total EXIT; shift; scripts/bench.sh "$@" ;;
+  release) trap total EXIT; shift; scripts/bench.sh --release "$@" ;;
+  charts)  python3 scripts/charts.py ;;
   info)    build; $BIN info ;;
   count)   build; $BIN count $(size "${2:-}") --stats "${@:3}" ;;
   find)    build; $BIN find  $(size "${2:-}") --stats "${@:3}" ;;
-  help|-h|--help) sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//' ;;
+  help|-h|--help) sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//' ;;
   *)       build; $BIN find $(size "$cmd") --stats "${@:2}" ;;   # ./wr 6x6
 esac

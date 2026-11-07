@@ -4,6 +4,8 @@ use std::process::ExitCode;
 use std::time::Instant;
 use wordrect::dict::{self, Dict};
 use wordrect::naive::Naive;
+use wordrect::search::TrieSearch;
+use wordrect::Solver;
 use wordrect::validate::validate;
 
 const USAGE: &str = "\
@@ -16,7 +18,7 @@ USAGE:
 
 OPTIONS:
   --dict PATH      dictionary file          [default: dicts/enable.txt]
-  --solver NAME    solver to use            [default: naive]  (available: naive)
+  --solver NAME    solver to use            [default: trie]  (available: trie, naive)
   --stats          print nodes visited, nodes/sec, time
   --print          (count) print every solution found
   -h, --help       show this help
@@ -43,7 +45,7 @@ fn parse_args() -> Result<Args, String> {
         dict: "dicts/enable.txt".into(),
         rows: 0,
         cols: 0,
-        solver: "naive".into(),
+        solver: "trie".into(),
         stats: false,
         print: false,
     };
@@ -98,15 +100,16 @@ fn run(a: Args) -> Result<(), String> {
     if a.rows == 0 || a.cols == 0 {
         return Err("--rows and --cols are required".into());
     }
-    if a.solver != "naive" {
-        return Err(format!("unknown solver {}", a.solver));
-    }
 
     let (rw, cw) = (d.words(a.cols), d.words(a.rows));
     println!("# size={}x{}  row words (len {})={}  col words (len {})={}", a.rows, a.cols, a.cols, rw.len(), a.rows, cw.len());
 
     let all: HashSet<String> = d.by_len.iter().flatten().cloned().collect();
-    let mut solver = Naive::new(a.rows, a.cols, rw, cw);
+    let mut solver: Box<dyn Solver> = match a.solver.as_str() {
+        "naive" => Box::new(Naive::new(a.rows, a.cols, rw, cw)),
+        "trie" => Box::new(TrieSearch::new(a.rows, a.cols, rw, cw)),
+        other => return Err(format!("unknown solver {other}")),
+    };
     let t = Instant::now();
 
     if a.cmd == "find" {
@@ -131,10 +134,10 @@ fn run(a: Args) -> Result<(), String> {
 
     let el = t.elapsed();
     if a.stats {
-        let s = solver.stats;
+        let s = solver.stats();
         let secs = el.as_secs_f64();
         println!(
-            "# nodes={}  time={:.3}s  nodes/sec={:.0}  (dict load {:.3}s)",
+            "# nodes={}  time={:.6}s  nodes/sec={:.0}  (dict load {:.3}s)",
             s.nodes,
             secs,
             s.nodes as f64 / secs.max(1e-9),

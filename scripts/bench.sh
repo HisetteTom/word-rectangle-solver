@@ -1,23 +1,37 @@
 #!/usr/bin/env bash
-# Usage: scripts/bench.sh [B1|B2|B3|all] [--release] [--solver NAME] [--runs N]
-#   default: all benchmarks, `fast` profile, naive solver.
+# Usage: scripts/bench.sh [B1|B2|B3|all] [--release] [--solver NAME] [--runs N] [--label TEXT]
+#   default: all benchmarks, `fast` profile, trie solver, 5 timed runs.
 #   --release  : build with the full release profile (LTO), use for journal numbers.
-# Uses hyperfine if installed, otherwise a simple timing loop.
-# Every run appends one line per benchmark to results/bench-log.csv.
+#   --label    : name of this step in the charts (default: solver name),
+#                e.g. --label "trie + masks". Use a new label for every improvement.
+# Each benchmark: 1 warmup run (shown) + N timed runs.
+# Appends one line per benchmark to results/bench-log.csv, then regenerates the charts.
+#   search_s = median search time reported by the binary (excludes dictionary load)
+#   mean_s   = mean wall time of the whole process
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-which_b=all; profile=fast; solver=naive; runs=3
+# colors only when writing to a terminal (and NO_COLOR is unset)
+if [[ -t 1 && -z ${NO_COLOR:-} ]]; then
+  B=$'\e[1m' D=$'\e[2m' R=$'\e[0m' CY=$'\e[36m' GR=$'\e[32m' YE=$'\e[33m' RD=$'\e[31m'
+else
+  B= D= R= CY= GR= YE= RD=
+fi
+
+which_b=all; profile=fast; solver=trie; runs=5; label=
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --release) profile=release ;;
     --solver)  solver="$2"; shift ;;
     --runs)    runs="$2"; shift ;;
+    --label)   label="$2"; shift ;;
     B*|all)    which_b="$1" ;;
-    *) echo "unknown arg $1"; exit 1 ;;
+    *) echo "${RD}unknown arg $1${R}"; exit 1 ;;
   esac
   shift
 done
+label=${label:-$solver}
+[[ $label == *,* ]] && { echo "${RD}--label must not contain commas${R}"; exit 1; }
 
 cargo build --quiet --profile "$profile"
 BIN="target/$profile/wordrect"
@@ -30,35 +44,41 @@ BENCHES=(
 )
 
 commit=$(git rev-parse --short HEAD 2>/dev/null || echo unknown)
-[[ -n "$(git status --porcelain --untracked-files=no 2>/dev/null)" ]] && commit="$commit-dirty"
+[[ -n "$(git status --porcelain --untracked-files=no -- src Cargo.toml 2>/dev/null)" ]] && commit="$commit-dirty"
+[[ $commit == *-dirty ]] && echo "${YE}warning: uncommitted changes in src/ — commit first so the log points at real code${R}"
 log=results/bench-log.csv
-[[ -f $log ]] || echo "date,commit,profile,solver,bench,args,mean_s,nodes,result" > "$log"
+[[ -f $log ]] || echo "date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label" > "$log"
 
 for b in "${BENCHES[@]}"; do
   IFS='|' read -r id args desc <<< "$b"
   [[ $which_b == all || $which_b == "$id" ]] || continue
-  echo "=== $id: $desc   ($BIN $args --solver $solver)"
-  # One run with --stats to get nodes + result
-  out=$("$BIN" $args --solver "$solver" --stats)
-  echo "$out" | tail -n +3
-  nodes=$(grep -o 'nodes=[0-9]*' <<< "$out" | head -1 | cut -d= -f2)
-  result=$(grep -E '^(solutions=|found|no solution)' <<< "$out" | head -1 | tr ',' ' ')
+  echo "${B}${CY}=== $id: $desc${R}   ${D}($BIN $args --solver $solver)  [$label]${R}"
 
-  if command -v hyperfine >/dev/null; then
-    json=$(mktemp)
-    hyperfine --warmup 1 --runs "$runs" --export-json "$json" -N "$BIN $args --solver $solver"
-    mean=$(grep -o '"mean": *[0-9.e-]*' "$json" | head -1 | grep -o '[0-9.e-]*$')
-    rm -f "$json"
-  else
-    total_ns=0
-    for ((i = 0; i < runs; i++)); do
-      s=$(date +%s%N); "$BIN" $args --solver "$solver" >/dev/null; e=$(date +%s%N)
-      total_ns=$((total_ns + e - s))
-    done
-    mean=$(awk -v t="$total_ns" -v n="$runs" 'BEGIN { printf "%.4f", t / n / 1e9 }')
-    echo "mean over $runs runs: ${mean}s   (install hyperfine for proper stats)"
-  fi
-  echo "$(date +%F),$commit,$profile,$solver,$id,$args,$mean,$nodes,$result" >> "$log"
+  # warmup run: shown, gives nodes + result
+  out=$("$BIN" $args --solver "$solver" --stats)
+  echo "$out" | tail -n +3 | while IFS= read -r line; do
+    case "$line" in
+      found*|solutions=*) echo "${GR}${line}${R}" ;;
+      "no solution"*)     echo "${RD}${line}${R}" ;;
+      "#"*)               echo "${D}${line}${R}" ;;
+      "  "*)              echo "${B}${GR}${line}${R}" ;;
+      *)                  echo "$line" ;;
+    esac
+  done
+  nodes=$(grep -o 'nodes=[0-9]*' <<< "$out" | head -1 | cut -d= -f2)
+  result=$(grep -E '^(solutions=|found|no solution)' <<< "$out" | head -1 | tr ',' ' ' | sed 's/ (validated)://')
+
+  wall_ns=0; searches=()
+  for ((i = 0; i < runs; i++)); do
+    s=$(date +%s%N); o=$("$BIN" $args --solver "$solver" --stats); e=$(date +%s%N)
+    wall_ns=$((wall_ns + e - s))
+    searches+=("$(grep -o 'time=[0-9.]*' <<< "$o" | head -1 | cut -d= -f2)")
+  done
+  mean=$(awk -v t="$wall_ns" -v n="$runs" 'BEGIN { printf "%.4f", t / n / 1e9 }')
+  search=$(printf '%s\n' "${searches[@]}" | sort -g | awk '{ a[NR] = $1 } END { m = (NR % 2) ? a[(NR + 1) / 2] : (a[NR / 2] + a[NR / 2 + 1]) / 2; printf "%.6f", m }')
+  echo "search (median of $runs): ${B}${YE}${search}s${R}   ${D}wall mean ${mean}s${R}"
+  echo "$(date +%F),$commit,$profile,$solver,$id,$args,$mean,$nodes,$result,$search,$label" >> "$log"
   echo
 done
-echo "logged to $log"
+echo "${D}logged to $log${R}"
+python3 scripts/charts.py

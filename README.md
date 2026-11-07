@@ -12,6 +12,16 @@ Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal
 
 ---
 
+## 📈 Progress
+
+Search time for each optimization step (log scale, shorter is better). Full tables: [`results/BENCHMARKS.md`](results/BENCHMARKS.md).
+
+![B1](results/charts/B1.svg)
+![B2](results/charts/B2.svg)
+![B3](results/charts/B3.svg)
+
+---
+
 ## ⚡ Quick start
 
 **Braindead mode** — `./wr` builds automatically, you never call cargo yourself:
@@ -22,6 +32,8 @@ Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal
 ./wr count 3x3    # count all 3×3
 ./wr test         # tests
 ./wr bench        # benchmark suite (./wr bench B2 for one)
+./wr bench --label "my step"   # record an optimization step → charts
+./wr charts       # regenerate charts from results/bench-log.csv
 ./wr release      # benchmark with full release build (official numbers)
 ./wr info         # dictionary stats
 ./wr help
@@ -36,11 +48,12 @@ B=target/fast/wordrect
 
 $B info                              # words per length in the dictionary
 $B find  --rows 4 --cols 4 --stats   # first 4×4, with nodes / time
-$B count --rows 3 --cols 3 --stats   # exhaustive count (naive: ~9 s)
+$B count --rows 3 --cols 3 --stats   # exhaustive count (trie: ~0.08 s, naive: ~12 s)
+$B find  --rows 6 --cols 6 --solver naive   # pick a solver (default: trie)
 $B count --rows 3 --cols 3 --print   # list every solution
 
-cargo test                           # naive vs brute force, validator, transpose
-scripts/bench.sh                     # run B1–B3, append to results/bench-log.csv
+cargo test                           # naive vs brute force, trie vs naive, validator, transpose
+scripts/bench.sh                     # run B1–B3, append to results/bench-log.csv, redraw charts
 scripts/bench.sh B2 --runs 5         # one benchmark
 scripts/bench.sh --release           # official numbers (full LTO build, slower to compile)
 ```
@@ -55,9 +68,8 @@ Build profiles:
 
 Compile-speed tricks already in place: **zero dependencies**, linking with **lld** (`.cargo/config.toml`),
 incremental `fast` profile. `target-cpu=native` is set globally.
-Install `hyperfine` (`sudo pacman -S hyperfine`) for proper benchmark statistics.
 
-Current status: **M1 done** (naive solver + validator + tests). Next: M2 (trie + mask solver).
+Current status: **M2 done** (trie + mask solver, ~150× faster on B1). Next: M4 (compact trie) / M5 (smart ordering).
 
 ---
 
@@ -288,9 +300,9 @@ Each step gets its own entry in the [optimization journal](#16-optimization-jour
 - [x] Measure it. It will be slow. That's the point; it's the reference for correctness and speed.
 
 ### Level 1: tries and masks
-- [ ] Per-length tries with 26-bit child masks.
-- [ ] Cell-by-cell search (§7).
-- [ ] Iterate letters via `trailing_zeros` + `x & (x - 1)`.
+- [x] Per-length tries with 26-bit child masks.
+- [x] Cell-by-cell search (§7).
+- [x] Iterate letters via `trailing_zeros` + `x & (x - 1)`.
 
 ### Level 2: memory layout
 - [ ] Store nodes in one flat `Vec`, in **BFS order**, so nodes at the same depth sit close together in memory.
@@ -350,9 +362,13 @@ Target suite (once the trie solver exists):
 
 | ID | Task | Naive time |
 |---|---|---|
-| `B1` | `count --rows 3 --cols 3` | ~9 s |
+| `B1` | `count --rows 3 --cols 3` | ~12 s |
 | `B2` | `find --rows 5 --cols 6` | ~2.4 s |
-| `B3` | `find --rows 6 --cols 6` | ~5.4 s |
+| `B3` | `find --rows 6 --cols 6` | ~5.7 s |
+
+Every run is appended to `results/bench-log.csv` (`search_s` = median search time, dictionary load
+excluded; `label` = optimization step). `scripts/charts.py` turns it into `results/charts/*.svg` and
+[`results/BENCHMARKS.md`](results/BENCHMARKS.md). Workflow for each step: see `CLAUDE.md`.
 
 Pick sizes so that `B1`–`B3` take **≤ 2 seconds** on the current version. When the code gets faster, add a bigger size instead of letting runs drop to microseconds.
 
@@ -399,22 +415,28 @@ word-rectangle-solver/
 │   ├── enable.txt
 │   └── HASHES.txt
 ├── scripts/
-│   └── bench.sh         ← benchmark suite → results/bench-log.csv
+│   ├── bench.sh         ← benchmark suite → results/bench-log.csv
+│   └── charts.py        ← bench-log.csv → charts/*.svg + BENCHMARKS.md
 ├── src/
 │   ├── main.rs          ← CLI
 │   ├── lib.rs
 │   ├── dict.rs          ← loading, cleaning, splitting by length
 │   ├── naive.rs         ← reference implementation (never optimize this)
+│   ├── trie.rs          ← per-length trie with child masks
+│   ├── search.rs        ← trie + mask cell-by-cell solver
 │   └── validate.rs      ← independent checker
 ├── tests/
-│   └── small_dicts.rs
+│   ├── small_dicts.rs
+│   └── cross_check.rs   ← every solver must match naive
 └── results/
     ├── records.md
     ├── journal.md
-    └── bench-log.csv
+    ├── bench-log.csv    ← every benchmark run ever (source of truth)
+    ├── BENCHMARKS.md    ← generated tables
+    └── charts/          ← generated SVG charts
 ```
 
-Planned: `src/trie.rs`, `src/search.rs`, `src/parallel.rs`, `benches/`, `tests/cross_check.rs`.
+Planned: `src/parallel.rs`, `benches/`.
 
 ---
 
@@ -446,7 +468,7 @@ Output always includes the dictionary fingerprint, the ruleset, the solver, and 
 | # | Milestone | Done when |
 |---|---|---|
 | M1 | Naive solver | Finds a 3×3 and a 4×4; validator passes ✅ |
-| M2 | Trie + mask solver | Same counts as naive on all small sizes; first big speedup recorded |
+| M2 | Trie + mask solver | Same counts as naive on all small sizes; first big speedup recorded ✅ |
 | M3 | Benchmark harness | `B1`–`B3` scripted with hyperfine; journal started (started ✅) |
 | M4 | Compact trie | Lower memory and faster `B2` |
 | M5 | Smart ordering + forward checking | Big drop in **nodes visited** |
