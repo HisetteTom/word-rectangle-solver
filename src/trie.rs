@@ -110,8 +110,6 @@ impl Trie {
 pub struct CNode {
     pub mask: u32,
     pub first: u32,
-    /// letters at depth + 2 (union of the children's masks)
-    pub next: u32,
 }
 
 /// Same trie as `Trie` (same indices) with 8-byte nodes: half the cache footprint.
@@ -122,7 +120,7 @@ pub struct CTrie {
 
 impl CTrie {
     pub fn new(t: &Trie) -> CTrie {
-        CTrie { nodes: t.nodes.iter().map(|n| CNode { mask: n.mask, first: n.first, next: n.next }).collect() }
+        CTrie { nodes: t.nodes.iter().map(|n| CNode { mask: n.mask, first: n.first }).collect() }
     }
 
     #[inline(always)]

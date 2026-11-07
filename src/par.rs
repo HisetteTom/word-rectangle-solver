@@ -109,7 +109,7 @@ impl<'a> Worker<'a> {
             }
             k.count_sym(r, c, row, &mut colv, &mut nodes, &mut row0)
         } else {
-            k.count(r, c, row, &mut colv, &mut nodes, !0, !0)
+            k.count(r, c, row, &mut colv, &mut nodes, !0)
         };
         self.nodes += nodes;
         total
@@ -225,7 +225,7 @@ impl<const W: usize> Kernel<'_, W> {
             colv[c] = self.ct.step(col, l);
             let (nr, nc, nrow) = if c == (W - 1) { (r + 1, 0, self.rt.node(0)) } else { (r, c + 1, self.rt.step(row, l)) };
             total += if tie_cell && l > w {
-                2 * self.count(nr, nc, nrow, colv, nodes, !0, !0)
+                2 * self.count(nr, nc, nrow, colv, nodes, !0)
             } else {
                 self.count_sym(nr, nc, nrow, colv, nodes, row0)
             };
@@ -295,7 +295,7 @@ impl<const W: usize> Kernel<'_, W> {
     /// `f` = forward mask of the *next* row (r + 1) at position c - 1: the letters a row word can
     /// have there, given what the columns already force on positions 0..c-1 of row r + 1
     /// (any superset is valid, e.g. `!0`). Unused at c == 0.
-    fn count(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, g: u32) -> u64 {
+    fn count(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32) -> u64 {
         if r == self.last_r {
             // Last row: columns only need their masks (their children are never used).
             let mut masks = [0u32; W];
@@ -309,9 +309,6 @@ impl<const W: usize> Kernel<'_, W> {
         let mut allowed = row.mask & col.mask;
         // letters row r + 1 could have at position c, before this cell's column constraint
         let base = if c == 0 { self.rt.node(0).mask } else { self.uni(c - 1, f) };
-        // same for row r + 2, through the column nodes' `next` (letters two rows down)
-        let two = r + 2 <= self.last_r;
-        let base2 = if !two { !0 } else if c == 0 { self.rt.node(0).mask } else { self.uni(c - 1, g) };
         if c == (W - 1) {
             // the letter completes this row: next cell is (r + 1, 0) with a fresh row
             let root = self.rt.node(0);
@@ -320,11 +317,11 @@ impl<const W: usize> Kernel<'_, W> {
                 let l = allowed.trailing_zeros();
                 allowed &= allowed - 1;
                 let cn = self.ct.step(col, l);
-                if base & cn.mask == 0 || (two && base2 & cn.next == 0) {
-                    continue; // next rows can't fit the columns
+                if base & cn.mask == 0 {
+                    continue; // next row can't fit the columns
                 }
                 colv[c] = cn;
-                total += self.count(r + 1, 0, root, colv, nodes, !0, !0);
+                total += self.count(r + 1, 0, root, colv, nodes, !0);
             }
             colv[c] = col;
             return total;
@@ -337,12 +334,11 @@ impl<const W: usize> Kernel<'_, W> {
             good &= good - 1;
             let cn = self.ct.step(col, l);
             let fc = base & cn.mask;
-            let gc = if two { base2 & cn.next } else { !0 };
-            if fc == 0 || gc == 0 {
-                continue; // next rows can't fit the columns
+            if fc == 0 {
+                continue; // next row can't fit the columns
             }
             colv[c] = cn;
-            total += self.count(r, c + 1, self.rt.step(row, l), colv, nodes, fc, gc);
+            total += self.count(r, c + 1, self.rt.step(row, l), colv, nodes, fc);
         }
         colv[c] = col;
         total
