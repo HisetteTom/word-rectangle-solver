@@ -351,3 +351,19 @@ Node counts are unchanged.
 | B13 no 5×10 | 3.53 s | 3.19 s | 1.11× |
 
 **Verdict:** kept. Every benchmark improves (5–14%, B8 more).
+
+### 2026-11-07: throttled stop check in `search` (`d8a5b29`) ✅
+
+**Idea:** `search` loaded the shared `best` atomic (through `stop()`) and tested the node budget at
+every node. Now both are checked only when `nodes % 256 == 0`. Results stay deterministic: the
+lowest job index still wins, and a job only aborts a little later. Counts don't use `search`.
+
+| Benchmark | Before (const-generic) | After | Change |
+|---|---|---|---|
+| B7 find 7×7 | 0.370 s | 0.313 s | 1.18× (noisy) |
+| B9 find 5×9 | 0.608 s | 0.606 s | ≈ |
+| B12 find 6×8 | 3.41 s | 3.18 s | 1.07× |
+| B13 no 5×10 | 3.19 s | 2.96 s | **1.08×** |
+| counts | — | — | ≈ (untouched) |
+
+**Verdict:** kept. B13, the cleanest find measurement (exhaustive, no early exit), gains 8%.

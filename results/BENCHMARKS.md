@@ -27,6 +27,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 3.47 ms | 3,419× | 1.00× | 1,049,457 | solutions=1909732 |
 | last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 3.82 ms | 3,101× | 0.91× | 1,049,457 | solutions=1909732 |
 | const-generic width | `1f12ee3` | 2026-11-07 | fast | 3.24 ms | 3,656× | 1.18× | 1,049,457 | solutions=1909732 |
+| throttled stop check | `d8a5b29` | 2026-11-07 | fast | 3.72 ms | 3,185× | 0.87× | 1,049,457 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -49,6 +50,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 510 µs | 4,588× | 0.69× | 12,444 | found |
 | last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 552 µs | 4,239× | 0.92× | 12,381 | found |
 | const-generic width | `1f12ee3` | 2026-11-07 | fast | 492 µs | 4,756× | 1.12× | 12,444 | found |
+| throttled stop check | `d8a5b29` | 2026-11-07 | fast | 340 µs | 6,882× | 1.45× | 12,444 | found |
 
 ## B3 · find first 6×6
 
@@ -71,6 +73,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 977 µs | 5,786× | 0.73× | 26,012 | found |
 | last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 967 µs | 5,846× | 1.01× | 26,011 | found |
 | const-generic width | `1f12ee3` | 2026-11-07 | fast | 896 µs | 6,309× | 1.08× | 26,012 | found |
+| throttled stop check | `d8a5b29` | 2026-11-07 | fast | 909 µs | 6,219× | 0.99× | 26,012 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -92,6 +95,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 508 ms | 73.9× | 1.02× | 559,509,989 | solutions=136245247 |
 | last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 525 ms | 71.5× | 0.97× | 559,509,989 | solutions=136245247 |
 | const-generic width | `1f12ee3` | 2026-11-07 | fast | 486 ms | 77.3× | 1.08× | 559,509,989 | solutions=136245247 |
+| throttled stop check | `d8a5b29` | 2026-11-07 | fast | 488 ms | 76.9× | 1.00× | 559,509,989 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -113,6 +117,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 4.14 s | 37.0× | 1.02× | 3,364,600,156 | solutions=114846713 |
 | last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 4.17 s | 36.7× | 0.99× | 3,364,600,156 | solutions=114846713 |
 | const-generic width | `1f12ee3` | 2026-11-07 | fast | 3.89 s | 39.4× | 1.07× | 3,364,600,156 | solutions=114846713 |
+| throttled stop check | `d8a5b29` | 2026-11-07 | fast | 3.89 s | 39.4× | 1.00× | 3,364,600,156 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -134,6 +139,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 335 ms | 48.7× | 1.02× | 182,615,542 | solutions=4453472 |
 | last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 340 ms | 48.0× | 0.98× | 182,615,542 | solutions=4453472 |
 | const-generic width | `1f12ee3` | 2026-11-07 | fast | 326 ms | 50.0× | 1.04× | 182,615,542 | solutions=4453472 |
+| throttled stop check | `d8a5b29` | 2026-11-07 | fast | 324 ms | 50.4× | 1.01× | 182,615,542 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -155,6 +161,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 413 ms | 12.2× | 1.06× | 56,870,056 | found |
 | last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 408 ms | 12.3× | 1.01× | 55,190,603 | found |
 | const-generic width | `1f12ee3` | 2026-11-07 | fast | 370 ms | 13.6× | 1.10× | 54,535,752 | found |
+| throttled stop check | `d8a5b29` | 2026-11-07 | fast | 313 ms | 16.0× | 1.18× | 55,604,492 | found |
 
 ## B8 · find first 6×7
 
@@ -176,6 +183,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 354 ms | 11.4× | 1.17× | 45,624,156 | found |
 | last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 467 ms | 8.65× | 0.76× | 45,614,993 | found |
 | const-generic width | `1f12ee3` | 2026-11-07 | fast | 282 ms | 14.3× | 1.66× | 45,679,334 | found |
+| throttled stop check | `d8a5b29` | 2026-11-07 | fast | 294 ms | 13.7× | 0.96× | 46,420,838 | found |
 
 ## B9 · find first 5×9
 
@@ -197,6 +205,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 691 ms | 34.5× | 1.08× | 237,653,498 | found |
 | last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 709 ms | 33.6× | 0.97× | 237,573,187 | found |
 | const-generic width | `1f12ee3` | 2026-11-07 | fast | 608 ms | 39.1× | 1.17× | 238,417,829 | found |
+| throttled stop check | `d8a5b29` | 2026-11-07 | fast | 606 ms | 39.3× | 1.00× | 239,671,344 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -211,6 +220,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 13.8 s | 2.21× | 1.04× | 9,533,780,804 | solutions=80364530 |
 | last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 13.8 s | 2.23× | 1.01× | 9,533,780,804 | solutions=80364530 |
 | const-generic width | `1f12ee3` | 2026-11-07 | fast | 12.5 s | 2.45× | 1.10× | 9,533,780,804 | solutions=80364530 |
+| throttled stop check | `d8a5b29` | 2026-11-07 | fast | 12.6 s | 2.43× | 0.99× | 9,533,780,804 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -225,6 +235,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 7.43 s | 1.28× | 1.03× | 4,952,123,756 | solutions=37812638 |
 | last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 7.44 s | 1.28× | 1.00× | 4,952,123,756 | solutions=37812638 |
 | const-generic width | `1f12ee3` | 2026-11-07 | fast | 7.01 s | 1.35× | 1.06× | 4,952,123,756 | solutions=37812638 |
+| throttled stop check | `d8a5b29` | 2026-11-07 | fast | 6.94 s | 1.37× | 1.01× | 4,952,123,756 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -239,6 +250,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 3.74 s | 1.36× | 1.04× | 1,514,358,809 | found |
 | last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 3.73 s | 1.37× | 1.00× | 1,514,240,914 | found |
 | const-generic width | `1f12ee3` | 2026-11-07 | fast | 3.41 s | 1.50× | 1.09× | 1,514,323,680 | found |
+| throttled stop check | `d8a5b29` | 2026-11-07 | fast | 3.18 s | 1.60× | 1.07× | 1,514,229,284 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -253,3 +265,4 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | compact column trie | `86cf07a` | 2026-11-07 | fast | 3.53 s | 1.40× | 1.04× | 1,432,485,110 | no solution: 5x10 exhausted |
 | last-row search (failed) | `ddbf60b` | 2026-11-07 | fast | 3.61 s | 1.37× | 0.98× | 1,432,466,342 | no solution: 5x10 exhausted |
 | const-generic width | `1f12ee3` | 2026-11-07 | fast | 3.19 s | 1.55× | 1.13× | 1,432,485,110 | no solution: 5x10 exhausted |
+| throttled stop check | `d8a5b29` | 2026-11-07 | fast | 2.96 s | 1.67× | 1.08× | 1,432,485,237 | no solution: 5x10 exhausted |
