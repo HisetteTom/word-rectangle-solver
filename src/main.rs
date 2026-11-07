@@ -16,7 +16,7 @@ USAGE:
 
 OPTIONS:
   --dict PATH      dictionary file          [default: dicts/enable.txt]
-  --solver NAME    solver to use            [default: mrv]  (available: mrv, trie, naive)
+  --solver NAME    solver to use            [default: trie]  (available: trie, naive)
   --stats          print nodes visited, nodes/sec, time
   --print          (count) print every solution found
   -h, --help       show this help
