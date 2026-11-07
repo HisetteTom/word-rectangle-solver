@@ -26,3 +26,12 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,d3df964,fast,trie,B7,find --rows 7 --cols 7,4.1752,141510783,found,3.958462,compact trie
 2026-11-07,d3df964,fast,trie,B8,find --rows 6 --cols 7,3.4478,117670090,found,3.266707,compact trie
 2026-11-07,d3df964,fast,trie,B9,find --rows 5 --cols 9,17.9596,604041773,found,17.752741,compact trie
+2026-11-07,072145f,fast,mrv,B1,count --rows 3 --cols 3,0.2549,4063089,solutions=1909732,0.090748,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B2,find --rows 5 --cols 6,0.1836,67477,found,0.002603,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B3,find --rows 6 --cols 6,0.1875,12263,found,0.000535,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B4,count --rows 4 --cols 4,37.9566,1232007295,solutions=136245247,37.801943,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B5,count --rows 4 --cols 5,188.9375,5745769138,solutions=114846713,188.768326,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B6,count --rows 3 --cols 7,25.9799,799291031,solutions=4453472,25.802075,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B7,find --rows 7 --cols 7,8.0715,214037348,found,7.891566,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B8,find --rows 6 --cols 7,6.5325,173754350,found,6.355779,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B9,find --rows 5 --cols 9,62.9769,1819147498,found,62.783765,staircase MRV (failed)

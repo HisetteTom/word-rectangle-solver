@@ -71,3 +71,24 @@ BFS order so a node's children are contiguous and sorted by letter, child = `fir
 **Verdict:** kept. Modest, as expected: tries for 4–5 letter words were already small enough to sit in cache;
 bigger words (7, 9 letters) gain most. Big wins must now come from **visiting fewer nodes** (Level 3:
 smarter cell order / forward checking), not from faster nodes.
+
+### 2026-11-07: Level 3 — staircase MRV + frontier forward checking (`072145f`) ❌ reverted
+
+**Idea:** a cell is fillable once its row prefix and column prefix are filled, so fillable cells are the
+corners of a staircase. At each node: if any frontier cell has `row_mask & col_mask == 0`, prune; otherwise
+branch on the frontier cell with the fewest legal letters (classic "most constrained variable first").
+
+| Benchmark | Before (compact trie) | After (MRV) | Change |
+|---|---|---|---|
+| B1 count 3×3 | 73.9 ms | 90.7 ms | 0.81× (slower) |
+| B3 find 6×6 | 1.41 ms | 0.54 ms | 2.6× (lucky: different first solution) |
+| B4 count 4×4 | 33.7 s | 37.8 s | 0.89× — nodes −14% but each node costs more |
+| B5 count 4×5 | 129.8 s | 188.8 s | 0.69× |
+| B6 count 3×7 | 12.7 s | 25.8 s | 0.49× |
+| B9 find 5×9 | 17.8 s | 62.8 s | 0.28× — 3× more nodes |
+
+**Verdict:** reverted. Letter count of a *single cell* is a bad proxy for subtree size: picking a cell with
+few letters often commits to a deep, wide subtree. Row-major order already prunes very well because each
+row is walked inside one trie (prefix sharing). The frontier check almost never fires: trie nodes below
+full depth always have children. Lesson: ordering heuristics need a better cost estimate (e.g. word
+counts under the nodes), not raw popcount.
