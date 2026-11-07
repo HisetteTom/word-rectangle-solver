@@ -34,6 +34,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 3.13 ms | 3,789× | 0.94× | 994,996 | solutions=1909732 |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 3.37 ms | 3,517× | 0.93× | 994,996 | solutions=1909732 |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 3.46 ms | 3,428× | 0.97× | 994,996 | solutions=1909732 |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 3.35 ms | 3,540× | 1.03× | 994,996 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -63,6 +64,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 392 µs | 5,969× | 1.12× | 7,220 | found |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 398 µs | 5,879× | 0.98× | 7,220 | found |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 404 µs | 5,792× | 0.99× | 7,220 | found |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 390 µs | 6,000× | 1.04× | 7,220 | found |
 
 ## B3 · find first 6×6
 
@@ -92,6 +94,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 603 µs | 9,374× | 0.89× | 12,839 | found |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 614 µs | 9,206× | 0.98× | 12,839 | found |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 601 µs | 9,406× | 1.02× | 12,839 | found |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 593 µs | 9,533× | 1.01× | 12,839 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -120,6 +123,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 452 ms | 83.0× | 1.06× | 397,315,658 | solutions=136245247 |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 443 ms | 84.7× | 1.02× | 397,275,206 | solutions=136245247 |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 434 ms | 86.6× | 1.02× | 397,315,658 | solutions=136245247 |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 437 ms | 85.8× | 0.99× | 397,315,658 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -148,6 +152,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 3.36 s | 45.5× | 1.08× | 2,142,627,416 | solutions=114846713 |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 3.40 s | 45.0× | 0.99× | 2,142,095,698 | solutions=114846713 |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 3.25 s | 47.0× | 1.04× | 2,142,627,416 | solutions=114846713 |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 3.26 s | 47.0× | 1.00× | 2,142,627,416 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -176,6 +181,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 250 ms | 65.1× | 1.07× | 132,592,160 | solutions=4453472 |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 259 ms | 62.9× | 0.97× | 132,592,160 | solutions=4453472 |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 258 ms | 63.2× | 1.00× | 132,592,160 | solutions=4453472 |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 247 ms | 66.0× | 1.04× | 132,592,160 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -204,6 +210,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 286 ms | 17.6× | 0.92× | 35,683,279 | found |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 294 ms | 17.1× | 0.97× | 35,657,392 | found |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 432 ms | 11.6× | 0.68× | 36,737,933 | found |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 300 ms | 16.8× | 1.44× | 35,926,381 | found |
 
 ## B8 · find first 6×7
 
@@ -232,6 +239,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 256 ms | 15.8× | 0.92× | 31,520,070 | found |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 394 ms | 10.2× | 0.65× | 31,084,090 | found |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 408 ms | 9.88× | 0.96× | 31,333,531 | found |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 231 ms | 17.5× | 1.77× | 31,362,556 | found |
 
 ## B9 · find first 5×9
 
@@ -260,6 +268,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 517 ms | 46.0× | 0.97× | 157,551,855 | found |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 549 ms | 43.4× | 0.94× | 157,549,514 | found |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 538 ms | 44.2× | 1.02× | 157,538,338 | found |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 534 ms | 44.6× | 1.01× | 157,771,656 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -281,6 +290,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 10.4 s | 2.93× | 1.15× | 5,393,001,298 | solutions=80364530 |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 10.8 s | 2.83× | 0.97× | 5,151,710,138 | solutions=80364530 |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 10.3 s | 2.97× | 1.05× | 5,393,001,298 | solutions=80364530 |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 10.3 s | 2.97× | 1.00× | 5,393,001,298 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -302,6 +312,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 5.81 s | 1.63× | 1.13× | 3,243,793,909 | solutions=37812638 |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 5.93 s | 1.60× | 0.98× | 3,242,807,579 | solutions=37812638 |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 5.85 s | 1.62× | 1.01× | 3,243,793,909 | solutions=37812638 |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 5.69 s | 1.67× | 1.03× | 3,243,793,909 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -323,6 +334,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 2.49 s | 2.05× | 1.03× | 1,009,874,380 | found |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 2.56 s | 1.99× | 0.97× | 1,009,822,614 | found |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 2.47 s | 2.07× | 1.04× | 1,009,905,272 | found |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 2.43 s | 2.10× | 1.01× | 1,009,922,905 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -344,6 +356,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | next-row forward check | `022d173` | 2026-11-07 | fast | 2.53 s | 1.95× | 1.05× | 976,239,922 | no solution: 5x10 exhausted |
 | two-rows-ahead check (failed) | `bd0c975` | 2026-11-07 | fast | 2.49 s | 1.98× | 1.02× | 976,239,922 | no solution: 5x10 exhausted |
 | branch-free forward check (failed) | `1a4c1f0` | 2026-11-07 | fast | 2.54 s | 1.95× | 0.98× | 976,239,922 | no solution: 5x10 exhausted |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 2.57 s | 1.92× | 0.99× | 976,239,922 | no solution: 5x10 exhausted |
 
 ## B14 · count all 6×4 (exhaustive)
 
@@ -352,3 +365,4 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
 |---|---|---|---|---:|---:|---:|---:|---|
 | B14 baseline (tall count) | `c539608` | 2026-11-07 | fast | 14.3 s | — | — | 7,691,811,606 | solutions=37812638 |
+| tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 5.69 s | 2.51× | 2.51× | 3,243,793,909 | solutions=37812638 |

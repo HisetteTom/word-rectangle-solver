@@ -254,3 +254,17 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,1a4c1f0,fast,par,B12,find --rows 6 --cols 8,2.5948,1009905272,found,2.467877,branch-free forward check (failed)
 2026-11-07,1a4c1f0,fast,par,B13,find --rows 5 --cols 10,2.6686,976239922,no solution: 5x10 exhausted,2.536136,branch-free forward check (failed)
 2026-11-07,c539608,fast,par,B14,count --rows 6 --cols 4,14.4519,7691811606,solutions=37812638,14.288183,B14 baseline (tall count)
+2026-11-07,e9dd7bb,fast,par,B1,count --rows 3 --cols 3,0.1588,994996,solutions=1909732,0.003348,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B2,find --rows 5 --cols 6,0.1880,7220,found,0.000390,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B3,find --rows 6 --cols 6,0.1860,12839,found,0.000593,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B4,count --rows 4 --cols 4,0.5987,397315658,solutions=136245247,0.437322,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B5,count --rows 4 --cols 5,3.4016,2142627416,solutions=114846713,3.256101,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B6,count --rows 3 --cols 7,0.3426,132592160,solutions=4453472,0.247161,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B7,find --rows 7 --cols 7,0.3988,35926381,found,0.299745,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B8,find --rows 6 --cols 7,0.3334,31362556,found,0.230518,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B9,find --rows 5 --cols 9,0.6728,157771656,found,0.533910,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B10,count --rows 5 --cols 5,10.3913,5393001298,solutions=80364530,10.304604,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B11,count --rows 4 --cols 6,5.7792,3243793909,solutions=37812638,5.687176,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B12,find --rows 6 --cols 8,2.5365,1009922905,found,2.434040,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B13,find --rows 5 --cols 10,2.6929,976239922,no solution: 5x10 exhausted,2.570258,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B14,count --rows 6 --cols 4,5.7804,3243793909,solutions=37812638,5.686319,tall grids transposed

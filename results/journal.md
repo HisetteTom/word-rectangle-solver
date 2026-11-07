@@ -523,3 +523,28 @@ pre-filter was 3–4% slower everywhere and wasn't kept even in the experiment.
 
 **Verdict:** reverted as noise. Few letters survive `good()`, so the extra column step for every
 candidate costs about as much as the mispredictions it removes.
+
+### 2026-11-07: tall grids transposed (`e9dd7bb`) ✅ kept, new benchmark B14
+
+**Idea:** an R×C rectangle transposed is a C×R rectangle with the word lists swapped, so both
+have the same count. Row-major search is much cheaper with **few long rows**: long rows give the
+row look-ahead (`next`, `next2`) and the bigram forward check more to prune, and the job split
+stays in row 0. Measured at "next-row forward check":
+
+| Shape | nodes | time | Transposed | nodes | time |
+|---|---|---|---|---|---|
+| 6×4 | 7.69 G | 14.1 s | 4×6 | 3.24 G | 5.9 s |
+| 5×4 | 3.16 G | 5.15 s | 4×5 | 2.14 G | 3.21 s |
+| 7×3 | 484 M | 0.83 s | 3×7 | 133 M | 0.25 s |
+| 8×6 find | 5.08 G | 11.6 s | 6×8 find | 1.01 G | 2.5 s |
+
+So `count` on a tall grid (rows > cols) now runs the transposed search. `find` keeps its
+orientation, because its answer must be the row-major lexicographically first grid (tests pin it
+to naive's answer). New benchmark **B14 = count 6×4**, with a baseline bar recorded first.
+
+| Benchmark | Before | After | Change |
+|---|---|---|---|
+| B14 count 6×4 | 14.29 s · 7.69 G nodes | 5.69 s · 3.24 G | **2.51×** |
+| others | | | unchanged (noise) |
+
+**Verdict:** kept.
