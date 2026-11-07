@@ -3,6 +3,7 @@
 //! For the next cell (row-major), the legal letters are
 //! `row_trie.mask(row_state[r]) & col_trie.mask(col_state[c])`.
 //! "nodes" = calls to `search` = cells tried, NOT comparable to naive's nodes.
+//! In count mode the last cell is counted with a popcount, not visited (fewer nodes).
 
 use crate::trie::Trie;
 use crate::{Grid, Solver, Stats};
@@ -67,6 +68,30 @@ impl TrieSearch {
         self.col_state[c] = col_node;
         keep_going
     }
+
+    /// Counting-only search: no grid writes, no callback, and the last cell is not
+    /// recursed into — its number of completions is just `popcount(allowed)`.
+    fn count_rec(&mut self, cell: usize) -> u64 {
+        self.stats.nodes += 1;
+        let (r, c) = (cell / self.cols, cell % self.cols);
+        let row_node = self.row_state[r];
+        let col_node = self.col_state[c];
+        let mut allowed = self.row_trie.mask(row_node) & self.col_trie.mask(col_node);
+        if cell + 1 == self.rows * self.cols {
+            return allowed.count_ones() as u64;
+        }
+        let mut total = 0;
+        while allowed != 0 {
+            let letter = allowed.trailing_zeros() as usize;
+            allowed &= allowed - 1;
+            self.row_state[r] = self.row_trie.child(row_node, letter);
+            self.col_state[c] = self.col_trie.child(col_node, letter);
+            total += self.count_rec(cell + 1);
+        }
+        self.row_state[r] = row_node;
+        self.col_state[c] = col_node;
+        total
+    }
 }
 
 impl Solver for TrieSearch {
@@ -80,7 +105,7 @@ impl Solver for TrieSearch {
     }
 
     fn count(&mut self) -> u64 {
-        self.search(0, &mut |_: &Self| true);
+        self.stats.solutions = self.count_rec(0);
         self.stats.solutions
     }
 
