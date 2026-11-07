@@ -410,3 +410,21 @@ arrays, `'enter` + backtrack loop) to avoid call overhead and register spills.
 
 **Verdict:** reverted. The recursive version keeps `row`, `col` and `allowed` in registers, and
 LLVM's calls are cheap. The explicit stacks add loads and stores and a harder-to-predict control flow.
+
+### 2026-11-07: PGO (profile-guided optimization) — tried, no gain (no code change, no bench bar)
+
+**Idea:** the kernel is branchy with data-dependent trip counts, so let LLVM lay out code from real
+profiles. Steps: `-Cprofile-generate` build, trained on count 3×3/4×4/3×7/4×5 and find
+6×6/7×7/5×9/6×8, then `llvm-profdata merge` and a `-Cprofile-use` build (rustc and llvm-profdata are both LLVM 23).
+
+| Run (release LTO vs release + PGO) | release | PGO |
+|---|---|---|
+| count 4×5 | 3.52–3.62 s | 3.42–3.51 s |
+| count 4×6 | 6.10–6.15 s | 6.03–6.32 s |
+| count 4×4 | 0.487–0.499 s | 0.487–0.510 s |
+| find 5×10 (exhaustive) | 2.71–2.87 s | 2.75–2.99 s |
+| find 6×8 | 2.60–2.83 s | 2.62–2.71 s |
+
+**Verdict:** dropped, within noise. Also, the instrumented binary took 5½ minutes to train, because
+22 threads contend on shared profile counters. The hot kernels are tiny and already well laid out,
+and release (LTO) ≈ fast here too.
