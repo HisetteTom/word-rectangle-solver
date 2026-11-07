@@ -12,7 +12,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 
 | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
 |---|---|---|---|---:|---:|---:|---:|---|
-| naive | `60c0927` | 2026-11-07 | fast | 11.85 s | — | — | 2,034,829 | solutions=1909732 |
+| naive | `60c0927` | 2026-11-07 | fast | 11.9 s | — | — | 2,034,829 | solutions=1909732 |
 | trie + masks | `60c0927` | 2026-11-07 | fast | 77.1 ms | 154× | 154× | 4,031,868 | solutions=1909732 |
 | compact trie | `d3df964` | 2026-11-07 | fast | 73.9 ms | 160× | 1.04× | 4,031,868 | solutions=1909732 |
 
@@ -42,8 +42,8 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 
 | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
 |---|---|---|---|---:|---:|---:|---:|---|
-| trie + masks | `166edb9` | 2026-11-07 | fast | 37.52 s | — | — | 1,435,800,420 | solutions=136245247 |
-| compact trie | `d3df964` | 2026-11-07 | fast | 33.66 s | 1.11× | 1.11× | 1,435,800,420 | solutions=136245247 |
+| trie + masks | `166edb9` | 2026-11-07 | fast | 37.5 s | — | — | 1,435,800,420 | solutions=136245247 |
+| compact trie | `d3df964` | 2026-11-07 | fast | 33.7 s | 1.11× | 1.11× | 1,435,800,420 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -51,8 +51,8 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 
 | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
 |---|---|---|---|---:|---:|---:|---:|---|
-| trie + masks | `166edb9` | 2026-11-07 | fast | 153.06 s | — | — | 5,169,522,478 | solutions=114846713 |
-| compact trie | `d3df964` | 2026-11-07 | fast | 129.83 s | 1.18× | 1.18× | 5,169,522,478 | solutions=114846713 |
+| trie + masks | `166edb9` | 2026-11-07 | fast | 153 s | — | — | 5,169,522,478 | solutions=114846713 |
+| compact trie | `d3df964` | 2026-11-07 | fast | 130 s | 1.18× | 1.18× | 5,169,522,478 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -60,8 +60,8 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 
 | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
 |---|---|---|---|---:|---:|---:|---:|---|
-| trie + masks | `166edb9` | 2026-11-07 | fast | 16.31 s | — | — | 489,739,310 | solutions=4453472 |
-| compact trie | `d3df964` | 2026-11-07 | fast | 12.66 s | 1.29× | 1.29× | 489,739,310 | solutions=4453472 |
+| trie + masks | `166edb9` | 2026-11-07 | fast | 16.3 s | — | — | 489,739,310 | solutions=4453472 |
+| compact trie | `d3df964` | 2026-11-07 | fast | 12.7 s | 1.29× | 1.29× | 489,739,310 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -87,5 +87,5 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 
 | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
 |---|---|---|---|---:|---:|---:|---:|---|
-| trie + masks | `166edb9` | 2026-11-07 | fast | 23.79 s | — | — | 604,041,773 | found |
-| compact trie | `d3df964` | 2026-11-07 | fast | 17.75 s | 1.34× | 1.34× | 604,041,773 | found |
+| trie + masks | `166edb9` | 2026-11-07 | fast | 23.8 s | — | — | 604,041,773 | found |
+| compact trie | `d3df964` | 2026-11-07 | fast | 17.8 s | 1.34× | 1.34× | 604,041,773 | found |

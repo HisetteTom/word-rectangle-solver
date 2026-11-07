@@ -3,7 +3,8 @@
 
 One horizontal bar chart per benchmark (SVG, renders on GitHub, follows light/dark).
 One bar per *label* (= one optimization step), oldest at the top, using the
-latest run of that label. Time axis is logarithmic, so 1000x speedups stay readable.
+latest run of that label. Time axis is logarithmic when steps span > 20x (so 1000x
+speedups stay readable), linear from 0 otherwise (so 1.2x gains stay visible).
 Speedup "x faster" is relative to the first step (the naive baseline).
 
 Usage: python3 scripts/charts.py      (bench.sh calls it automatically)
@@ -30,6 +31,10 @@ def describe(args: str) -> str:
 
 
 def fmt_time(s: float) -> str:
+    if s >= 100:
+        return f"{s:.0f} s"
+    if s >= 10:
+        return f"{s:.1f} s"
     if s >= 1:
         return f"{s:.2f} s"
     if s >= 1e-3:
@@ -39,10 +44,10 @@ def fmt_time(s: float) -> str:
 
 def fmt_tick(s: float) -> str:
     if s >= 1:
-        return f"{s:g} s"
+        return f"{s:.4g} s"
     if s >= 1e-3:
-        return f"{s * 1e3:g} ms"
-    return f"{s * 1e6:g} µs"
+        return f"{s * 1e3:.4g} ms"
+    return f"{s * 1e6:.4g} µs"
 
 
 def fmt_x(x: float) -> str:
@@ -80,14 +85,29 @@ def svg(bench: str, steps: list[dict]) -> str:
     height = top + row_h * len(steps) + 34
 
     times = [s["t"] for s in steps]
-    lo = 10 ** math.floor(math.log10(min(times)))
-    hi = 10 ** math.ceil(math.log10(max(times)))
-    if hi <= lo:
-        hi = lo * 10
-    span = math.log10(hi) - math.log10(lo)
+    # Wide range (> 20x): log scale with decade ticks. Narrow range: linear from 0,
+    # otherwise a 1.2x gain would be invisible.
+    log_scale = max(times) / min(times) > 20
+    if log_scale:
+        lo = 10 ** math.floor(math.log10(min(times)))
+        hi = 10 ** math.ceil(math.log10(max(times)))
+        span = math.log10(hi) - math.log10(lo)
+        ticks = [lo * 10**k for k in range(round(span) + 1)]
+
+        def frac(t: float) -> float:
+            return (math.log10(t) - math.log10(lo)) / span
+    else:
+        raw = max(times) / 4
+        mag = 10 ** math.floor(math.log10(raw))
+        step = next(m * mag for m in (1, 2, 2.5, 5, 10) if m * mag >= raw)
+        hi = step * math.ceil(max(times) / step)
+        ticks = [step * k for k in range(round(hi / step) + 1)]
+
+        def frac(t: float) -> float:
+            return t / hi
 
     def x(t: float) -> float:
-        return left + max(3.0, (math.log10(t) - math.log10(lo)) / span * plot_w)
+        return left + max(3.0, frac(t) * plot_w)
 
     base = times[0]
     best = min(times)
@@ -104,15 +124,12 @@ def svg(bench: str, steps: list[dict]) -> str:
 </style>""",
         f'<rect class="bg" width="{width}" height="{height}" rx="8"/>',
         f'<text class="t" x="20" y="30" font-size="17" font-weight="700">{escape(bench)} · {escape(describe(steps[0]["args"]))}</text>',
-        f'<text class="m" x="20" y="50" font-size="12">search time, log scale · shorter is better · speedup vs {escape(steps[0]["label"])}</text>',
+        f'<text class="m" x="20" y="50" font-size="12">search time{", log scale" if log_scale else ""} · shorter is better · speedup vs {escape(steps[0]["label"])}</text>',
     ]
-    # decade gridlines
-    d = math.log10(lo)
-    while d <= math.log10(hi) + 1e-9:
-        gx = left + (d - math.log10(lo)) / span * plot_w
+    for tv in ticks:
+        gx = left + frac(tv) * plot_w if tv > 0 else left
         out.append(f'<line class="g" x1="{gx:.1f}" x2="{gx:.1f}" y1="{top - 6}" y2="{height - 28}" stroke-dasharray="2 3"/>')
-        out.append(f'<text class="m" x="{gx:.1f}" y="{height - 12}" font-size="11" text-anchor="middle">{fmt_tick(round(10 ** d, 9))}</text>')
-        d += 1
+        out.append(f'<text class="m" x="{gx:.1f}" y="{height - 12}" font-size="11" text-anchor="middle">{fmt_tick(round(tv, 9)) if tv > 0 else "0"}</text>')
     for i, s in enumerate(steps):
         y = top + i * row_h
         cy = y + bar_h / 2 + 4
