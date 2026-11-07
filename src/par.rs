@@ -49,6 +49,8 @@ pub struct ParSearch {
     seq_budget: u64,
     /// Square with the same words for rows and columns: transposes of solutions are solutions.
     sym: bool,
+    /// Per position k of a row word: which letters can follow at k + 1 (see `Bigram`).
+    bigrams: Vec<Bigram>,
     stats: Stats,
 }
 
@@ -96,7 +98,7 @@ impl<'a> Worker<'a> {
         let s = self.s;
         let (r, c) = (cell / W, cell % W);
         let mut colv: [CNode; W] = std::array::from_fn(|i| s.col_trie.node(self.col_state[i]));
-        let k = Kernel::<W> { rt: &s.row_trie, ct: &s.col_trie, last_r: s.rows - 1 };
+        let k = Kernel::<W> { rt: &s.row_trie, bi: &s.bigrams, ct: &s.col_trie, last_r: s.rows - 1 };
         let mut nodes = 0;
         let row = s.row_trie.node(self.row_state[r]);
         let total = if s.sym {
@@ -107,7 +109,7 @@ impl<'a> Worker<'a> {
             }
             k.count_sym(r, c, row, &mut colv, &mut nodes, &mut row0)
         } else {
-            k.count(r, c, row, &mut colv, &mut nodes)
+            k.count(r, c, row, &mut colv, &mut nodes, !0)
         };
         self.nodes += nodes;
         total
@@ -125,14 +127,14 @@ impl<'a> Worker<'a> {
             return on(&self.grid);
         }
         let (r, c) = (cell / W, cell % W);
-        let k = Kernel::<W> { rt: &s.row_trie, ct: &s.col_trie, last_r: s.rows - 1 };
+        let k = Kernel::<W> { rt: &s.row_trie, bi: &s.bigrams, ct: &s.col_trie, last_r: s.rows - 1 };
         let mut st = SearchState::<W> {
             colv: std::array::from_fn(|i| s.col_trie.node(self.col_state[i])),
             grid: std::mem::take(&mut self.grid),
             nodes: self.nodes,
             limit: self.limit,
         };
-        let done = k.search(r, c, s.row_trie.node(self.row_state[r]), &mut st, on, stop);
+        let done = k.search(r, c, s.row_trie.node(self.row_state[r]), &mut st, on, stop, !0);
         self.grid = st.grid;
         self.nodes = st.nodes;
         done
@@ -144,6 +146,8 @@ impl<'a> Worker<'a> {
 /// the row state is a single node (finished rows are never needed again).
 struct Kernel<'t, const W: usize> {
     rt: &'t Trie,
+    /// `ParSearch::bigrams`
+    bi: &'t [Bigram],
     ct: &'t CTrie,
     last_r: usize,
 }
@@ -221,7 +225,7 @@ impl<const W: usize> Kernel<'_, W> {
             colv[c] = self.ct.step(col, l);
             let (nr, nc, nrow) = if c == (W - 1) { (r + 1, 0, self.rt.node(0)) } else { (r, c + 1, self.rt.step(row, l)) };
             total += if tie_cell && l > w {
-                2 * self.count(nr, nc, nrow, colv, nodes)
+                2 * self.count(nr, nc, nrow, colv, nodes, !0)
             } else {
                 self.count_sym(nr, nc, nrow, colv, nodes, row0)
             };
@@ -241,7 +245,9 @@ struct SearchState<const W: usize> {
 
 impl<const W: usize> Kernel<'_, W> {
     /// Same order as `count`, writes letters to the grid; false = stop.
-    fn search<F: FnMut(&[u8]) -> bool, S: Fn() -> bool>(&self, r: usize, c: usize, row: Node, st: &mut SearchState<W>, on: &mut F, stop: &S) -> bool {
+    /// `f`: forward mask of the next row, as in `count`.
+    #[allow(clippy::too_many_arguments)]
+    fn search<F: FnMut(&[u8]) -> bool, S: Fn() -> bool>(&self, r: usize, c: usize, row: Node, st: &mut SearchState<W>, on: &mut F, stop: &S, f: u32) -> bool {
         st.nodes += 1;
         if st.nodes & 255 == 0 && (st.nodes > st.limit || stop()) {
             return false;
@@ -253,22 +259,29 @@ impl<const W: usize> Kernel<'_, W> {
             let m = |k: usize| if k < W { st.colv[k].mask } else { !0 };
             allowed = self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3));
         }
+        let last_row = r == self.last_r;
+        // letters row r + 1 could have at position c (no next row in the last row)
+        let base = if last_row { !0 } else if c == 0 { self.rt.node(0).mask } else { self.uni(c - 1, f) };
         let cell = r * W + c;
         let mut keep_going = true;
         while allowed != 0 {
             let l = allowed.trailing_zeros();
             allowed &= allowed - 1;
             st.grid[cell] = b'a' + l as u8;
-            let ok = if c == (W - 1) {
-                if r == self.last_r {
-                    on(&st.grid)
-                } else {
-                    st.colv[c] = self.ct.step(col, l);
-                    self.search(r + 1, 0, self.rt.node(0), st, on, stop)
-                }
+            let ok = if last_row && c == W - 1 {
+                on(&st.grid)
             } else {
-                st.colv[c] = self.ct.step(col, l);
-                self.search(r, c + 1, self.rt.step(row, l), st, on, stop)
+                let cn = self.ct.step(col, l);
+                let fc = if last_row { !0 } else { base & cn.mask };
+                if fc == 0 {
+                    continue; // next row can't fit the columns
+                }
+                st.colv[c] = cn;
+                if c == W - 1 {
+                    self.search(r + 1, 0, self.rt.node(0), st, on, stop, !0)
+                } else {
+                    self.search(r, c + 1, self.rt.step(row, l), st, on, stop, fc)
+                }
             };
             if !ok {
                 keep_going = false;
@@ -279,7 +292,10 @@ impl<const W: usize> Kernel<'_, W> {
         keep_going
     }
 
-    fn count(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64) -> u64 {
+    /// `f` = forward mask of the *next* row (r + 1) at position c - 1: the letters a row word can
+    /// have there, given what the columns already force on positions 0..c-1 of row r + 1
+    /// (any superset is valid, e.g. `!0`). Unused at c == 0.
+    fn count(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32) -> u64 {
         if r == self.last_r {
             // Last row: columns only need their masks (their children are never used).
             let mut masks = [0u32; W];
@@ -291,18 +307,21 @@ impl<const W: usize> Kernel<'_, W> {
         *nodes += 1;
         let col = colv[c];
         let mut allowed = row.mask & col.mask;
+        // letters row r + 1 could have at position c, before this cell's column constraint
+        let base = if c == 0 { self.rt.node(0).mask } else { self.uni(c - 1, f) };
         if c == (W - 1) {
-            if r == self.last_r {
-                return allowed.count_ones() as u64; // each letter completes the grid
-            }
             // the letter completes this row: next cell is (r + 1, 0) with a fresh row
             let root = self.rt.node(0);
             let mut total = 0;
             while allowed != 0 {
                 let l = allowed.trailing_zeros();
                 allowed &= allowed - 1;
-                colv[c] = self.ct.step(col, l);
-                total += self.count(r + 1, 0, root, colv, nodes);
+                let cn = self.ct.step(col, l);
+                if base & cn.mask == 0 {
+                    continue; // next row can't fit the columns
+                }
+                colv[c] = cn;
+                total += self.count(r + 1, 0, root, colv, nodes, !0);
             }
             colv[c] = col;
             return total;
@@ -313,11 +332,23 @@ impl<const W: usize> Kernel<'_, W> {
         while good != 0 {
             let l = good.trailing_zeros();
             good &= good - 1;
-            colv[c] = self.ct.step(col, l);
-            total += self.count(r, c + 1, self.rt.step(row, l), colv, nodes);
+            let cn = self.ct.step(col, l);
+            let fc = base & cn.mask;
+            if fc == 0 {
+                continue; // next row can't fit the columns
+            }
+            colv[c] = cn;
+            total += self.count(r, c + 1, self.rt.step(row, l), colv, nodes, fc);
         }
         colv[c] = col;
         total
+    }
+
+    /// Letters a row word can have at position k + 1, given its letter at k is in `f`.
+    #[inline(always)]
+    fn uni(&self, k: usize, f: u32) -> u32 {
+        let t = &self.bi[k];
+        t[0][(f & 127) as usize] | t[1][((f >> 7) & 127) as usize] | t[2][((f >> 14) & 127) as usize] | t[3][((f >> 21) & 31) as usize]
     }
 
     /// Branch-free look-ahead filter: the letters of `allowed` whose row child can still match
@@ -339,6 +370,27 @@ impl<const W: usize> Kernel<'_, W> {
     }
 }
 
+/// Successor table for one position k: `t[chunk][v]` = letters that follow (at k + 1) some letter of
+/// the 7-bit chunk `v` (letters 7·chunk ..) at k. The union over any letter set `f` is 4 lookups.
+type Bigram = [[u32; 128]; 4];
+
+fn bigrams(words: &[String], len: usize) -> Vec<Bigram> {
+    let mut t = vec![[[0u32; 128]; 4]; len.max(1)];
+    for w in words {
+        let b = w.as_bytes();
+        for k in 0..len - 1 {
+            let (a, n) = ((b[k] - b'a') as usize, (b[k + 1] - b'a') as u32);
+            let (chunk, bit) = (a / 7, a % 7);
+            for v in 0..128 {
+                if v >> bit & 1 == 1 {
+                    t[k][chunk][v] |= 1 << n;
+                }
+            }
+        }
+    }
+    t
+}
+
 impl ParSearch {
     /// `threads == 0` = all available cores.
     pub fn new(rows: usize, cols: usize, row_words: &[String], col_words: &[String], threads: usize) -> Self {
@@ -356,6 +408,7 @@ impl ParSearch {
             threads,
             seq_budget: FIND_SEQ_BUDGET,
             sym: rows == cols && row_words == col_words,
+            bigrams: bigrams(row_words, cols),
             stats: Stats::default(),
         }
     }
