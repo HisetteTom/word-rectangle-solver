@@ -1,5 +1,6 @@
 pub mod dict;
 pub mod naive;
+pub mod par;
 pub mod search;
 pub mod trie;
 pub mod validate;
@@ -17,7 +18,7 @@ pub struct Stats {
 }
 
 /// Every solver, by CLI name. The first one is the default.
-pub const SOLVERS: &[&str] = &["trie", "naive"];
+pub const SOLVERS: &[&str] = &["par", "trie", "naive"];
 
 /// Build a solver by name. `row_words` have length `cols`, `col_words` length `rows`.
 pub fn make_solver<'a>(
@@ -30,6 +31,7 @@ pub fn make_solver<'a>(
     Some(match name {
         "naive" => Box::new(naive::Naive::new(rows, cols, row_words, col_words)),
         "trie" => Box::new(search::TrieSearch::new(rows, cols, row_words, col_words)),
+        "par" => Box::new(par::ParSearch::new(rows, cols, row_words, col_words, 0)),
         _ => return None,
     })
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Usage: scripts/bench.sh [all|quick|heavy|B<n>] [--release] [--solver NAME] [--runs N] [--label TEXT]
-#   default: all benchmarks, `fast` profile, trie solver (the CLI default).
+#   default: all benchmarks, `fast` profile, par solver (the CLI default).
 #   quick = B1–B3 (seconds): 1 warmup run (shown) + N timed runs (default 5).
 #   heavy = B4+ (minutes): ONE timed run each, no warmup.
 #   --release  : build with the full release profile (LTO), use for journal numbers.
@@ -19,7 +19,7 @@ else
   B= D= R= CY= GR= YE= RD=
 fi
 
-which_b=all; profile=fast; solver=trie; runs=5; label=
+which_b=all; profile=fast; solver=par; runs=5; label=
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --release) profile=release ;;

@@ -4,7 +4,8 @@
 use std::collections::HashSet;
 use wordrect::dict::Dict;
 use wordrect::validate::validate;
-use wordrect::{Grid, SOLVERS, make_solver};
+use wordrect::par::ParSearch;
+use wordrect::{Grid, SOLVERS, Solver, make_solver};
 
 fn optimized() -> impl Iterator<Item = &'static str> {
     SOLVERS.iter().copied().filter(|&s| s != "naive")
@@ -85,11 +86,14 @@ fn enable_3x3_count_and_finds_validate() {
 }
 
 #[test]
-fn row_major_trie_finds_same_first_solution_as_naive() {
+fn row_major_solvers_find_same_first_solution_as_naive() {
     // Both explore in lexicographic order, so the first grid must be identical.
     let d = Dict::load("dicts/enable.txt".as_ref()).unwrap();
     for (r, c) in [(3, 3), (3, 4), (4, 4)] {
-        assert_eq!(find("trie", &d, r, c), find("naive", &d, r, c), "size={r}x{c}");
+        let want = find("naive", &d, r, c);
+        for s in optimized() {
+            assert_eq!(find(s, &d, r, c), want, "solver={s} size={r}x{c}");
+        }
     }
 }
 
@@ -103,4 +107,19 @@ fn empty_and_tiny() {
         assert!(all(s, &d, 5, 5).is_empty(), "{s}: no words of that length");
         assert!(find(s, &d, 5, 5).is_none(), "{s}");
     }
+}
+
+#[test]
+fn par_parallel_find_path_is_deterministic() {
+    // seq budget 0 forces the multi-threaded path; must still return naive's first grid.
+    let d = Dict::load("dicts/enable.txt".as_ref()).unwrap();
+    for (r, c) in [(2, 2), (3, 3), (3, 4), (4, 4), (2, 6)] {
+        let want = find("naive", &d, r, c);
+        for threads in [1, 3, 0] {
+            let got = ParSearch::new(r, c, d.words(c), d.words(r), threads).with_seq_budget(0).find();
+            assert_eq!(got, want, "size={r}x{c} threads={threads}");
+        }
+    }
+    let d = Dict::from_words(["cat", "dog"]);
+    assert!(ParSearch::new(3, 3, d.words(3), d.words(3), 0).with_seq_budget(0).find().is_none());
 }
