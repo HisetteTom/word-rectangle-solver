@@ -20,6 +20,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 7.82 ms | 1,515× | 4.03× | 2,122,136 | solutions=1909732 |
 | DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 6.73 ms | 1,761× | 1.16× | 2,122,136 | solutions=1909732 |
 | DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 7.15 ms | 1,657× | 0.94× | 2,122,136 | solutions=1909732 |
+| by-value node kernel | `6da98c6` | 2026-11-07 | fast | 6.37 ms | 1,861× | 1.12× | 2,122,136 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -35,6 +36,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 732 µs | 3,197× | 0.98× | 22,841 | found |
 | DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 849 µs | 2,756× | 0.86× | 22,841 | found |
 | DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 811 µs | 2,885× | 1.05× | 22,841 | found |
+| by-value node kernel | `6da98c6` | 2026-11-07 | fast | 586 µs | 3,993× | 1.38× | 22,840 | found |
 
 ## B3 · find first 6×6
 
@@ -50,6 +52,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 1.51 ms | 3,736× | 0.95× | 49,782 | found |
 | DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 1.65 ms | 3,428× | 0.92× | 49,782 | found |
 | DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 1.64 ms | 3,449× | 1.01× | 49,782 | found |
+| by-value node kernel | `6da98c6` | 2026-11-07 | fast | 1.23 ms | 4,599× | 1.33× | 49,781 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -64,6 +67,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 1.48 s | 25.3× | 18.0× | 1,299,555,173 | solutions=136245247 |
 | DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 1.64 s | 22.9× | 0.90× | 1,299,555,173 | solutions=136245247 |
 | DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 2.46 s | 15.2× | 0.67× | 1,186,892,215 | solutions=136245247 |
+| by-value node kernel | `6da98c6` | 2026-11-07 | fast | 1.12 s | 33.6× | 2.21× | 1,299,555,173 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -78,6 +82,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 6.43 s | 23.8× | 18.7× | 5,054,675,765 | solutions=114846713 |
 | DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 6.89 s | 22.2× | 0.93× | 5,054,675,765 | solutions=114846713 |
 | DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 8.44 s | 18.1× | 0.82× | 5,005,168,405 | solutions=114846713 |
+| by-value node kernel | `6da98c6` | 2026-11-07 | fast | 4.84 s | 31.6× | 1.74× | 5,054,675,765 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -92,6 +97,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 628 ms | 26.0× | 19.3× | 485,285,838 | solutions=4453472 |
 | DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 735 ms | 22.2× | 0.85× | 485,285,838 | solutions=4453472 |
 | DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 721 ms | 22.6× | 1.02× | 485,285,838 | solutions=4453472 |
+| by-value node kernel | `6da98c6` | 2026-11-07 | fast | 484 ms | 33.7× | 1.49× | 485,285,838 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -106,6 +112,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 698 ms | 7.20× | 5.87× | 157,038,815 | found |
 | DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 608 ms | 8.27× | 1.15× | 157,586,299 | found |
 | DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 695 ms | 7.23× | 0.87× | 157,530,723 | found |
+| by-value node kernel | `6da98c6` | 2026-11-07 | fast | 462 ms | 10.9× | 1.50× | 159,127,185 | found |
 
 ## B8 · find first 6×7
 
@@ -120,6 +127,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 626 ms | 6.45× | 5.42× | 120,820,550 | found |
 | DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 594 ms | 6.80× | 1.05× | 120,691,906 | found |
 | DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 637 ms | 6.33× | 0.93× | 121,022,023 | found |
+| by-value node kernel | `6da98c6` | 2026-11-07 | fast | 394 ms | 10.2× | 1.62× | 120,902,270 | found |
 
 ## B9 · find first 5×9
 
@@ -134,3 +142,4 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | parallel 22 threads | `ecc8a36` | 2026-11-07 | fast | 1.06 s | 22.4× | 17.0× | 610,338,537 | found |
 | DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 1.14 s | 20.9× | 0.93× | 608,074,075 | found |
 | DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 1.14 s | 20.9× | 1.00× | 608,125,901 | found |
+| by-value node kernel | `6da98c6` | 2026-11-07 | fast | 863 ms | 27.6× | 1.32× | 608,264,071 | found |

@@ -182,3 +182,33 @@ almost never repeat, because the merged states are mostly deep (near-final) ones
 **Verdict:** both reverted. The tries already fit in L2, so a smaller automaton buys nothing, and the
 extra edge load costs 5–15 %. Memoizing on column states is the wrong granularity for rectangles of
 this size.
+
+### 2026-11-07: Level 7 — by-value node kernel (`6da98c6`) ✅
+
+**Profile first** (`perf stat`, sequential `trie`, B4): **~100 instructions and ~37 cycles per node**. Also,
+the scheduler ran the single-threaded process on an **E-core** 97.5 % of the time (`cpu_atom`). So sequential
+numbers depend on core placement; the parallel runs use every core anyway.
+
+**Idea:** a dedicated hot recursion (`Kernel`) for `par`:
+- carry trie nodes **by value** (`{mask, first}`, 8 bytes), so `allowed = row.mask & col.mask` needs no load and only
+  the two child steps touch memory;
+- track `(r, c)` directly: no `cell / cols` and `cell % cols` (a real `div`, since `cols` isn't a constant);
+- the row state is a single node, because finished rows are never needed again;
+- the node counter is a local, not `self.nodes`.
+
+Also tried `get_unchecked` in the child step: only 2–3 % (noise level), so I dropped it to keep the code free of `unsafe`.
+
+| Benchmark | Before (parallel) | After (kernel) | Change |
+|---|---|---|---|
+| B1 count 3×3 | 7.8 ms | 6.4 ms | 1.23× |
+| B2 find 5×6 | 0.73 ms | 0.59 ms | 1.25× |
+| B3 find 6×6 | 1.51 ms | 1.23 ms | 1.23× |
+| B4 count 4×4 | 1.48 s | 1.12 s | 1.33× |
+| B5 count 4×5 | 6.43 s | 4.84 s | 1.33× |
+| B6 count 3×7 | 0.63 s | 0.48 s | 1.30× |
+| B7 find 7×7 | 0.70 s | 0.46 s | 1.51× |
+| B8 find 6×7 | 0.63 s | 0.39 s | 1.59× |
+| B9 find 5×9 | 1.06 s | 0.86 s | 1.23× |
+| heavy total | 10.9 s | 8.2 s | **1.34×** |
+
+**Verdict:** kept. Same node counts and identical grids (checked against `trie` on B7–B9).

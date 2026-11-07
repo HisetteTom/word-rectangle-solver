@@ -71,3 +71,12 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,7a14702,fast,par,B7,find --rows 7 --cols 7,0.8977,157530723,found,0.694814,DAWG + row memo (failed)
 2026-11-07,7a14702,fast,par,B8,find --rows 6 --cols 7,0.8366,121022023,found,0.637492,DAWG + row memo (failed)
 2026-11-07,7a14702,fast,par,B9,find --rows 5 --cols 9,1.3251,608125901,found,1.137499,DAWG + row memo (failed)
+2026-11-07,6da98c6,fast,par,B1,count --rows 3 --cols 3,0.1616,2122136,solutions=1909732,0.006370,by-value node kernel
+2026-11-07,6da98c6,fast,par,B2,find --rows 5 --cols 6,0.1629,22840,found,0.000586,by-value node kernel
+2026-11-07,6da98c6,fast,par,B3,find --rows 6 --cols 6,0.2015,49781,found,0.001229,by-value node kernel
+2026-11-07,6da98c6,fast,par,B4,count --rows 4 --cols 4,1.2695,1299555173,solutions=136245247,1.117181,by-value node kernel
+2026-11-07,6da98c6,fast,par,B5,count --rows 4 --cols 5,4.9948,5054675765,solutions=114846713,4.840369,by-value node kernel
+2026-11-07,6da98c6,fast,par,B6,count --rows 3 --cols 7,0.6195,485285838,solutions=4453472,0.483824,by-value node kernel
+2026-11-07,6da98c6,fast,par,B7,find --rows 7 --cols 7,0.5544,159127185,found,0.462352,by-value node kernel
+2026-11-07,6da98c6,fast,par,B8,find --rows 6 --cols 7,0.5349,120902270,found,0.394178,by-value node kernel
+2026-11-07,6da98c6,fast,par,B9,find --rows 5 --cols 9,1.0288,608264071,found,0.862979,by-value node kernel
