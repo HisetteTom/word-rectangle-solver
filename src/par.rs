@@ -308,23 +308,6 @@ impl<const W: usize> Kernel<'_, W> {
             }
             return self.count_last(c, row, &masks, nodes);
         }
-        if c == 0 && r + 1 == self.last_r {
-            // last two rows: fill them together, column by column (see `count_pair`)
-            let mut masks = [0u32; W];
-            let mut ends = [0u32; W];
-            for k in 0..W {
-                let n = colv[k];
-                masks[k] = n.mask;
-                // letters column k can end with (last row), whatever the row above puts there
-                let mut a = n.mask;
-                while a != 0 {
-                    let l = a.trailing_zeros();
-                    a &= a - 1;
-                    ends[k] |= self.ct.step(n, l).mask;
-                }
-            }
-            return self.count_pair(0, row, self.rt.node(0), colv, &masks, &ends, nodes);
-        }
         *nodes += 1;
         let col = colv[c];
         let mut allowed = row.mask & col.mask;
@@ -362,47 +345,6 @@ impl<const W: usize> Kernel<'_, W> {
             total += self.count(r, c + 1, self.rt.step(row, l), colv, nodes, fc);
         }
         colv[c] = col;
-        total
-    }
-
-    /// The last two rows together, column by column: at column c place the second-to-last
-    /// row's letter `a` (row node `p`), then the last row's letter `b` (row node `q`), which must
-    /// end column c (`b` in the column child's mask). Both rows are checked against the trie at
-    /// every column, so a last row that can't exist is caught at once, instead of after the whole
-    /// second-to-last row (94–97% of those nodes used to lead to nothing).
-    #[allow(clippy::too_many_arguments)]
-    fn count_pair(&self, c: usize, p: Node, q: Node, colv: &[CNode; W], masks: &[u32; W], ends: &[u32; W], nodes: &mut u64) -> u64 {
-        *nodes += 1;
-        let col = colv[c];
-        let allowed = p.mask & col.mask;
-        let mut total = 0;
-        if c == W - 1 {
-            let mut a = allowed;
-            while a != 0 {
-                let l = a.trailing_zeros();
-                a &= a - 1;
-                total += (q.mask & self.ct.step(col, l).mask).count_ones() as u64;
-            }
-            return total;
-        }
-        let m = |k: usize| if k < W { masks[k] } else { !0 };
-        let mut good = self.good(p, allowed, c, m(c + 1), m(c + 2), m(c + 3));
-        while good != 0 {
-            let l = good.trailing_zeros();
-            good &= good - 1;
-            let bm = q.mask & self.ct.step(col, l).mask;
-            if bm == 0 {
-                continue;
-            }
-            let e = |k: usize| if k < W { ends[k] } else { !0 };
-            let mut bm = self.good(q, bm, c, e(c + 1), e(c + 2), e(c + 3));
-            let pn = self.rt.step(p, l);
-            while bm != 0 {
-                let b = bm.trailing_zeros();
-                bm &= bm - 1;
-                total += self.count_pair(c + 1, pn, self.rt.step(q, b), colv, masks, ends, nodes);
-            }
-        }
         total
     }
 
