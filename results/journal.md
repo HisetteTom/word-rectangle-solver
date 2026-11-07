@@ -504,3 +504,22 @@ CNode 8 → 12 B), and a second forward mask `g` runs through the bigram tables.
 **Verdict:** reverted. When row r + 2 exists, the next-row check plus `good()` already catch
 nearly every dead end. It prunes 0.03% of nodes on 4-row grids and 4.5% on 5×5, which doesn't
 pay for the bigger column nodes and the extra lookups.
+
+### 2026-11-07: branch-free forward check (`1a4c1f0`) ❌ reverted
+
+**Idea:** the next-row check (`base & column child mask == 0 → skip`) is a data-dependent branch
+right after the branch-free `good()` pass. Fold it into that pass (`good_fw`) so the second loop
+only visits survivors. A second version also pre-filtered the end-of-row cell the same way.
+
+| Benchmark | Before (next-row forward check) | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 0.452 s | 0.434 s | 1.04× |
+| B5 count 4×5 | 3.36 s | 3.25 s | 1.03× |
+| B10 count 5×5 | 10.44 s | 10.31 s | 1.01× |
+| B11 count 4×6 | 5.81 s | 5.85 s | 0.99× |
+
+With 3 interleaved A/B runs it looked flat on 4×5 and 5×5 and 3% slower on 4×6. The end-of-row
+pre-filter was 3–4% slower everywhere and wasn't kept even in the experiment.
+
+**Verdict:** reverted as noise. Few letters survive `good()`, so the extra column step for every
+candidate costs about as much as the mispredictions it removes.
