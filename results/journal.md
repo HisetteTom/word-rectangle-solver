@@ -212,3 +212,17 @@ Also tried `get_unchecked` in the child step: only 2–3 % (noise level), so I d
 | heavy total | 10.9 s | 8.2 s | **1.34×** |
 
 **Verdict:** kept. Same node counts and identical grids (checked against `trie` on B7–B9).
+
+### 2026-11-07: huge suite B10–B13 added
+
+The heavy suite was down to ~8 s, and single runs of 0.4–1 s are noisy, so I added a tier sized at
+"by-value node kernel" (~50 s total). Old IDs are unchanged.
+
+| ID | Task | Baseline time | Result |
+|---|---|---|---|
+| B10 | count 5×5 | 30.6 s | 80,364,530 solutions (30.7 G nodes) |
+| B11 | count 4×6 | 9.50 s | 37,812,638 solutions |
+| B12 | find 6×8 | 5.10 s | acidemia/ninepins/unslings/reticule/imamates/careless |
+| B13 | find 5×10 | 4.94 s | **no 5×10 exists** (3.8 G nodes, exhaustive) |
+
+Probe: find 7×8 did not finish in 150 s; a future target.

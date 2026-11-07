@@ -143,3 +143,35 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | DAWG (failed) | `ad3fb0c` | 2026-11-07 | fast | 1.14 s | 20.9× | 0.93× | 608,074,075 | found |
 | DAWG + row memo (failed) | `7a14702` | 2026-11-07 | fast | 1.14 s | 20.9× | 1.00× | 608,125,901 | found |
 | by-value node kernel | `6da98c6` | 2026-11-07 | fast | 863 ms | 27.6× | 1.32× | 608,264,071 | found |
+
+## B10 · count all 5×5 (exhaustive)
+
+![B10](charts/B10.svg)
+
+| Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
+|---|---|---|---|---:|---:|---:|---:|---|
+| by-value node kernel | `1449b66` | 2026-11-07 | fast | 30.6 s | — | — | 30,730,973,507 | solutions=80364530 |
+
+## B11 · count all 4×6 (exhaustive)
+
+![B11](charts/B11.svg)
+
+| Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
+|---|---|---|---|---:|---:|---:|---:|---|
+| by-value node kernel | `1449b66` | 2026-11-07 | fast | 9.50 s | — | — | 9,588,114,365 | solutions=37812638 |
+
+## B12 · find first 6×8
+
+![B12](charts/B12.svg)
+
+| Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
+|---|---|---|---|---:|---:|---:|---:|---|
+| by-value node kernel | `1449b66` | 2026-11-07 | fast | 5.10 s | — | — | 4,132,728,056 | found |
+
+## B13 · prove no 5×10 exists (exhaustive)
+
+![B13](charts/B13.svg)
+
+| Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
+|---|---|---|---|---:|---:|---:|---:|---|
+| by-value node kernel | `1449b66` | 2026-11-07 | fast | 4.94 s | — | — | 3,802,792,308 | no solution: 5x10 exhausted |

@@ -80,3 +80,7 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,6da98c6,fast,par,B7,find --rows 7 --cols 7,0.5544,159127185,found,0.462352,by-value node kernel
 2026-11-07,6da98c6,fast,par,B8,find --rows 6 --cols 7,0.5349,120902270,found,0.394178,by-value node kernel
 2026-11-07,6da98c6,fast,par,B9,find --rows 5 --cols 9,1.0288,608264071,found,0.862979,by-value node kernel
+2026-11-07,1449b66,fast,par,B10,count --rows 5 --cols 5,30.7490,30730973507,solutions=80364530,30.614587,by-value node kernel
+2026-11-07,1449b66,fast,par,B11,count --rows 4 --cols 6,9.6109,9588114365,solutions=37812638,9.499298,by-value node kernel
+2026-11-07,1449b66,fast,par,B12,find --rows 6 --cols 8,5.1969,4132728056,found,5.101496,by-value node kernel
+2026-11-07,1449b66,fast,par,B13,find --rows 5 --cols 10,5.0374,3802792308,no solution: 5x10 exhausted,4.943884,by-value node kernel
