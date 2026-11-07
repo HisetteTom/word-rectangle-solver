@@ -460,3 +460,29 @@ stay local.
 
 **Verdict:** reverted. The tries fit in L2 (at most ~270 KiB row + ~135 KiB column), and BFS
 keeps the hot top levels packed together at the start of the array, which matters more.
+
+### 2026-11-07: next-row forward check (`022d173`) ✅ kept
+
+**Idea:** when cell (r, c) is placed, row r + 1 will need a letter at column c that (a) extends the
+column word and (b) can follow a letter that row r + 1 can have at c − 1. Per-position **bigram
+tables** (for each position k, letter set of position k → letters that can follow at k + 1 in some
+row word) turn (b) into a mask with four 128-entry lookups: `uni(k, f)`. Carry `f` (letters row
+r + 1 can still have at column c) along the row. A letter whose `uni(c−1, f) & column-child.mask`
+is empty gets cut right away, instead of failing one full row later. It is applied in both the
+count and the search kernels.
+
+| Benchmark | Before (branch-free look-ahead) | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 0.454 s · 434 M nodes | 0.452 s · 397 M | 1.00× |
+| B5 count 4×5 | 3.51 s · 2.44 G | 3.36 s · 2.14 G | 1.04× |
+| B6 count 3×7 | 0.254 s | 0.250 s | 1.02× |
+| B7 find 7×7 | 0.291 s | 0.286 s | 1.02× |
+| B8 find 6×7 | 0.273 s | 0.256 s | 1.07× |
+| B10 count 5×5 | 11.42 s · 6.88 G | 10.44 s · 5.39 G | **1.09×** |
+| B11 count 4×6 | 6.21 s · 3.71 G | 5.81 s · 3.24 G | **1.07×** |
+| B12 find 6×8 | 2.51 s · 1.16 G | 2.49 s · 1.01 G | 1.01× |
+| B13 no 5×10 | 2.66 s · 1.14 G | 2.53 s · 0.98 G | 1.05× |
+
+**Verdict:** kept. It cuts 9–22% of the nodes, but each node costs more (four extra table
+loads), so the time gain is smaller than the node gain. It helps most where rows are many and
+short (5×5).

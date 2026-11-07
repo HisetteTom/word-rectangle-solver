@@ -214,3 +214,16 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,2c1dbf2,fast,par,B11,count --rows 4 --cols 6,6.7465,3714990647,solutions=37812638,6.593198,DFS trie layout (failed)
 2026-11-07,2c1dbf2,fast,par,B12,find --rows 6 --cols 8,2.6955,1160896403,found,2.575432,DFS trie layout (failed)
 2026-11-07,2c1dbf2,fast,par,B13,find --rows 5 --cols 10,2.7831,1139376699,no solution: 5x10 exhausted,2.664486,DFS trie layout (failed)
+2026-11-07,022d173,fast,par,B1,count --rows 3 --cols 3,0.1663,994996,solutions=1909732,0.003128,next-row forward check
+2026-11-07,022d173,fast,par,B2,find --rows 5 --cols 6,0.1870,7220,found,0.000392,next-row forward check
+2026-11-07,022d173,fast,par,B3,find --rows 6 --cols 6,0.1878,12839,found,0.000603,next-row forward check
+2026-11-07,022d173,fast,par,B4,count --rows 4 --cols 4,0.6106,397315658,solutions=136245247,0.452312,next-row forward check
+2026-11-07,022d173,fast,par,B5,count --rows 4 --cols 5,3.5074,2142627416,solutions=114846713,3.362797,next-row forward check
+2026-11-07,022d173,fast,par,B6,count --rows 3 --cols 7,0.3457,132592160,solutions=4453472,0.250476,next-row forward check
+2026-11-07,022d173,fast,par,B7,find --rows 7 --cols 7,0.4051,35683279,found,0.286123,next-row forward check
+2026-11-07,022d173,fast,par,B8,find --rows 6 --cols 7,0.3738,31520070,found,0.255629,next-row forward check
+2026-11-07,022d173,fast,par,B9,find --rows 5 --cols 9,0.6217,157551855,found,0.516777,next-row forward check
+2026-11-07,022d173,fast,par,B10,count --rows 5 --cols 5,10.5271,5393001298,solutions=80364530,10.436954,next-row forward check
+2026-11-07,022d173,fast,par,B11,count --rows 4 --cols 6,5.9026,3243793909,solutions=37812638,5.814520,next-row forward check
+2026-11-07,022d173,fast,par,B12,find --rows 6 --cols 8,2.5949,1009874380,found,2.490908,next-row forward check
+2026-11-07,022d173,fast,par,B13,find --rows 5 --cols 10,2.6417,976239922,no solution: 5x10 exhausted,2.533463,next-row forward check
