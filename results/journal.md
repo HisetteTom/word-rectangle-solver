@@ -270,3 +270,39 @@ weight ×2. Job prefixes are capped to row 0, because they are expanded without 
 | rectangles / finds | — | — | — | ≈ (unchanged) |
 
 **Verdict:** kept.
+
+### 2026-11-07: Level 4 — row look-ahead / forward checking (`e5a081e`) ✅
+
+**Idea:** a letter at (r, c) is only useful if the row node it leads to can still match the
+columns further right. Each trie node now carries two look-ahead masks: `next` = union of the
+children's masks (letters some completion has one position further), and `next2` = the same two
+positions further. After stepping the row we already hold the child node, so the check is two ANDs
+against `colv[c+2].mask` and `colv[c+3].mask`, with no extra memory load. It is in `count`,
+`count_last` and `search`.
+
+Tried on the way:
+- a full `reach[node][p]` table over all positions: B5 nodes 5.05 G → 3.35 G, but a separate
+  load plus a loop per node made it slower overall, time flat;
+- the single `reach[c+2]` from the separate table: 4×6 1.19×;
+- 12-byte nodes with `next` only: 4×6 1.22×;
+- 16-byte nodes with `next` and `next2`: the version kept.
+
+Bigger nodes cost the 4×4 square (short rows: few checks to gain) ~6%.
+
+| Benchmark | Before (symmetry) | After (look-ahead) | Nodes | Change |
+|---|---|---|---|---|
+| B1 count 3×3 | 3.54 ms | 3.45 ms | 1.10 M → 1.05 M | ≈ |
+| B3 find 6×6 | 1.22 ms | 0.72 ms | 49.8 k → 26.0 k | 1.70× |
+| B4 count 4×4 | 0.471 s | 0.520 s | 0.66 G → 0.56 G | 0.91× (bigger nodes) |
+| B5 count 4×5 | 4.32 s | 4.21 s | 5.05 G → 3.36 G | 1.03× |
+| B6 count 3×7 | 0.398 s | 0.343 s | 485 M → 183 M | 1.16× |
+| B7 find 7×7 | 0.608 s | 0.439 s | 159 M → 55 M | 1.38× |
+| B8 find 6×7 | 0.552 s | 0.413 s | 121 M → 46 M | 1.34× |
+| B9 find 5×9 | 0.875 s | 0.748 s | 608 M → 238 M | 1.17× |
+| B10 count 5×5 | 15.95 s | 14.43 s | 15.5 G → 9.5 G | 1.11× |
+| B11 count 4×6 | 9.12 s | 7.64 s | 9.59 G → 4.95 G | 1.19× |
+| B12 find 6×8 | 5.24 s | 3.87 s | 4.13 G → 1.51 G | 1.35× |
+| B13 no 5×10 | 5.04 s | 3.68 s | 3.80 G → 1.43 G | 1.37× |
+
+**Verdict:** kept. Node counts drop 1.5–2.9×, but nodes/sec drops too (more work per node and
+bigger nodes), so the wall-clock gain is 1.1–1.4×. Next: make the per-node work cheaper.

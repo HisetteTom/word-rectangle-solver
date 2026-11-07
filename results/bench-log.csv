@@ -110,3 +110,16 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
 2026-11-07,43cfaf9,fast,par,B11,count --rows 4 --cols 6,9.2039,9588114365,solutions=37812638,9.119630,square symmetry
 2026-11-07,43cfaf9,fast,par,B12,find --rows 6 --cols 8,5.3377,4132541447,found,5.243593,square symmetry
 2026-11-07,43cfaf9,fast,par,B13,find --rows 5 --cols 10,5.1321,3802792308,no solution: 5x10 exhausted,5.040092,square symmetry
+2026-11-07,e5a081e,fast,par,B1,count --rows 3 --cols 3,0.1677,1049457,solutions=1909732,0.003451,row look-ahead
+2026-11-07,e5a081e,fast,par,B2,find --rows 5 --cols 6,0.0846,12444,found,0.000354,row look-ahead
+2026-11-07,e5a081e,fast,par,B3,find --rows 6 --cols 6,0.1052,26012,found,0.000718,row look-ahead
+2026-11-07,e5a081e,fast,par,B4,count --rows 4 --cols 4,0.6759,559509989,solutions=136245247,0.519570,row look-ahead
+2026-11-07,e5a081e,fast,par,B5,count --rows 4 --cols 5,4.3668,3364600156,solutions=114846713,4.214466,row look-ahead
+2026-11-07,e5a081e,fast,par,B6,count --rows 3 --cols 7,0.5002,182615542,solutions=4453472,0.342504,row look-ahead
+2026-11-07,e5a081e,fast,par,B7,find --rows 7 --cols 7,0.6152,55119689,found,0.439004,row look-ahead
+2026-11-07,e5a081e,fast,par,B8,find --rows 6 --cols 7,0.5829,46110613,found,0.413071,row look-ahead
+2026-11-07,e5a081e,fast,par,B9,find --rows 5 --cols 9,0.8969,237520689,found,0.748415,row look-ahead
+2026-11-07,e5a081e,fast,par,B10,count --rows 5 --cols 5,14.5152,9533780804,solutions=80364530,14.432836,row look-ahead
+2026-11-07,e5a081e,fast,par,B11,count --rows 4 --cols 6,7.7208,4952123756,solutions=37812638,7.636107,row look-ahead
+2026-11-07,e5a081e,fast,par,B12,find --rows 6 --cols 8,3.9672,1514385525,found,3.873844,row look-ahead
+2026-11-07,e5a081e,fast,par,B13,find --rows 5 --cols 10,3.7966,1432485110,no solution: 5x10 exhausted,3.678839,row look-ahead

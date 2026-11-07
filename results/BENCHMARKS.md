@@ -23,6 +23,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | by-value node kernel | `6da98c6` | 2026-11-07 | fast | 6.37 ms | 1,861× | 1.12× | 2,122,136 | solutions=1909732 |
 | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 5.94 ms | 1,996× | 1.07× | 2,122,136 | solutions=1909732 |
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 3.54 ms | 3,348× | 1.68× | 1,102,846 | solutions=1909732 |
+| row look-ahead | `e5a081e` | 2026-11-07 | fast | 3.45 ms | 3,434× | 1.03× | 1,049,457 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -41,6 +42,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | by-value node kernel | `6da98c6` | 2026-11-07 | fast | 586 µs | 3,993× | 1.38× | 22,840 | found |
 | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 588 µs | 3,979× | 1.00× | 22,840 | found |
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 393 µs | 5,954× | 1.50× | 22,840 | found |
+| row look-ahead | `e5a081e` | 2026-11-07 | fast | 354 µs | 6,610× | 1.11× | 12,444 | found |
 
 ## B3 · find first 6×6
 
@@ -59,6 +61,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | by-value node kernel | `6da98c6` | 2026-11-07 | fast | 1.23 ms | 4,599× | 1.33× | 49,781 | found |
 | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 1.2 ms | 4,707× | 1.02× | 49,781 | found |
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 1.22 ms | 4,641× | 0.99× | 49,781 | found |
+| row look-ahead | `e5a081e` | 2026-11-07 | fast | 718 µs | 7,873× | 1.70× | 26,012 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -76,6 +79,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | by-value node kernel | `6da98c6` | 2026-11-07 | fast | 1.12 s | 33.6× | 2.21× | 1,299,555,173 | solutions=136245247 |
 | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 923 ms | 40.7× | 1.21× | 1,299,555,173 | solutions=136245247 |
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 471 ms | 79.6× | 1.96× | 660,528,401 | solutions=136245247 |
+| row look-ahead | `e5a081e` | 2026-11-07 | fast | 520 ms | 72.2× | 0.91× | 559,509,989 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -93,6 +97,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | by-value node kernel | `6da98c6` | 2026-11-07 | fast | 4.84 s | 31.6× | 1.74× | 5,054,675,765 | solutions=114846713 |
 | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 4.30 s | 35.6× | 1.13× | 5,054,675,765 | solutions=114846713 |
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 4.32 s | 35.4× | 0.99× | 5,054,675,765 | solutions=114846713 |
+| row look-ahead | `e5a081e` | 2026-11-07 | fast | 4.21 s | 36.3× | 1.03× | 3,364,600,156 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -110,6 +115,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | by-value node kernel | `6da98c6` | 2026-11-07 | fast | 484 ms | 33.7× | 1.49× | 485,285,838 | solutions=4453472 |
 | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 397 ms | 41.1× | 1.22× | 485,285,838 | solutions=4453472 |
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 398 ms | 41.0× | 1.00× | 485,285,838 | solutions=4453472 |
+| row look-ahead | `e5a081e` | 2026-11-07 | fast | 343 ms | 47.6× | 1.16× | 182,615,542 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -127,6 +133,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | by-value node kernel | `6da98c6` | 2026-11-07 | fast | 462 ms | 10.9× | 1.50× | 159,127,185 | found |
 | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 477 ms | 10.5× | 0.97× | 158,604,931 | found |
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 608 ms | 8.27× | 0.79× | 159,148,928 | found |
+| row look-ahead | `e5a081e` | 2026-11-07 | fast | 439 ms | 11.4× | 1.38× | 55,119,689 | found |
 
 ## B8 · find first 6×7
 
@@ -144,6 +151,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | by-value node kernel | `6da98c6` | 2026-11-07 | fast | 394 ms | 10.2× | 1.62× | 120,902,270 | found |
 | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 564 ms | 7.16× | 0.70× | 120,838,089 | found |
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 552 ms | 7.31× | 1.02× | 120,887,650 | found |
+| row look-ahead | `e5a081e` | 2026-11-07 | fast | 413 ms | 9.77× | 1.34× | 46,110,613 | found |
 
 ## B9 · find first 5×9
 
@@ -161,6 +169,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | by-value node kernel | `6da98c6` | 2026-11-07 | fast | 863 ms | 27.6× | 1.32× | 608,264,071 | found |
 | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 906 ms | 26.3× | 0.95× | 607,918,285 | found |
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 875 ms | 27.2× | 1.04× | 608,152,499 | found |
+| row look-ahead | `e5a081e` | 2026-11-07 | fast | 748 ms | 31.8× | 1.17× | 237,520,689 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -171,6 +180,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | by-value node kernel | `1449b66` | 2026-11-07 | fast | 30.6 s | — | — | 30,730,973,507 | solutions=80364530 |
 | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 30.9 s | 0.99× | 0.99× | 30,730,973,507 | solutions=80364530 |
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 15.9 s | 1.92× | 1.94× | 15,549,963,977 | solutions=80364530 |
+| row look-ahead | `e5a081e` | 2026-11-07 | fast | 14.4 s | 2.12× | 1.11× | 9,533,780,804 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -181,6 +191,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | by-value node kernel | `1449b66` | 2026-11-07 | fast | 9.50 s | — | — | 9,588,114,365 | solutions=37812638 |
 | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 8.96 s | 1.06× | 1.06× | 9,588,114,365 | solutions=37812638 |
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 9.12 s | 1.04× | 0.98× | 9,588,114,365 | solutions=37812638 |
+| row look-ahead | `e5a081e` | 2026-11-07 | fast | 7.64 s | 1.24× | 1.19× | 4,952,123,756 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -191,6 +202,7 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | by-value node kernel | `1449b66` | 2026-11-07 | fast | 5.10 s | — | — | 4,132,728,056 | found |
 | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 5.25 s | 0.97× | 0.97× | 4,132,932,128 | found |
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 5.24 s | 0.97× | 1.00× | 4,132,541,447 | found |
+| row look-ahead | `e5a081e` | 2026-11-07 | fast | 3.87 s | 1.32× | 1.35× | 1,514,385,525 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -201,3 +213,4 @@ reported by the binary (dictionary load excluded). Details of each step: [`journ
 | by-value node kernel | `1449b66` | 2026-11-07 | fast | 4.94 s | — | — | 3,802,792,308 | no solution: 5x10 exhausted |
 | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 4.89 s | 1.01× | 1.01× | 3,802,792,308 | no solution: 5x10 exhausted |
 | square symmetry | `43cfaf9` | 2026-11-07 | fast | 5.04 s | 0.98× | 0.97× | 3,802,792,308 | no solution: 5x10 exhausted |
+| row look-ahead | `e5a081e` | 2026-11-07 | fast | 3.68 s | 1.34× | 1.37× | 1,432,485,110 | no solution: 5x10 exhausted |
