@@ -18,6 +18,20 @@ use crate::{Grid, Solver, Stats};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
 
+/// Calls `$body` with the const generic `$W` = `$w` (1..=32): the kernels are monomorphized per
+/// row width, so column loops, `c + k < W` tests and array bounds are compile-time constants.
+macro_rules! by_width {
+    ($w:expr, |$W:ident| $body:expr) => {
+        by_width!(@ $w, $W, $body, 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32)
+    };
+    (@ $w:expr, $W:ident, $body:expr, $($n:literal)*) => {
+        match $w {
+            $($n => { const $W: usize = $n; $body })*
+            w => panic!("par supports 1..=32 columns, got {w}"),
+        }
+    };
+}
+
 /// Jobs per thread. Exhaustive counting balances fine with few jobs; `find` needs many
 /// small jobs, because the job that holds the first solution must not be one huge subtree.
 const COUNT_JOBS_PER_THREAD: usize = 256;
@@ -75,15 +89,19 @@ impl<'a> Worker<'a> {
 
     /// Count all completions of the loaded job prefix (`cell` = first empty cell).
     fn count_job(&mut self, cell: usize) -> u64 {
-        let (cols, s) = (self.s.cols, self.s);
-        let (r, c) = (cell / cols, cell % cols);
-        let mut colv: Vec<CNode> = self.col_state.iter().map(|&n| s.col_trie.node(n)).collect();
-        let k = Kernel { rt: &s.row_trie, ct: &s.col_trie, last_r: s.rows - 1, last_c: cols - 1 };
+        by_width!(self.s.cols, |W| self.count_job_w::<W>(cell))
+    }
+
+    fn count_job_w<const W: usize>(&mut self, cell: usize) -> u64 {
+        let s = self.s;
+        let (r, c) = (cell / W, cell % W);
+        let mut colv: [CNode; W] = std::array::from_fn(|i| s.col_trie.node(self.col_state[i]));
+        let k = Kernel::<W> { rt: &s.row_trie, ct: &s.col_trie, last_r: s.rows - 1 };
         let mut nodes = 0;
         let row = s.row_trie.node(self.row_state[r]);
         let total = if s.sym {
             // job prefixes stay inside row 0 when `sym` (see `count`), so they are all "tied"
-            let mut row0 = [0u8; 32];
+            let mut row0 = [0u8; W];
             for (d, &g) in row0.iter_mut().zip(&self.grid[..cell]) {
                 *d = g - b'a';
             }
@@ -98,16 +116,19 @@ impl<'a> Worker<'a> {
     /// Calls `on` on every solution of the loaded job prefix (`cell` = first empty cell);
     /// returns false if stopped (`on` returned false, `stop()` became true, or the node limit hit).
     fn search<F: FnMut(&[u8]) -> bool, S: Fn() -> bool>(&mut self, cell: usize, on: &mut F, stop: &S) -> bool {
+        by_width!(self.s.cols, |W| self.search_w::<W, F, S>(cell, on, stop))
+    }
+
+    fn search_w<const W: usize, F: FnMut(&[u8]) -> bool, S: Fn() -> bool>(&mut self, cell: usize, on: &mut F, stop: &S) -> bool {
         let s = self.s;
-        if cell == s.rows * s.cols {
+        if cell == s.rows * W {
             return on(&self.grid);
         }
-        let (r, c) = (cell / s.cols, cell % s.cols);
-        let k = Kernel { rt: &s.row_trie, ct: &s.col_trie, last_r: s.rows - 1, last_c: s.cols - 1 };
-        let mut st = SearchState {
-            colv: self.col_state.iter().map(|&n| s.col_trie.node(n)).collect(),
+        let (r, c) = (cell / W, cell % W);
+        let k = Kernel::<W> { rt: &s.row_trie, ct: &s.col_trie, last_r: s.rows - 1 };
+        let mut st = SearchState::<W> {
+            colv: std::array::from_fn(|i| s.col_trie.node(self.col_state[i])),
             grid: std::mem::take(&mut self.grid),
-            cols: s.cols,
             nodes: self.nodes,
             limit: self.limit,
         };
@@ -121,23 +142,22 @@ impl<'a> Worker<'a> {
 /// Hot counting recursion. Carries trie nodes *by value*: `allowed` needs no memory
 /// load, only the two child steps do. (r, c) are tracked directly (no `/` or `%`), and
 /// the row state is a single node (finished rows are never needed again).
-struct Kernel<'t> {
+struct Kernel<'t, const W: usize> {
     rt: &'t Trie,
     ct: &'t CTrie,
     last_r: usize,
-    last_c: usize,
 }
 
-impl Kernel<'_> {
+impl<const W: usize> Kernel<'_, W> {
     /// Last row, cell `c`: completions of `row` with letter `c'` in `masks[c']` for every c' >= c.
-    fn count_last(&self, c: usize, row: Node, masks: &[u32; 32], nodes: &mut u64) -> u64 {
+    fn count_last(&self, c: usize, row: Node, masks: &[u32; W], nodes: &mut u64) -> u64 {
         *nodes += 1;
         let mut allowed = row.mask & masks[c];
-        if c == self.last_c {
+        if c == (W - 1) {
             return allowed.count_ones() as u64;
         }
         let mut total = 0;
-        if c + 1 == self.last_c {
+        if c + 1 == (W - 1) {
             // unrolled: the next cell is the last one, count it by popcount directly
             let last = masks[c + 1];
             *nodes += allowed.count_ones() as u64;
@@ -152,7 +172,7 @@ impl Kernel<'_> {
             let l = allowed.trailing_zeros();
             allowed &= allowed - 1;
             let idx = Trie::child_idx(row, l);
-            let w = self.last_c + 1;
+            let w = W;
             let nrow = self.rt.node(idx);
             if c + 2 < w && (nrow.next & masks[c + 2] == 0 || (c + 3 < w && nrow.next2 & masks[c + 3] == 0)) {
                 continue;
@@ -163,16 +183,16 @@ impl Kernel<'_> {
     }
 }
 
-impl Kernel<'_> {
+impl<const W: usize> Kernel<'_, W> {
     /// Transpose symmetry for squares (rows and columns share one word list).
     /// Transposing swaps (first row, first column), so
     ///   count = 2 * #{row0 < col0} + #{row0 == col0}.
     /// This runs only on the "tied" path, where column 0 equals row 0 so far. At (r, 0), letters
     /// below `row0[r]` are cut, the equal letter stays tied, and greater letters leave for the
     /// plain kernel with weight 2.
-    fn count_sym(&self, r: usize, c: usize, row: Node, colv: &mut [CNode], nodes: &mut u64, row0: &mut [u8; 32]) -> u64 {
+    fn count_sym(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, row0: &mut [u8; W]) -> u64 {
         if r == self.last_r {
-            let mut masks = [0u32; 32];
+            let mut masks = [0u32; W];
             for (m, n) in masks.iter_mut().zip(colv.iter()) {
                 *m = n.mask;
             }
@@ -203,7 +223,7 @@ impl Kernel<'_> {
                 row0[c] = l as u8;
             }
             colv[c] = self.ct.step(col, l);
-            let (nr, nc, nrow) = if c == self.last_c { (r + 1, 0, self.rt.node(0)) } else { (r, c + 1, self.rt.step(row, l)) };
+            let (nr, nc, nrow) = if c == (W - 1) { (r + 1, 0, self.rt.node(0)) } else { (r, c + 1, self.rt.step(row, l)) };
             total += if tie_cell && l > w {
                 2 * self.count(nr, nc, nrow, colv, nodes)
             } else {
@@ -216,30 +236,29 @@ impl Kernel<'_> {
 }
 
 /// Mutable state of `Kernel::search`.
-struct SearchState {
-    colv: Vec<CNode>,
+struct SearchState<const W: usize> {
+    colv: [CNode; W],
     grid: Vec<u8>,
-    cols: usize,
     nodes: u64,
     limit: u64,
 }
 
-impl Kernel<'_> {
+impl<const W: usize> Kernel<'_, W> {
     /// Same order as `count`, writes letters to the grid; false = stop.
-    fn search<F: FnMut(&[u8]) -> bool, S: Fn() -> bool>(&self, r: usize, c: usize, row: Node, st: &mut SearchState, on: &mut F, stop: &S) -> bool {
+    fn search<F: FnMut(&[u8]) -> bool, S: Fn() -> bool>(&self, r: usize, c: usize, row: Node, st: &mut SearchState<W>, on: &mut F, stop: &S) -> bool {
         st.nodes += 1;
         if st.nodes > st.limit || stop() {
             return false;
         }
         let col = st.colv[c];
         let mut allowed = row.mask & col.mask;
-        let cell = r * st.cols + c;
+        let cell = r * W + c;
         let mut keep_going = true;
         while allowed != 0 {
             let l = allowed.trailing_zeros();
             allowed &= allowed - 1;
             st.grid[cell] = b'a' + l as u8;
-            let ok = if c == self.last_c {
+            let ok = if c == (W - 1) {
                 if r == self.last_r {
                     on(&st.grid)
                 } else {
@@ -248,7 +267,7 @@ impl Kernel<'_> {
                 }
             } else {
                 let nrow = self.rt.step(row, l);
-                let w = self.last_c + 1;
+                let w = W;
                 if c + 2 < w && (nrow.next & st.colv[c + 2].mask == 0 || (c + 3 < w && nrow.next2 & st.colv[c + 3].mask == 0)) {
                     continue; // look-ahead: this row can't fit the columns further right
                 }
@@ -264,10 +283,10 @@ impl Kernel<'_> {
         keep_going
     }
 
-    fn count(&self, r: usize, c: usize, row: Node, colv: &mut [CNode], nodes: &mut u64) -> u64 {
+    fn count(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64) -> u64 {
         if r == self.last_r {
             // Last row: columns only need their masks (their children are never used).
-            let mut masks = [0u32; 32];
+            let mut masks = [0u32; W];
             for (m, n) in masks.iter_mut().zip(colv.iter()) {
                 *m = n.mask;
             }
@@ -276,7 +295,7 @@ impl Kernel<'_> {
         *nodes += 1;
         let col = colv[c];
         let mut allowed = row.mask & col.mask;
-        if c == self.last_c {
+        if c == (W - 1) {
             if r == self.last_r {
                 return allowed.count_ones() as u64; // each letter completes the grid
             }
@@ -293,7 +312,7 @@ impl Kernel<'_> {
             return total;
         }
         let mut total = 0;
-        let w = self.last_c + 1;
+        let w = W;
         while allowed != 0 {
             let l = allowed.trailing_zeros();
             allowed &= allowed - 1;
