@@ -13,7 +13,7 @@
 //!    skip / abort any job after it, so the answer is the lexicographically first grid,
 //!    exactly what the sequential solver returns.
 
-use crate::trie::{Node, Trie};
+use crate::trie::{CNode, CTrie, Node, Trie};
 use crate::{Grid, Solver, Stats};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
@@ -30,7 +30,7 @@ pub struct ParSearch {
     rows: usize,
     cols: usize,
     row_trie: Trie,
-    col_trie: Trie,
+    col_trie: CTrie,
     threads: usize,
     seq_budget: u64,
     /// Square with the same words for rows and columns: transposes of solutions are solutions.
@@ -77,7 +77,7 @@ impl<'a> Worker<'a> {
     fn count_job(&mut self, cell: usize) -> u64 {
         let (cols, s) = (self.s.cols, self.s);
         let (r, c) = (cell / cols, cell % cols);
-        let mut colv: Vec<Node> = self.col_state.iter().map(|&n| s.col_trie.node(n)).collect();
+        let mut colv: Vec<CNode> = self.col_state.iter().map(|&n| s.col_trie.node(n)).collect();
         let k = Kernel { rt: &s.row_trie, ct: &s.col_trie, last_r: s.rows - 1, last_c: cols - 1 };
         let mut nodes = 0;
         let row = s.row_trie.node(self.row_state[r]);
@@ -123,7 +123,7 @@ impl<'a> Worker<'a> {
 /// the row state is a single node (finished rows are never needed again).
 struct Kernel<'t> {
     rt: &'t Trie,
-    ct: &'t Trie,
+    ct: &'t CTrie,
     last_r: usize,
     last_c: usize,
 }
@@ -170,7 +170,7 @@ impl Kernel<'_> {
     /// This runs only on the "tied" path, where column 0 equals row 0 so far. At (r, 0), letters
     /// below `row0[r]` are cut, the equal letter stays tied, and greater letters leave for the
     /// plain kernel with weight 2.
-    fn count_sym(&self, r: usize, c: usize, row: Node, colv: &mut [Node], nodes: &mut u64, row0: &mut [u8; 32]) -> u64 {
+    fn count_sym(&self, r: usize, c: usize, row: Node, colv: &mut [CNode], nodes: &mut u64, row0: &mut [u8; 32]) -> u64 {
         if r == self.last_r {
             let mut masks = [0u32; 32];
             for (m, n) in masks.iter_mut().zip(colv.iter()) {
@@ -217,7 +217,7 @@ impl Kernel<'_> {
 
 /// Mutable state of `Kernel::search`.
 struct SearchState {
-    colv: Vec<Node>,
+    colv: Vec<CNode>,
     grid: Vec<u8>,
     cols: usize,
     nodes: u64,
@@ -264,7 +264,7 @@ impl Kernel<'_> {
         keep_going
     }
 
-    fn count(&self, r: usize, c: usize, row: Node, colv: &mut [Node], nodes: &mut u64) -> u64 {
+    fn count(&self, r: usize, c: usize, row: Node, colv: &mut [CNode], nodes: &mut u64) -> u64 {
         if r == self.last_r {
             // Last row: columns only need their masks (their children are never used).
             let mut masks = [0u32; 32];
@@ -323,7 +323,7 @@ impl ParSearch {
             rows,
             cols,
             row_trie: Trie::new(row_words),
-            col_trie: Trie::new(col_words),
+            col_trie: CTrie::new(&Trie::new(col_words)),
             threads,
             seq_budget: FIND_SEQ_BUDGET,
             sym: rows == cols && row_words == col_words,

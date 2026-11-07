@@ -104,3 +104,43 @@ impl Trie {
         self.nodes[0].mask == 0
     }
 }
+
+/// Compact 8-byte node (no look-ahead masks), for tries that only need `mask` + child steps.
+#[derive(Clone, Copy, Default)]
+pub struct CNode {
+    pub mask: u32,
+    pub first: u32,
+}
+
+/// Same trie as `Trie` (same indices) with 8-byte nodes: half the cache footprint.
+/// Column tries use it: their look-ahead is never read.
+pub struct CTrie {
+    nodes: Vec<CNode>,
+}
+
+impl CTrie {
+    pub fn new(t: &Trie) -> CTrie {
+        CTrie { nodes: t.nodes.iter().map(|n| CNode { mask: n.mask, first: n.first }).collect() }
+    }
+
+    #[inline(always)]
+    pub fn mask(&self, node: u32) -> u32 {
+        self.nodes[node as usize].mask
+    }
+
+    #[inline(always)]
+    pub fn child(&self, node: u32, letter: usize) -> u32 {
+        let n = self.nodes[node as usize];
+        n.first + (n.mask & ((1u32 << letter) - 1)).count_ones()
+    }
+
+    #[inline(always)]
+    pub fn node(&self, node: u32) -> CNode {
+        self.nodes[node as usize]
+    }
+
+    #[inline(always)]
+    pub fn step(&self, n: CNode, letter: u32) -> CNode {
+        self.nodes[(n.first + (n.mask & ((1u32 << letter) - 1)).count_ones()) as usize]
+    }
+}
