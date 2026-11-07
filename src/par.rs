@@ -1,5 +1,6 @@
 //! Level 6: parallel version of the row-major trie search (`search.rs`), std threads only.
 //! The hot loops (`Kernel`) carry trie nodes by value and track (row, col) directly.
+//! Square counts use transpose symmetry (`Kernel::count_sym`): about half the nodes.
 //!
 //! 0. `find` first tries a short sequential search (`FIND_SEQ_BUDGET` nodes): small cases stay cheap.
 //! 1. Split: expand the first cells breadth-first (lexicographic order) until there are
@@ -30,6 +31,8 @@ pub struct ParSearch {
     col_trie: Trie,
     threads: usize,
     seq_budget: u64,
+    /// Square with the same words for rows and columns: transposes of solutions are solutions.
+    sym: bool,
     stats: Stats,
 }
 
@@ -75,7 +78,17 @@ impl<'a> Worker<'a> {
         let mut colv: Vec<Node> = self.col_state.iter().map(|&n| s.col_trie.node(n)).collect();
         let k = Kernel { rt: &s.row_trie, ct: &s.col_trie, last_r: s.rows - 1, last_c: cols - 1 };
         let mut nodes = 0;
-        let total = k.count(r, c, s.row_trie.node(self.row_state[r]), &mut colv, &mut nodes);
+        let row = s.row_trie.node(self.row_state[r]);
+        let total = if s.sym {
+            // job prefixes stay inside row 0 when `sym` (see `count`), so they are all "tied"
+            let mut row0 = [0u8; 32];
+            for (d, &g) in row0.iter_mut().zip(&self.grid[..cell]) {
+                *d = g - b'a';
+            }
+            k.count_sym(r, c, row, &mut colv, &mut nodes, &mut row0)
+        } else {
+            k.count(r, c, row, &mut colv, &mut nodes)
+        };
         self.nodes += nodes;
         total
     }
@@ -138,6 +151,58 @@ impl Kernel<'_> {
             allowed &= allowed - 1;
             total += self.count_last(c + 1, self.rt.step(row, l), masks, nodes);
         }
+        total
+    }
+}
+
+impl Kernel<'_> {
+    /// Transpose symmetry for squares (rows and columns share one word list).
+    /// Transposing swaps (first row, first column), so
+    ///   count = 2 * #{row0 < col0} + #{row0 == col0}.
+    /// This runs only on the "tied" path, where column 0 equals row 0 so far. At (r, 0), letters
+    /// below `row0[r]` are cut, the equal letter stays tied, and greater letters leave for the
+    /// plain kernel with weight 2.
+    fn count_sym(&self, r: usize, c: usize, row: Node, colv: &mut [Node], nodes: &mut u64, row0: &mut [u8; 32]) -> u64 {
+        if r == self.last_r {
+            let mut masks = [0u32; 32];
+            for (m, n) in masks.iter_mut().zip(colv.iter()) {
+                *m = n.mask;
+            }
+            if c == 0 && r >= 1 {
+                let w = row0[r] as u32;
+                let m0 = masks[0];
+                masks[0] = m0 & (1 << w);
+                let eq = self.count_last(0, row, &masks, nodes);
+                masks[0] = m0 & !((2u32 << w) - 1);
+                let gt = self.count_last(0, row, &masks, nodes);
+                return eq + 2 * gt;
+            }
+            return self.count_last(c, row, &masks, nodes);
+        }
+        *nodes += 1;
+        let col = colv[c];
+        let mut allowed = row.mask & col.mask;
+        let tie_cell = c == 0 && r >= 1;
+        let w = row0[r] as u32;
+        if tie_cell {
+            allowed &= !((1u32 << w) - 1); // letters >= row0[r]
+        }
+        let mut total = 0;
+        while allowed != 0 {
+            let l = allowed.trailing_zeros();
+            allowed &= allowed - 1;
+            if r == 0 {
+                row0[c] = l as u8;
+            }
+            colv[c] = self.ct.step(col, l);
+            let (nr, nc, nrow) = if c == self.last_c { (r + 1, 0, self.rt.node(0)) } else { (r, c + 1, self.rt.step(row, l)) };
+            total += if tie_cell && l > w {
+                2 * self.count(nr, nc, nrow, colv, nodes)
+            } else {
+                self.count_sym(nr, nc, nrow, colv, nodes, row0)
+            };
+        }
+        colv[c] = col;
         total
     }
 }
@@ -242,6 +307,7 @@ impl ParSearch {
             col_trie: Trie::new(col_words),
             threads,
             seq_budget: FIND_SEQ_BUDGET,
+            sym: rows == cols && row_words == col_words,
             stats: Stats::default(),
         }
     }
@@ -254,7 +320,7 @@ impl ParSearch {
 
     /// Breadth-first expansion of the first cells into lexicographically ordered jobs.
     /// Never expands the last cell, so every job still has at least one cell to fill.
-    fn jobs(&mut self, per_thread: usize) -> (usize, Vec<u8>) {
+    fn jobs(&mut self, per_thread: usize, max_depth: usize) -> (usize, Vec<u8>) {
         let n = self.rows * self.cols;
         let target = per_thread * self.threads;
         let mut w = Worker::new(self);
@@ -262,7 +328,7 @@ impl ParSearch {
         let mut jobs: Vec<u8> = Vec::new(); // flattened prefixes of length `depth`
         let mut count = 1;
         let mut expanded = 0;
-        while count < target && depth + 1 < n {
+        while count < target && depth + 1 < n && depth < max_depth {
             let mut next = Vec::new();
             let mut next_count = 0;
             for j in 0..count {
@@ -346,7 +412,7 @@ impl Solver for ParSearch {
             return g;
         }
         // 2. parallel: restart from scratch on many small jobs
-        let (depth, jobs) = self.jobs(FIND_JOBS_PER_THREAD);
+        let (depth, jobs) = self.jobs(FIND_JOBS_PER_THREAD, usize::MAX);
         let best = AtomicUsize::new(usize::MAX);
         let found = self.run(depth, &jobs, |w, j, _| {
             if best.load(Relaxed) < j {
@@ -368,14 +434,16 @@ impl Solver for ParSearch {
     }
 
     fn count(&mut self) -> u64 {
-        let (depth, jobs) = self.jobs(COUNT_JOBS_PER_THREAD);
+        // with symmetry, job prefixes must stay in row 0 (they are expanded without the tie rule)
+        let max_depth = if self.sym { self.cols } else { usize::MAX };
+        let (depth, jobs) = self.jobs(COUNT_JOBS_PER_THREAD, max_depth);
         let total: u64 = self.run(depth, &jobs, |w, _, _| Some(w.count_job(depth))).iter().map(|(_, c)| c).sum();
         self.stats.solutions = total;
         total
     }
 
     fn all(&mut self) -> Vec<Grid> {
-        let (depth, jobs) = self.jobs(COUNT_JOBS_PER_THREAD);
+        let (depth, jobs) = self.jobs(COUNT_JOBS_PER_THREAD, usize::MAX);
         let per_job = self.run(depth, &jobs, |w, _, _| {
             let mut v = Vec::new();
             w.search(depth, &mut |g: &[u8]| {
