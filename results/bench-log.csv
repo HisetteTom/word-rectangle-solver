@@ -486,3 +486,19 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,9618022,fast,par,B14,count --rows 6 --cols 4,1.6852,1046986844,solutions=37812638,1.599290,next-row set on wide rows (failed),hephaestus
 2026-11-22,9618022,fast,par,B15,count --rows 5 --cols 6,12.5938,8497208081,solutions=7424362,12.503543,next-row set on wide rows (failed),hephaestus
 2026-11-22,9618022,fast,par,B16,find --rows 6 --cols 9,10.9942,10489584264,no solution: 6x9 exhausted,10.885544,next-row set on wide rows (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B1,count --rows 3 --cols 3,0.0796,994996,solutions=1909732,0.001744,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B2,find --rows 5 --cols 6,0.0811,7220,found,0.000146,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B3,find --rows 6 --cols 6,0.0848,12839,found,0.000232,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B4,count --rows 4 --cols 4,0.1882,170637018,solutions=136245247,0.115452,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B5,count --rows 4 --cols 5,0.8562,450671969,solutions=114846713,0.778029,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B6,count --rows 3 --cols 7,0.1797,90978847,solutions=4453472,0.086233,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B7,find --rows 7 --cols 7,0.2376,34425540,found,0.143577,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B8,find --rows 6 --cols 7,0.2162,22854961,found,0.127955,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B9,find --rows 5 --cols 9,0.2939,159215937,found,0.187932,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B10,count --rows 5 --cols 5,4.1255,3266964258,solutions=80364530,4.050911,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B11,count --rows 4 --cols 6,1.6399,865977876,solutions=37812638,1.559555,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B12,find --rows 6 --cols 8,1.1285,690195394,found,1.032595,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B13,find --rows 5 --cols 10,1.0471,976239922,no solution: 5x10 exhausted,0.953537,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B14,count --rows 6 --cols 4,1.6512,865977876,solutions=37812638,1.562903,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B15,count --rows 5 --cols 6,12.9134,8494075096,solutions=7424362,12.828644,second-to-last-row kernel (failed),hephaestus
+2026-11-22,a3bbca3,fast,par,B16,find --rows 6 --cols 9,9.3539,10489967076,no solution: 6x9 exhausted,9.255938,second-to-last-row kernel (failed),hephaestus

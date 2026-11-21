@@ -118,6 +118,9 @@ impl<'a> Worker<'a> {
         let mut colv: [CNode; W] = std::array::from_fn(|i| s.col_trie.node(self.col_state[i]));
         let mut k = Kernel::<W>::new(s);
         k.cut = plain;
+        // separate instances with and without `count_pen`: even an unused call site slowed the
+        // generic kernel of 5-row grids by 2–3%
+        let pen = Kernel::<W>::PEN && s.rows <= 4;
         let mut nodes = 0;
         let row = s.row_trie.node(self.row_state[r]);
         let total = if s.sym && plain.is_none() {
@@ -126,10 +129,15 @@ impl<'a> Worker<'a> {
             for (d, &g) in row0.iter_mut().zip(&self.grid[..cell]) {
                 *d = g - b'a';
             }
-            k.count_sym(r, c, row, &mut colv, &mut nodes, &mut row0)
+            if pen { k.count_sym::<true>(r, c, row, &mut colv, &mut nodes, &mut row0) } else { k.count_sym::<false>(r, c, row, &mut colv, &mut nodes, &mut row0) }
         } else {
             let ps: &[Node] = if c == 0 { std::slice::from_ref(&k.root) } else { &[] };
-            if plain.is_some() { k.count::<true>(r, c, row, &mut colv, &mut nodes, !0, ps, SELF) } else { k.count::<false>(r, c, row, &mut colv, &mut nodes, !0, ps, SELF) }
+            match (plain.is_some(), pen) {
+                (true, true) => k.count::<true, true>(r, c, row, &mut colv, &mut nodes, !0, ps, SELF),
+                (true, false) => k.count::<true, false>(r, c, row, &mut colv, &mut nodes, !0, ps, SELF),
+                (false, true) => k.count::<false, true>(r, c, row, &mut colv, &mut nodes, !0, ps, SELF),
+                (false, false) => k.count::<false, false>(r, c, row, &mut colv, &mut nodes, !0, ps, SELF),
+            }
         };
         self.nodes += nodes;
         total
@@ -216,6 +224,10 @@ impl<const W: usize> Kernel<'_, W> {
     /// Track the exact next-row set only on rows of up to 8 letters: on longer rows it overflows
     /// `S_CAP` almost at once and only costs time (6×9 count: 10.5 s with it, 9.4 s without).
     const TRACK: bool = W <= 8;
+    /// Use `count_pen` for the second-to-last row only where it measured faster: grids of at most
+    /// 4 rows and 6 columns (`P` = true instances of the kernels). On 4×7, 5×5, 5×6, 5×7 and 6×6 it
+    /// was 1.5–4% slower than the generic kernel, for no reason I could isolate without a profiler.
+    const PEN: bool = W <= 6;
 
     /// Last row, cell `c`: completions of `row` with letter `c'` in `masks[c']` for every c' >= c.
     fn count_last(&self, c: usize, row: Node, masks: &[u32; W], nodes: &mut u64) -> u64 {
@@ -257,7 +269,7 @@ impl<const W: usize> Kernel<'_, W> {
     /// This runs only on the "tied" path, where column 0 equals row 0 so far. At (r, 0), letters
     /// below `row0[r]` are cut, the equal letter stays tied, and greater letters leave for the
     /// plain kernel with weight 2.
-    fn count_sym(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, row0: &mut [u8; W]) -> u64 {
+    fn count_sym<const P: bool>(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, row0: &mut [u8; W]) -> u64 {
         if r == self.last_r {
             let mut masks = [0u32; W];
             for (m, n) in masks.iter_mut().zip(colv.iter()) {
@@ -295,9 +307,9 @@ impl<const W: usize> Kernel<'_, W> {
             // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
             let (nr, nc, nrow) = if c == (W - 1) { (r + 1, 0, self.root) } else { (r, c + 1, unsafe { self.rstep(row, l) }) };
             total += if tie_cell && l > w {
-                2 * self.count::<false>(nr, nc, nrow, colv, nodes, !0, if nc == 0 { std::slice::from_ref(&self.root) } else { &[] }, SELF)
+                2 * self.count::<false, P>(nr, nc, nrow, colv, nodes, !0, if nc == 0 { std::slice::from_ref(&self.root) } else { &[] }, SELF)
             } else {
-                self.count_sym(nr, nc, nrow, colv, nodes, row0)
+                self.count_sym::<P>(nr, nc, nrow, colv, nodes, row0)
             };
         }
         colv[c] = col;
@@ -369,12 +381,13 @@ impl<const W: usize> Kernel<'_, W> {
     /// have there, given what the columns already force on positions 0..c-1 of row r + 1
     /// (any superset is valid, e.g. `!0`). Unused at c == 0.
     /// `ANY`: return as soon as the total is non-zero (an existence test, for `find`).
+    /// `P`: hand the second-to-last row to `count_pen` (see `Kernel::PEN`).
     /// `ps`, `pm` = the exact set S of row-trie nodes (depth c) that row r + 1 can still be in, given
     /// the column letters already forced on its positions 0..c-1: S = children of the nodes `ps` by
     /// letters in `pm`, or `ps` itself when `pm == SELF`. Built lazily, only if this cell has a live
     /// letter. `ps` empty = unknown (S had more than `S_CAP` nodes): the bigram bound `f` is used.
     #[allow(clippy::too_many_arguments)]
-    fn count<const ANY: bool>(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[Node], pm: u32) -> u64 {
+    fn count<const ANY: bool, const P: bool>(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[Node], pm: u32) -> u64 {
         if r == self.last_r {
             // Last row: columns only need their masks (their children are never used).
             let mut masks = [0u32; W];
@@ -383,8 +396,8 @@ impl<const W: usize> Kernel<'_, W> {
             }
             return self.count_last(c, row, &masks, nodes);
         }
-        if Self::TRACK && r + 1 == self.last_r && !ps.is_empty() {
-            return self.count_pen::<ANY>(c, row, colv, nodes, f, ps, pm);
+        if P && r + 1 == self.last_r && !ps.is_empty() {
+            return self.count_pen::<ANY, P>(c, row, colv, nodes, f, ps, pm);
         }
         *nodes += 1;
         crate::probe::hit(r, c);
@@ -455,7 +468,7 @@ impl<const W: usize> Kernel<'_, W> {
                     continue;
                 }
                 colv[c] = cn;
-                total += self.count::<ANY>(r + 1, 0, self.root, colv, nodes, !0, std::slice::from_ref(&self.root), SELF);
+                total += self.count::<ANY, P>(r + 1, 0, self.root, colv, nodes, !0, std::slice::from_ref(&self.root), SELF);
                 if ANY && total > 0 {
                     break;
                 }
@@ -474,7 +487,7 @@ impl<const W: usize> Kernel<'_, W> {
             }
             colv[c] = cn;
             // SAFETY: `l` comes from `good`, a subset of this node's mask.
-            total += self.count::<ANY>(r, c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc, s, cn.mask);
+            total += self.count::<ANY, P>(r, c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc, s, cn.mask);
             if ANY && total > 0 {
                 break;
             }
@@ -489,7 +502,7 @@ impl<const W: usize> Kernel<'_, W> {
     /// Falls back to the generic `count` if S overflows `S_CAP`.
     #[allow(clippy::too_many_arguments)]
     #[inline(never)]
-    fn count_pen<const ANY: bool>(&self, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[Node], pm: u32) -> u64 {
+    fn count_pen<const ANY: bool, const P: bool>(&self, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[Node], pm: u32) -> u64 {
         *nodes += 1;
         crate::probe::hit(self.last_r - 1, c);
         if ANY {
@@ -527,7 +540,7 @@ impl<const W: usize> Kernel<'_, W> {
                     let x = m.trailing_zeros();
                     m &= m - 1;
                     if n == S_CAP_PEN {
-                        return self.count::<ANY>(self.last_r - 1, c, row, colv, nodes, f, &[], SELF);
+                        return self.count::<ANY, P>(self.last_r - 1, c, row, colv, nodes, f, &[], SELF);
                     }
                     // SAFETY: `x` is a bit of `sn.mask`, `sn` a row-trie node.
                     let ch = unsafe { self.rstep(*sn, x) };
@@ -605,7 +618,7 @@ impl<const W: usize> Kernel<'_, W> {
             }
             colv[c] = cn;
             // SAFETY: as above.
-            total += self.count_pen::<ANY>(c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc, s, cn.mask);
+            total += self.count_pen::<ANY, P>(c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc, s, cn.mask);
             if ANY && total > 0 {
                 break;
             }
