@@ -550,3 +550,19 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,ae085c4,fast,par,B14,count --rows 6 --cols 4,1.6797,862998712,solutions=37812638,1.585895,short sequential find budget,hephaestus
 2026-11-22,ae085c4,fast,par,B15,count --rows 5 --cols 6,12.0710,7001446794,solutions=7424362,11.986059,short sequential find budget,hephaestus
 2026-11-22,ae085c4,fast,par,B16,find --rows 6 --cols 9,9.3268,10487997156,no solution: 6x9 exhausted,9.229840,short sequential find budget,hephaestus
+2026-11-22,631c1c3,fast,par,B1,count --rows 3 --cols 3,0.0784,994996,solutions=1909732,0.001634,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B2,find --rows 5 --cols 6,0.0900,7220,found,0.000151,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B3,find --rows 6 --cols 6,0.0933,12839,found,0.000235,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B4,count --rows 4 --cols 4,0.2046,170637018,solutions=136245247,0.124225,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B5,count --rows 4 --cols 5,1.0193,448100724,solutions=114846713,0.938210,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B6,count --rows 3 --cols 7,0.2145,89635286,solutions=4453472,0.112682,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B7,find --rows 7 --cols 7,0.2397,26804994,found,0.135559,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B8,find --rows 6 --cols 7,0.2115,14983421,found,0.107732,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B9,find --rows 5 --cols 9,0.2633,157444263,found,0.152123,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B10,count --rows 5 --cols 5,4.5579,3123782617,solutions=80364530,4.476757,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B11,count --rows 4 --cols 6,1.9658,858502757,solutions=37812638,1.877232,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B12,find --rows 6 --cols 8,1.2574,538575004,found,1.144325,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B13,find --rows 5 --cols 10,1.0163,974270002,no solution: 5x10 exhausted,0.903131,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B14,count --rows 6 --cols 4,1.9706,858502757,solutions=37812638,1.876131,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B15,count --rows 5 --cols 6,15.7632,6960472956,solutions=7424362,15.672506,DAWG next-row set (failed),hephaestus
+2026-11-22,631c1c3,fast,par,B16,find --rows 6 --cols 9,9.3540,10487997156,no solution: 6x9 exhausted,9.229442,DAWG next-row set (failed),hephaestus

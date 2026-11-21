@@ -943,3 +943,24 @@ Budget sweep (median of 5):
 
 **Verdict:** kept. A constant from the early days (sized when one node cost 5× more) had become the
 biggest cost of the short finds. From this step on, heavy and huge benchmarks are the median of 3 runs.
+
+### 2026-11-22: next-row set over a DAWG, with multiplicities (`631c1c3`) ❌ reverted
+
+**Idea:** the next-row set holds one row-trie node per prefix, but two prefixes that can end the same
+ways behave the same from here on. Over a minimized automaton (DAWG, restored from `ad3fb0c`), the set
+becomes a multiset of states: a new child that lands on a state already in the set just adds its
+multiplicity (`SetBuf::merge`). The second-to-last row adds `mult × popcount`, so counts stay exact.
+I expected smaller sets, fewer overflows, and a way to finally track 9–10 letter rows.
+
+| Shape | trie set | DAWG set | |
+|---|---:|---:|---|
+| count 5×5 | 3.93 s · 3.27 G nodes | 4.46 s · 3.12 G | 0.88× |
+| count 5×6 | 12.0 s · 8.50 G | 15.6 s · 6.96 G | 0.77× |
+| count 6×9, tracked (was off) | 9.4 s · 10.49 G | 13.5 s · **5.64 G** | 0.70× |
+| count 6×9, second-to-last row only | 9.4 s | 10.7 s · 10.49 G | 0.88× |
+
+**Verdict:** reverted. The merged set prunes hard: on 6×9 it halves the nodes, which the trie set
+never managed. But each node costs about 2.7× more: two dependent loads per child step (edge, then node),
+plus a linear merge scan over up to 32 entries on every insert. The node halving comes from the
+upper rows (tracking only the second-to-last row gives nothing), and that's where the sets are biggest.
+If set upkeep ever gets much cheaper (e.g. an O(1) merge with a per-thread stamp table), it's worth retrying.
