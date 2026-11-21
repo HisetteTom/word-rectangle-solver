@@ -534,3 +534,19 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,a182ecf,fast,par,B14,count --rows 6 --cols 4,1.6828,862998712,solutions=37812638,1.592602,next-row set cap 32,hephaestus
 2026-11-22,a182ecf,fast,par,B15,count --rows 5 --cols 6,12.0813,7001446794,solutions=7424362,11.995557,next-row set cap 32,hephaestus
 2026-11-22,a182ecf,fast,par,B16,find --rows 6 --cols 9,9.3604,10489967076,no solution: 6x9 exhausted,9.261024,next-row set cap 32,hephaestus
+2026-11-22,ae085c4,fast,par,B1,count --rows 3 --cols 3,0.0793,994996,solutions=1909732,0.001723,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B2,find --rows 5 --cols 6,0.0889,7220,found,0.000149,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B3,find --rows 6 --cols 6,0.0852,12839,found,0.000229,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B4,count --rows 4 --cols 4,0.1897,170637018,solutions=136245247,0.113812,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B5,count --rows 4 --cols 5,0.8477,450034077,solutions=114846713,0.771141,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B6,count --rows 3 --cols 7,0.1769,90270853,solutions=4453472,0.085482,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B7,find --rows 7 --cols 7,0.2001,27407764,found,0.103832,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B8,find --rows 6 --cols 7,0.1836,15410365,found,0.082789,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B9,find --rows 5 --cols 9,0.2514,157462177,found,0.152140,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B10,count --rows 5 --cols 5,4.0113,3129472451,solutions=80364530,3.933429,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B11,count --rows 4 --cols 6,1.6623,862998712,solutions=37812638,1.580831,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B12,find --rows 6 --cols 8,1.0098,540300434,found,0.911934,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B13,find --rows 5 --cols 10,1.0049,974270002,no solution: 5x10 exhausted,0.900979,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B14,count --rows 6 --cols 4,1.6797,862998712,solutions=37812638,1.585895,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B15,count --rows 5 --cols 6,12.0710,7001446794,solutions=7424362,11.986059,short sequential find budget,hephaestus
+2026-11-22,ae085c4,fast,par,B16,find --rows 6 --cols 9,9.3268,10487997156,no solution: 6x9 exhausted,9.229840,short sequential find budget,hephaestus

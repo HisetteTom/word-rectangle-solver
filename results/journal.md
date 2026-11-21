@@ -915,3 +915,31 @@ Re-checked the width cutoff with cap 32: tracking 9–10 letter rows is still sl
 | others | | | within noise |
 
 **Verdict:** kept.
+
+### 2026-11-22: short sequential find budget (`ae085c4`) ✅ kept
+
+**Probe:** find scaled badly: 7×7 took 0.63 s on 1 thread and 0.14 s on 32 (4.5×), and 16 threads beat 32. Timing
+the phases showed `find`'s **sequential first attempt** (budget: 2 M nodes, meant to keep tiny cases
+off the thread pool) costing **36 ms** before any thread started, on every find too big to finish there.
+Job expansion took only 3–6 ms.
+
+Budget sweep (median of 5):
+
+| budget | 7×7 | 6×7 | 5×9 | 6×8 | 5×8 | 4×11 | 6×6 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 2 M | 0.140 s | 0.115 s | 0.187 s | 0.948 s | 55 ms | 80 ms | 0.23 ms |
+| 300 k | 0.109 s | 0.088 s | 0.156 s | 0.918 s | 26 ms | 49 ms | 0.23 ms |
+| 100 k | 0.104 s | 0.083 s | 0.152 s | 0.911 s | 23 ms | 44 ms | 0.23 ms |
+| **30 k** | 0.105 s | 0.081 s | 0.150 s | 0.913 s | 21 ms | 43 ms | 0.23 ms |
+| 10 k | 0.104 s | 0.082 s | 0.150 s | 0.911 s | 21 ms | 42 ms | 6.9 ms (went parallel) |
+
+| Benchmark | Before (next-row set cap 32) | After | Change |
+|---|---|---|---|
+| B7 find 7×7 | 0.139 s | 0.104 s | 1.34× faster |
+| B8 find 6×7 | 0.120 s | 0.083 s | 1.45× faster |
+| B9 find 5×9 | 0.186 s | 0.152 s | 1.22× faster |
+| B12 find 6×8 | 0.947 s | 0.912 s | 1.04× faster |
+| B13 prove no 5×10 | 0.936 s | 0.901 s | 1.04× faster |
+
+**Verdict:** kept. A constant from the early days (sized when one node cost 5× more) had become the
+biggest cost of the short finds. From this step on, heavy and huge benchmarks are the median of 3 runs.
