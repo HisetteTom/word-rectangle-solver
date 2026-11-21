@@ -438,3 +438,19 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-21,009f4fe,fast,par,B14,count --rows 6 --cols 4,1.7465,1046986844,solutions=37812638,1.650059,reuse look-ahead children (failed),hephaestus
 2026-11-21,009f4fe,fast,par,B15,count --rows 5 --cols 6,12.9449,8497208081,solutions=7424362,12.857011,reuse look-ahead children (failed),hephaestus
 2026-11-21,009f4fe,fast,par,B16,find --rows 6 --cols 9,10.0861,10489967076,no solution: 6x9 exhausted,9.988382,reuse look-ahead children (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B1,count --rows 3 --cols 3,0.0722,994996,solutions=1909732,0.001802,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B2,find --rows 5 --cols 6,0.0885,7220,found,0.000153,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B3,find --rows 6 --cols 6,0.0836,12839,found,0.000242,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B4,count --rows 4 --cols 4,0.2087,192987066,solutions=136245247,0.134681,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B5,count --rows 4 --cols 5,0.9871,614200383,solutions=114846713,0.912831,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B6,count --rows 3 --cols 7,0.1763,107976321,solutions=4453472,0.090871,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B7,find --rows 7 --cols 7,0.2383,39003324,found,0.137799,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B8,find --rows 6 --cols 7,0.2208,32230747,found,0.128900,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B9,find --rows 5 --cols 9,0.2966,157866834,found,0.205617,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B10,count --rows 5 --cols 5,4.3139,3269576133,solutions=80364530,4.236641,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B11,count --rows 4 --cols 6,1.7834,1046986844,solutions=37812638,1.697965,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B12,find --rows 6 --cols 8,1.1480,1009783881,found,1.052225,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B13,find --rows 5 --cols 10,1.1193,976239922,no solution: 5x10 exhausted,1.015275,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B14,count --rows 6 --cols 4,1.7920,1046986844,solutions=37812638,1.703931,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B15,count --rows 5 --cols 6,13.4380,8497208081,solutions=7424362,13.354903,12-byte packed row nodes (failed),hephaestus
+2026-11-21,d9ff337,fast,par,B16,find --rows 6 --cols 9,10.3578,10489967076,no solution: 6x9 exhausted,10.251746,12-byte packed row nodes (failed),hephaestus

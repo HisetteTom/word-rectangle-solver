@@ -786,3 +786,26 @@ the last-row walk don't step the trie a second time.
 
 **Verdict:** reverted. The second step is an L1 hit (the child was loaded a few cycles earlier), so
 it costs a popcount and a load. A store per letter into a 416-byte buffer, plus a counter, costs more.
+
+### 2026-11-21: 12-byte packed row nodes (`d9ff337`) ❌ reverted
+
+**Probe first:** dropping the `next2` look-ahead mask (12-byte nodes, weaker pruning) made 4×5 and 5×5
+*faster* (0.852 s, 3.87 s) despite 3–4% more nodes, so the cost per node fell about 6%: memory footprint
+matters. The 5-letter row trie (16-byte nodes) plus the column trie come to about 480 KB, against 512 KB of L2
+per core, shared by 2 SMT threads.
+
+**Idea:** keep all three masks and pack the 18-bit first-child index into their spare top 6 bits
+(12 bytes per node, ≤ 2^18 nodes per trie). Users AND masks with clean 26-bit masks (`LETTERS`
+replaces `!0` in the look-ahead), so the index bits never leak into letter sets.
+
+| Benchmark | Before (exact next-row set) | After | Change |
+|---|---|---|---|
+| B5 count 4×5 | 0.864 s | 0.913 s | 0.95× |
+| B10 count 5×5 | 3.95 s | 4.24 s | 0.93× |
+| B11 count 4×6 | 1.59 s | 1.70 s | 0.94× |
+| B15 count 5×6 | 12.43 s | 13.35 s | 0.93× |
+| B16 prove no 6×9 | 9.91 s | 10.25 s | 0.97× |
+
+**Verdict:** reverted. Decoding the index costs 5 shifts/ORs on the critical path of every child step
+(load → decode → next load), and that costs more than the smaller footprint saves. A smaller node
+must keep `first` directly addressable.
