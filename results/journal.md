@@ -836,3 +836,18 @@ answer were counted to the end.
 **Verdict:** kept, as a trade-off. Exhaustive proofs, the long runs that settle the atlas frontier,
 get 4–7% faster. A satisfiable find walks the job holding the answer twice (test, then search), which
 costs about 10 ms on runs of about 0.13 s.
+
+### 2026-11-22: next-row set on wide rows, second-to-last row only (`9618022`) ❌ reverted
+
+**Idea:** on rows of 9+ letters the set overflows in the upper rows, where columns still allow many
+letters. In the second-to-last row the columns are almost complete words, so I expected the set to stay
+small there. So: track it only in that row when W > 8.
+
+| Benchmark | Before (count-kernel job test) | After | Change |
+|---|---|---|---|
+| count 6×9 (not a benchmark) | 9.4 s · 10.49 G nodes | 11.1 s · 10.49 G | 0.85× |
+| B13 prove no 5×10 | 0.94 s | 1.10 s | 0.85× |
+| B16 prove no 6×9 | 9.26 s | 10.9 s | 0.85× |
+
+**Verdict:** reverted. The node count barely moves: even in the second-to-last row, 9–10 letter rows
+have more than 16 compatible next-row prefixes, so the set overflows and only adds cost.

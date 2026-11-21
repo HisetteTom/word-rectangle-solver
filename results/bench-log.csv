@@ -470,3 +470,19 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-21,759d725,fast,par,B14,count --rows 6 --cols 4,1.6724,1046986844,solutions=37812638,1.584192,count-kernel job test in find,hephaestus
 2026-11-21,759d725,fast,par,B15,count --rows 5 --cols 6,12.4895,8497208081,solutions=7424362,12.408392,count-kernel job test in find,hephaestus
 2026-11-21,759d725,fast,par,B16,find --rows 6 --cols 9,9.3592,10489967076,no solution: 6x9 exhausted,9.255842,count-kernel job test in find,hephaestus
+2026-11-22,9618022,fast,par,B1,count --rows 3 --cols 3,0.0777,994996,solutions=1909732,0.001749,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B2,find --rows 5 --cols 6,0.0816,7220,found,0.000148,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B3,find --rows 6 --cols 6,0.0855,12839,found,0.000226,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B4,count --rows 4 --cols 4,0.1999,192987066,solutions=136245247,0.129733,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B5,count --rows 4 --cols 5,0.9364,614200383,solutions=114846713,0.857461,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B6,count --rows 3 --cols 7,0.1805,107976321,solutions=4453472,0.088447,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B7,find --rows 7 --cols 7,0.2383,34381484,found,0.142005,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B8,find --rows 6 --cols 7,0.2171,22785951,found,0.120510,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B9,find --rows 5 --cols 9,0.3130,154217609,found,0.218097,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B10,count --rows 5 --cols 5,3.9741,3269576133,solutions=80364530,3.897791,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B11,count --rows 4 --cols 6,1.6797,1046986844,solutions=37812638,1.600528,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B12,find --rows 6 --cols 8,1.1445,690157479,found,1.040526,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B13,find --rows 5 --cols 10,1.1867,962271526,no solution: 5x10 exhausted,1.093020,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B14,count --rows 6 --cols 4,1.6852,1046986844,solutions=37812638,1.599290,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B15,count --rows 5 --cols 6,12.5938,8497208081,solutions=7424362,12.503543,next-row set on wide rows (failed),hephaestus
+2026-11-22,9618022,fast,par,B16,find --rows 6 --cols 9,10.9942,10489584264,no solution: 6x9 exhausted,10.885544,next-row set on wide rows (failed),hephaestus

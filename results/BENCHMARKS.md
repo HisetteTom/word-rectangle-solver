@@ -53,6 +53,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 1.81 ms | 3,241× | 1.07× | 994,996 | solutions=1909732 |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 1.8 ms | 3,255× | 1.07× | 994,996 | solutions=1909732 |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 1.76 ms | 3,333× | 1.10× | 994,996 | solutions=1909732 |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 1.75 ms | 3,354× | 1.01× | 994,996 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -92,6 +93,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 148 µs | 7,797× | 1.03× | 7,220 | found |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 153 µs | 7,542× | 1.00× | 7,220 | found |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 149 µs | 7,745× | 1.03× | 7,220 | found |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 148 µs | 7,797× | 1.01× | 7,220 | found |
 
 ## B3 · find first 6×6
 
@@ -131,6 +133,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 235 µs | 11,540× | 0.99× | 12,839 | found |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 242 µs | 11,206× | 0.96× | 12,839 | found |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 228 µs | 11,894× | 1.02× | 12,839 | found |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 226 µs | 11,999× | 1.01× | 12,839 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -169,6 +172,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 132 ms | 109× | 1.00× | 192,987,066 | solutions=136245247 |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 135 ms | 106× | 0.98× | 192,987,066 | solutions=136245247 |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 132 ms | 109× | 1.00× | 192,987,066 | solutions=136245247 |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 130 ms | 110× | 1.02× | 192,987,066 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -207,6 +211,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 872 ms | 66.2× | 0.99× | 614,200,383 | solutions=114846713 |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 913 ms | 63.2× | 0.95× | 614,200,383 | solutions=114846713 |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 872 ms | 66.2× | 0.99× | 614,200,383 | solutions=114846713 |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 857 ms | 67.3× | 1.02× | 614,200,383 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -245,6 +250,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 93.5 ms | 62.7× | 0.94× | 107,976,321 | solutions=4453472 |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 90.9 ms | 64.6× | 0.97× | 107,976,321 | solutions=4453472 |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 87.4 ms | 67.1× | 1.01× | 107,976,321 | solutions=4453472 |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 88.4 ms | 66.3× | 0.99× | 107,976,321 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -283,6 +289,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 135 ms | 13.4× | 0.96× | 49,388,577 | found |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 138 ms | 13.1× | 0.94× | 39,003,324 | found |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 144 ms | 12.6× | 0.90× | 35,197,216 | found |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 142 ms | 12.7× | 1.01× | 34,381,484 | found |
 
 ## B8 · find first 6×7
 
@@ -321,6 +328,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 116 ms | 12.7× | 1.00× | 33,692,001 | found |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 129 ms | 11.4× | 0.89× | 32,230,747 | found |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 120 ms | 12.2× | 0.96× | 22,695,216 | found |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 121 ms | 12.2× | 1.00× | 22,785,951 | found |
 
 ## B9 · find first 5×9
 
@@ -359,6 +367,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 195 ms | 42.9× | 0.99× | 157,903,355 | found |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 206 ms | 40.7× | 0.94× | 157,866,834 | found |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 188 ms | 44.5× | 1.03× | 159,376,757 | found |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 218 ms | 38.3× | 0.86× | 154,217,609 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -393,6 +402,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 4.02 s | 3.96× | 0.98× | 3,269,576,133 | solutions=80364530 |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 4.24 s | 3.76× | 0.93× | 3,269,576,133 | solutions=80364530 |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 3.99 s | 3.99× | 0.99× | 3,269,576,133 | solutions=80364530 |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 3.90 s | 4.09× | 1.02× | 3,269,576,133 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -427,6 +437,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 1.65 s | 3.04× | 0.96× | 1,046,986,844 | solutions=37812638 |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 1.70 s | 2.95× | 0.93× | 1,046,986,844 | solutions=37812638 |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 1.58 s | 3.17× | 1.00× | 1,046,986,844 | solutions=37812638 |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 1.60 s | 3.13× | 0.99× | 1,046,986,844 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -461,6 +472,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 1.00 s | 2.64× | 1.02× | 1,009,753,304 | found |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 1.05 s | 2.51× | 0.97× | 1,009,783,881 | found |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 1.03 s | 2.56× | 0.99× | 690,106,117 | found |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 1.04 s | 2.54× | 0.99× | 690,157,479 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -495,6 +507,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 982 ms | 2.50× | 0.99× | 976,239,922 | no solution: 5x10 exhausted |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 1.02 s | 2.42× | 0.96× | 976,239,922 | no solution: 5x10 exhausted |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 941 ms | 2.61× | 1.04× | 976,239,922 | no solution: 5x10 exhausted |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 1.09 s | 2.25× | 0.86× | 962,271,526 | no solution: 5x10 exhausted |
 
 ## B14 · count all 6×4 (exhaustive)
 
@@ -529,6 +542,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 1.65 s | 5.84× | 0.97× | 1,046,986,844 | solutions=37812638 |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 1.70 s | 5.65× | 0.93× | 1,046,986,844 | solutions=37812638 |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 1.58 s | 6.08× | 1.01× | 1,046,986,844 | solutions=37812638 |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 1.60 s | 6.02× | 0.99× | 1,046,986,844 | solutions=37812638 |
 
 ## B15 · count all 5×6 (exhaustive)
 
@@ -563,6 +577,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 12.9 s | 2.33× | 0.97× | 8,497,208,081 | solutions=7424362 |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 13.4 s | 2.24× | 0.93× | 8,497,208,081 | solutions=7424362 |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 12.4 s | 2.41× | 1.00× | 8,497,208,081 | solutions=7424362 |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 12.5 s | 2.40× | 0.99× | 8,497,208,081 | solutions=7424362 |
 
 ## B16 · prove no 6×9 exists (exhaustive)
 
@@ -597,3 +612,4 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 9.99 s | 2.60× | 0.99× | 10,489,967,076 | no solution: 6x9 exhausted |
 | ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 10.3 s | 2.53× | 0.97× | 10,489,967,076 | no solution: 6x9 exhausted |
 | ⭐ | **count-kernel job test in find** | `759d725` | 2026-11-21 | fast | 9.26 s | 2.81× | 1.07× | 10,489,967,076 | no solution: 6x9 exhausted |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 10.9 s | 2.39× | 0.85× | 10,489,584,264 | no solution: 6x9 exhausted |
