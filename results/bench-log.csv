@@ -454,3 +454,19 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-21,d9ff337,fast,par,B14,count --rows 6 --cols 4,1.7920,1046986844,solutions=37812638,1.703931,12-byte packed row nodes (failed),hephaestus
 2026-11-21,d9ff337,fast,par,B15,count --rows 5 --cols 6,13.4380,8497208081,solutions=7424362,13.354903,12-byte packed row nodes (failed),hephaestus
 2026-11-21,d9ff337,fast,par,B16,find --rows 6 --cols 9,10.3578,10489967076,no solution: 6x9 exhausted,10.251746,12-byte packed row nodes (failed),hephaestus
+2026-11-21,759d725,fast,par,B1,count --rows 3 --cols 3,0.0780,994996,solutions=1909732,0.001760,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B2,find --rows 5 --cols 6,0.0879,7220,found,0.000149,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B3,find --rows 6 --cols 6,0.0849,12839,found,0.000228,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B4,count --rows 4 --cols 4,0.2017,192987066,solutions=136245247,0.131871,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B5,count --rows 4 --cols 5,0.9458,614200383,solutions=114846713,0.871985,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B6,count --rows 3 --cols 7,0.1881,107976321,solutions=4453472,0.087419,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B7,find --rows 7 --cols 7,0.2377,35197216,found,0.144104,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B8,find --rows 6 --cols 7,0.2078,22695216,found,0.120175,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B9,find --rows 5 --cols 9,0.2938,159376757,found,0.187944,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B10,count --rows 5 --cols 5,4.0679,3269576133,solutions=80364530,3.992260,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B11,count --rows 4 --cols 6,1.6639,1046986844,solutions=37812638,1.583604,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B12,find --rows 6 --cols 8,1.1298,690106117,found,1.031926,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B13,find --rows 5 --cols 10,1.0404,976239922,no solution: 5x10 exhausted,0.940628,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B14,count --rows 6 --cols 4,1.6724,1046986844,solutions=37812638,1.584192,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B15,count --rows 5 --cols 6,12.4895,8497208081,solutions=7424362,12.408392,count-kernel job test in find,hephaestus
+2026-11-21,759d725,fast,par,B16,find --rows 6 --cols 9,9.3592,10489967076,no solution: 6x9 exhausted,9.255842,count-kernel job test in find,hephaestus

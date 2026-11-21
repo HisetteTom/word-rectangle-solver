@@ -809,3 +809,30 @@ replaces `!0` in the look-ahead), so the index bits never leak into letter sets.
 **Verdict:** reverted. Decoding the index costs 5 shifts/ORs on the critical path of every child step
 (load → decode → next load), and that costs more than the smaller footprint saves. A smaller node
 must keep `first` directly addressable.
+
+### 2026-11-21: count-kernel job test in find (`759d725`) ✅ kept (trade-off)
+
+**Idea:** on exhaustive work the count kernel beats `search` (6×9: 9.4 s vs 9.9 s), and on rows of
+≤ 8 letters it has the exact next-row set. So in `find`'s parallel phase each job is first *tested*
+with the count kernel, and only a job with solutions is searched (from its start, so the answer is
+still the lexicographically first grid: determinism unchanged). For this the count kernel gets a
+compile-time `ANY` mode (monomorphized, so plain counts don't pay for it):
+- return as soon as the total is non-zero;
+- every 1024 nodes, check whether an earlier job already has a solution, and if so cancel (a sticky
+  flag makes every frame return at once), as `search` does with `stop()`.
+
+Without these two, 7×7 got almost 2× slower (0.24 s), because jobs holding solutions or coming after the
+answer were counted to the end.
+
+| Benchmark | Before (exact next-row set) | After | Change |
+|---|---|---|---|
+| B7 find 7×7 | 0.129 s | 0.144 s | 0.90× |
+| B8 find 6×7 | 0.115 s | 0.120 s | 0.96× |
+| B9 find 5×9 | 0.194 s | 0.188 s | 1.03× |
+| B12 find 6×8 | 1.025 s | 1.032 s | ≈ |
+| B13 prove no 5×10 | 0.976 s | 0.941 s | 1.04× |
+| B16 prove no 6×9 | 9.91 s | 9.26 s | 1.07× |
+
+**Verdict:** kept, as a trade-off. Exhaustive proofs, the long runs that settle the atlas frontier,
+get 4–7% faster. A satisfiable find walks the job holding the answer twice (test, then search), which
+costs about 10 ms on runs of about 0.13 s.
