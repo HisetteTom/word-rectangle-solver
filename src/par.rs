@@ -229,11 +229,12 @@ impl<const W: usize> Kernel<'_, W> {
             return total;
         }
         let m = |k: usize| if k < W { masks[k] } else { !0 };
-        let mut kids = Kids::new();
-        let good = self.good_kids(row, allowed, c, m(c + 1), m(c + 2), m(c + 3), &mut kids);
-        for k in 0..good.count_ones() as usize {
-            // SAFETY: `good_kids` kept popcount(good) children.
-            total += self.count_last(c + 1, unsafe { kids.get(k) }, masks, nodes);
+        let mut good = self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3));
+        while good != 0 {
+            let l = good.trailing_zeros();
+            good &= good - 1;
+            // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
+            total += self.count_last(c + 1, unsafe { self.rstep(row, l) }, masks, nodes);
         }
         total
     }
@@ -375,12 +376,11 @@ impl<const W: usize> Kernel<'_, W> {
         crate::probe::hit(r, c);
         let col = colv[c];
         let allowed = row.mask & col.mask;
-        let mut kids = Kids::new();
         let mut good = if c == (W - 1) {
             allowed
         } else {
             let m = |k: usize| if k < W { colv[k].mask } else { !0 };
-            self.good_kids(row, allowed, c, m(c + 1), m(c + 2), m(c + 3), &mut kids)
+            self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3))
         };
         if good == 0 {
             return 0;
@@ -435,21 +435,18 @@ impl<const W: usize> Kernel<'_, W> {
             colv[c] = col;
             return total;
         }
-        let mut k = 0;
         while good != 0 {
             let l = good.trailing_zeros();
             good &= good - 1;
             // SAFETY: `l` comes from `good`, a subset of this node's mask.
             let cn = unsafe { self.cstep(col, l) };
-            // SAFETY: the k-th letter of `good` is the k-th child `good_kids` kept.
-            let child = unsafe { kids.get(k) };
-            k += 1;
             let fc = base & cn.mask;
             if fc == 0 {
                 continue; // next row can't fit the columns
             }
             colv[c] = cn;
-            total += self.count(r, c + 1, child, colv, nodes, fc, s, cn.mask);
+            // SAFETY: `l` comes from `good`, a subset of this node's mask.
+            total += self.count(r, c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc, s, cn.mask);
         }
         colv[c] = col;
         total
@@ -460,35 +457,6 @@ impl<const W: usize> Kernel<'_, W> {
     fn uni(&self, k: usize, f: u32) -> u32 {
         let t = &self.bi[k];
         t[0][(f & 127) as usize] | t[1][((f >> 7) & 127) as usize] | t[2][((f >> 14) & 127) as usize] | t[3][((f >> 21) & 31) as usize]
-    }
-
-    /// `good`, also keeping the row child of every kept letter (in letter order) in `kids`, so the
-    /// caller doesn't step the trie a second time.
-    #[inline(always)]
-    fn good_kids(&self, row: Node, allowed: u32, c: usize, m1: u32, m2: u32, m3: u32, kids: &mut Kids) -> u32 {
-        let (e2, e3) = (c + 2 >= W, c + 3 >= W);
-        let mut a = allowed;
-        let mut good = 0;
-        let mut k = 0;
-        while a != 0 {
-            let l = a.trailing_zeros();
-            a &= a - 1;
-            // SAFETY: `l` comes from `allowed`, a subset of this node's mask.
-            let n = unsafe { self.rstep(row, l) };
-            let ok = (n.mask & m1 != 0) & (e2 | (n.next & m2 != 0)) & (e3 | (n.next2 & m3 != 0));
-            // branch-free compaction: always write, advance only if kept (k <= 25 here)
-            // SAFETY: k < popcount(allowed) <= 26.
-            unsafe { self.write_kid(kids, k, n) };
-            k += ok as usize;
-            good |= (ok as u32) << l;
-        }
-        good
-    }
-
-    #[inline(always)]
-    unsafe fn write_kid(&self, kids: &mut Kids, k: usize, n: Node) {
-        // SAFETY: caller guarantees k < 26.
-        unsafe { kids.n.get_unchecked_mut(k).write(n) };
     }
 
     /// Branch-free look-ahead filter: the letters of `allowed` whose row child can still match
@@ -508,28 +476,6 @@ impl<const W: usize> Kernel<'_, W> {
             good |= (ok as u32) << l;
         }
         good
-    }
-}
-
-/// Row children kept by `Kernel::good_kids`, in letter order (at most 26 letters).
-struct Kids {
-    n: [std::mem::MaybeUninit<Node>; 26],
-}
-
-impl Kids {
-    #[inline(always)]
-    fn new() -> Self {
-        Kids { n: [std::mem::MaybeUninit::uninit(); 26] }
-    }
-
-    /// The k-th kept child.
-    ///
-    /// # Safety
-    /// `k` < the number of letters `good_kids` kept (it wrote slots 0..that).
-    #[inline(always)]
-    unsafe fn get(&self, k: usize) -> Node {
-        // SAFETY: slot k was written by `good_kids` (contract above); k < 26.
-        unsafe { self.n.get_unchecked(k).assume_init() }
     }
 }
 
