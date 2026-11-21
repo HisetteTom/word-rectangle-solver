@@ -33,7 +33,9 @@ STYLE = """<style>
   .ln{stroke:#1f6feb;fill:none} .lnf{fill:#1f6feb} .ctx{stroke:#afb8c1;fill:none} .ring{stroke:#ffffff}
   .fx{stroke:#8c959f;fill:none} .area{fill:#1f6feb;fill-opacity:.08} .tile{fill:#f6f8fa;stroke:#d1d9e0}
   .big{fill:#1f6feb;font-weight:800}
+  .s2{stroke:#eb6834;fill:none} .s2f{fill:#eb6834} .s3{stroke:#1baf7a;fill:none} .s3f{fill:#1baf7a}
   @media (prefers-color-scheme: dark){
+    .s2{stroke:#d95926} .s2f{fill:#d95926} .s3{stroke:#199e70} .s3f{fill:#199e70}
     .bg{fill:#0d1117} .t{fill:#e6edf3} .m{fill:#9198a1} .g{stroke:#30363d}
     .bar{fill:#2f5f8f} .best{fill:#4493f8} .x{fill:#3fb950}
     .hs{stroke:#484f58} .hb{fill:#21262d} .f{fill:#f85149} .ft{fill:#6e7681} .cur{fill:#4493f8}
@@ -311,6 +313,157 @@ def progress(data: dict[str, list[dict]]):
     return "\n".join(out) + "\n"
 
 
+ATLAS = ROOT / "results" / "atlas.csv"
+# sequential blues, one class per decade of the count (light mode, dark mode)
+DECADES_LIGHT = ["#e3eefb", "#cfe1f7", "#b6d1f2", "#97bdeb", "#74a5e2", "#4f8bd6", "#2f70c5", "#1d58a8", "#14448a", "#0d326b"]
+DECADES_DARK = ["#12233a", "#16304f", "#1a3d66", "#1d4a7d", "#215a95", "#286bad", "#3a80c4", "#5797d4", "#7aaee0", "#a3c7ec"]
+
+
+def fmt_count(n: int) -> str:
+    for div, suf in ((1e9, "G"), (1e6, "M"), (1e3, "k")):
+        if n >= div:
+            v = n / div
+            return f"{v:.3g}{suf}" if v < 100 else f"{v:.0f}{suf}"
+    return str(n)
+
+
+def atlas() -> str | None:
+    if not ATLAS.exists():
+        return None
+    with ATLAS.open(newline="") as f:
+        cells = {(int(x["rows"]), int(x["cols"])): x for x in csv.DictReader(f)}
+    if not cells:
+        return None
+    rs = sorted({r for r, _ in cells})
+    cs = list(range(min(c for _, c in cells), max(c for _, c in cells) + 1))
+    cw, ch = 62, 50
+    left, top = 92, 132
+    width = left + cw * len(cs) + 24
+    legend_y = top + ch * len(rs) + 40
+    height = legend_y + 96
+    css = ["<style>", "  .bg{fill:#ffffff} .t{fill:#1f2328} .m{fill:#59636e} .g{stroke:#d1d9e0} .ink{fill:#1f2328} .inv{fill:#ffffff}",
+           "  .none{fill:#f6f8fa;stroke:#d1d9e0} .ex{fill:#dafbe1;stroke:#1a7f37} .exi{fill:#1a7f37} .unk{fill:#ffffff;stroke:#bf8700;stroke-dasharray:3 3} .unki{fill:#9a6700}",
+           "  .star{fill:#bf8700} .cell{stroke:#ffffff;stroke-width:2}"]
+    css += [f"  .d{i}{{fill:{c}}}" for i, c in enumerate(DECADES_LIGHT)]
+    css += ["  @media (prefers-color-scheme: dark){",
+            "    .bg{fill:#0d1117} .t{fill:#e6edf3} .m{fill:#9198a1} .g{stroke:#30363d} .ink{fill:#e6edf3} .inv{fill:#0d1117}",
+            "    .none{fill:#161b22;stroke:#30363d} .ex{fill:#0f2e1a;stroke:#3fb950} .exi{fill:#3fb950} .unk{fill:#0d1117;stroke:#d29922} .unki{fill:#d29922}",
+            "    .star{fill:#d29922} .cell{stroke:#0d1117}"]
+    css += [f"    .d{i}{{fill:{c}}}" for i, c in enumerate(DECADES_DARK)]
+    css += ["  }", "</style>"]
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" font-family="{FONT}">',
+           "\n".join(css), f'<rect class="bg" width="{width}" height="{height}" rx="10"/>',
+           '<text class="t" x="24" y="38" font-size="22" font-weight="800">Atlas of word rectangles</text>',
+           '<text class="m" x="24" y="60" font-size="12.5">How many R×C grids have a real word in every row and every column? ENABLE dictionary (172,823 words), repeats allowed.</text>',
+           '<text class="m" x="24" y="78" font-size="12.5">Exact counts from exhaustive search. C×R has the same answer as R×C (transpose), so only R ≤ C is shown.</text>']
+    # axes
+    out.append(f'<text class="m" x="{left + cw * len(cs) / 2:.0f}" y="{top - 26}" font-size="12" text-anchor="middle">columns (letters per row word)</text>')
+    for j, c in enumerate(cs):
+        out.append(f'<text class="t" x="{left + j * cw + cw / 2:.0f}" y="{top - 8}" font-size="13" font-weight="600" text-anchor="middle">{c}</text>')
+    out.append(f'<text class="m" font-size="12" text-anchor="middle" transform="translate({left - 52},{top + ch * len(rs) / 2:.0f}) rotate(-90)">rows (letters per column word)</text>')
+    for i, r in enumerate(rs):
+        out.append(f'<text class="t" x="{left - 12}" y="{top + i * ch + ch / 2 + 5:.0f}" font-size="13" font-weight="600" text-anchor="end">{r}</text>')
+    biggest = max((r * c, r, c) for (r, c), x in cells.items() if x["status"] in ("counted", "exists") and int(x.get("solutions") or 1) > 0)
+    for (r, c), x in cells.items():
+        i, j = rs.index(r), cs.index(c)
+        x0, y0 = left + j * cw, top + i * ch
+        cx, cy = x0 + cw / 2, y0 + ch / 2
+        st = x["status"]
+        t = float(x["time_s"] or 0)
+        tt = fmt_time(t) if st != "unknown" else ""
+        if st == "counted":
+            n = int(x["solutions"])
+            d = min(9, int(math.log10(n)))
+            ink = "inv" if d >= 5 else "ink"
+            out.append(f'<rect class="d{d} cell" x="{x0}" y="{y0}" width="{cw}" height="{ch}" rx="5"/>')
+            out.append(f'<text class="{ink}" x="{cx}" y="{cy + 1}" font-size="14" font-weight="700" text-anchor="middle">{fmt_count(n)}</text>')
+            out.append(f'<text class="{ink}" x="{cx}" y="{cy + 15}" font-size="9" text-anchor="middle" opacity=".75">{tt}</text>')
+        elif st == "none":
+            out.append(f'<rect class="none" x="{x0 + 2}" y="{y0 + 2}" width="{cw - 4}" height="{ch - 4}" rx="5"/>')
+            out.append(f'<text class="m" x="{cx}" y="{cy + 1}" font-size="15" text-anchor="middle">∅</text>')
+            out.append(f'<text class="m" x="{cx}" y="{cy + 15}" font-size="9" text-anchor="middle">{tt}</text>')
+        elif st == "exists":
+            out.append(f'<rect class="ex" x="{x0 + 2}" y="{y0 + 2}" width="{cw - 4}" height="{ch - 4}" rx="5" stroke-width="1.5"/>')
+            out.append(f'<text class="exi" x="{cx}" y="{cy + 1}" font-size="15" font-weight="700" text-anchor="middle">✓</text>')
+            out.append(f'<text class="exi" x="{cx}" y="{cy + 15}" font-size="9" text-anchor="middle">{tt}</text>')
+        else:
+            out.append(f'<rect class="unk" x="{x0 + 2}" y="{y0 + 2}" width="{cw - 4}" height="{ch - 4}" rx="5" stroke-width="1.5"/>')
+            out.append(f'<text class="unki" x="{cx}" y="{cy + 5}" font-size="16" font-weight="700" text-anchor="middle">?</text>')
+        if (r, c) == biggest[1:]:
+            out.append(f'<text class="star" x="{x0 + cw - 8}" y="{y0 + 13}" font-size="12" text-anchor="middle">★</text>')
+    # legend: decades + symbols
+    ly = legend_y
+    out.append(f'<text class="m" x="{left}" y="{ly - 10}" font-size="11">number of rectangles (and time to the answer, 32 threads)</text>')
+    for d in range(10):
+        lx = left + d * 40
+        out.append(f'<rect class="d{d}" x="{lx}" y="{ly}" width="38" height="14" rx="2"/>')
+        out.append(f'<text class="m" x="{lx}" y="{ly + 28}" font-size="10">{["1", "10", "100", "1k", "10k", "100k", "1M", "10M", "100M", "1G"][d]}</text>')
+    sx = left + 10 * 40 + 30
+    items = [("none", "∅", "m", "proven impossible"), ("ex", "✓", "exi", "exists (too many to count)"), ("unk", "?", "unki", "open (search too long)")]
+    for k, (cls, sym, ic, label) in enumerate(items):
+        yy = ly + k * 22 - 4
+        out.append(f'<rect class="{cls}" x="{sx}" y="{yy}" width="20" height="18" rx="4" stroke-width="1.5"/>')
+        out.append(f'<text class="{ic}" x="{sx + 10}" y="{yy + 14}" font-size="12" font-weight="700" text-anchor="middle">{sym}</text>')
+        out.append(f'<text class="m" x="{sx + 28}" y="{yy + 13}" font-size="11">{label}</text>')
+    out.append(f'<text class="star" x="{left}" y="{ly + 58}" font-size="12">★</text><text class="m" x="{left + 16}" y="{ly + 58}" font-size="11">largest area with a solution ({biggest[1]}×{biggest[2]})</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
+def anatomy(data: dict[str, list[dict]], bench: str) -> str:
+    """Where a benchmark's speedup came from: (fewer nodes) × (cheaper nodes) = total, per kept step."""
+    steps = [s for s in data[bench] if not failed(s["label"])]
+    b = steps[0]
+    nb, tb = int(b["nodes"]), b["t"]
+    total = [tb / s["t"] for s in steps]
+    fewer = [nb / int(s["nodes"]) for s in steps]
+    cheaper = [t / f for t, f in zip(total, fewer)]
+    left, right, top, plot_h, step_w = 70, 200, 96, 300, 44
+    plot_w = step_w * (len(steps) - 1)
+    width, height = left + plot_w + right, top + plot_h + 135
+    vals = total + fewer + cheaper
+    lo = 10 ** math.floor(math.log10(min(vals)))
+    hi = 10 ** math.ceil(math.log10(max(vals) * 1.02))
+    span = math.log10(hi) - math.log10(lo)
+
+    def X(i):
+        return left + i * step_w
+
+    def Y(v):
+        return top + plot_h - (math.log10(v) - math.log10(lo)) / span * plot_h
+
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" font-family="{FONT}">',
+           STYLE, f'<rect class="bg" width="{width}" height="{height}" rx="10"/>',
+           f'<text class="t" x="24" y="36" font-size="20" font-weight="800">Anatomy of the speedup · {bench} {escape(describe(b["args"], b.get("result", "")))}</text>',
+           f'<text class="m" x="24" y="57" font-size="12.5">total speedup = fewer search nodes × less time per node (threads, layout, kernels) · vs {escape(b["label"])} · log scale</text>',
+           f'<text class="m" x="24" y="74" font-size="11">nodes = cells visited by the kernel; a few steps changed what one node is (e.g. leaves counted in bulk), so read the split as approximate</text>']
+    k = 0
+    while lo * 10**k <= hi * 1.0001:
+        v = lo * 10**k
+        out.append(f'<line class="g" x1="{left}" x2="{left + plot_w}" y1="{Y(v):.1f}" y2="{Y(v):.1f}" stroke-dasharray="2 3"/>')
+        out.append(f'<text class="m" x="{left - 10}" y="{Y(v) + 4:.1f}" font-size="11" text-anchor="end">{fmt_x(v).replace(".00", "")}</text>')
+        k += 1
+    series = [(fewer, "s2", "s2f", "fewer nodes", 2), (cheaper, "s3", "s3f", "cheaper nodes", 2), (total, "ln", "lnf", "total", 3.2)]
+    ends = []
+    for vs, cls, fcls, name, sw in series:
+        pts = " ".join(f"{X(i):.1f},{Y(v):.1f}" for i, v in enumerate(vs))
+        out.append(f'<polyline class="{cls}" points="{pts}" stroke-width="{sw}" stroke-linejoin="round" stroke-linecap="round"/>')
+        for i, v in enumerate(vs):
+            out.append(f'<circle class="{fcls} ring" cx="{X(i):.1f}" cy="{Y(v):.1f}" r="{4.5 if sw > 3 else 3.5}" stroke-width="1.5"/>')
+        ends.append([Y(vs[-1]) + 4, name, fcls, vs[-1]])
+    ends.sort()
+    for j in range(1, len(ends)):
+        ends[j][0] = max(ends[j][0], ends[j - 1][0] + 30)
+    for y, name, fcls, v in ends:
+        out.append(f'<text class="{fcls}" x="{X(len(steps) - 1) + 14:.1f}" y="{y:.1f}" font-size="17" font-weight="800">{fmt_x(v)}</text>')
+        out.append(f'<text class="m" x="{X(len(steps) - 1) + 14:.1f}" y="{y + 14:.1f}" font-size="11">{name}</text>')
+    for i, s in enumerate(steps):
+        cls = "cur" if i == len(steps) - 1 else "t"
+        out.append(f'<text class="{cls}" font-size="11" text-anchor="end" transform="translate({X(i) + 4:.1f},{top + plot_h + 14}) rotate(-45)">{escape(s["label"])}</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
 def report(data: dict[str, list[dict]]) -> str:
     lines = [
         "# Benchmark progress",
@@ -360,6 +513,10 @@ def main():
     for bench, steps in data.items():
         (CHARTS / f"{bench}.svg").write_text(svg(bench, steps))
     (CHARTS / "progress.svg").write_text(progress(data))
+    if "B5" in data:
+        (CHARTS / "anatomy-B5.svg").write_text(anatomy(data, "B5"))
+    if (a := atlas()) is not None:
+        (CHARTS / "atlas.svg").write_text(a)
     REPORT.write_text(report(data))
     print(f"charts: {', '.join(f'results/charts/{b}.svg' for b in data)} + results/BENCHMARKS.md")
 

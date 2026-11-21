@@ -3,7 +3,8 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 use std::time::Instant;
 use wordrect::dict::{self, Dict};
-use wordrect::{SOLVERS, make_solver};
+use wordrect::par::ParSearch;
+use wordrect::{SOLVERS, Solver, make_solver};
 use wordrect::validate::validate;
 
 const USAGE: &str = "\
@@ -17,6 +18,7 @@ USAGE:
 OPTIONS:
   --dict PATH      dictionary file          [default: dicts/enable.txt]
   --solver NAME    solver to use            [default: par]   (available: par, trie, naive)
+  --threads N      threads for the par solver [default: all cores]
   --stats          print nodes visited, nodes/sec, time
   --print          (count) print every solution found
   -h, --help       show this help
@@ -30,6 +32,7 @@ struct Args {
     solver: String,
     stats: bool,
     print: bool,
+    threads: usize,
 }
 
 fn parse_args() -> Result<Args, String> {
@@ -46,6 +49,7 @@ fn parse_args() -> Result<Args, String> {
         solver: SOLVERS[0].into(),
         stats: false,
         print: false,
+        threads: 0,
     };
     while let Some(flag) = it.next() {
         let mut val = || it.next().ok_or(format!("{flag} needs a value"));
@@ -54,6 +58,7 @@ fn parse_args() -> Result<Args, String> {
             "--rows" | "-r" => a.rows = val()?.parse().map_err(|e| format!("--rows: {e}"))?,
             "--cols" | "-c" => a.cols = val()?.parse().map_err(|e| format!("--cols: {e}"))?,
             "--solver" => a.solver = val()?,
+            "--threads" => a.threads = val()?.parse().map_err(|e| format!("--threads: {e}"))?,
             "--stats" => a.stats = true,
             "--print" => a.print = true,
             "-h" | "--help" => return Err(String::new()),
@@ -103,8 +108,12 @@ fn run(a: Args) -> Result<(), String> {
     println!("# size={}x{}  row words (len {})={}  col words (len {})={}", a.rows, a.cols, a.cols, rw.len(), a.rows, cw.len());
 
     let all: HashSet<String> = d.by_len.iter().flatten().cloned().collect();
-    let mut solver = make_solver(&a.solver, a.rows, a.cols, rw, cw)
-        .ok_or_else(|| format!("unknown solver {} (available: {})", a.solver, SOLVERS.join(", ")))?;
+    let mut solver: Box<dyn Solver> = if a.solver == "par" && a.threads > 0 {
+        Box::new(ParSearch::new(a.rows, a.cols, rw, cw, a.threads))
+    } else {
+        make_solver(&a.solver, a.rows, a.cols, rw, cw)
+            .ok_or_else(|| format!("unknown solver {} (available: {})", a.solver, SOLVERS.join(", ")))?
+    };
     let t = Instant::now();
 
     if a.cmd == "find" {
