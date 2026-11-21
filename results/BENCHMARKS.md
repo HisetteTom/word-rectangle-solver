@@ -49,6 +49,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 1.67 ms | 3,507× | 1.08× | 994,996 | solutions=1909732 |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 1.93 ms | 3,041× | 0.87× | 994,996 | solutions=1909732 |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 1.83 ms | 3,197× | 1.05× | 994,996 | solutions=1909732 |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 1.87 ms | 3,130× | 1.03× | 994,996 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -84,6 +85,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 153 µs | 7,542× | 1.03× | 7,220 | found |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 153 µs | 7,542× | 1.00× | 7,220 | found |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 129 µs | 8,945× | 1.19× | 2,123 | found |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 155 µs | 7,445× | 0.99× | 7,220 | found |
 
 ## B3 · find first 6×6
 
@@ -119,6 +121,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 236 µs | 11,491× | 1.05× | 12,839 | found |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 233 µs | 11,639× | 1.01× | 12,839 | found |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 218 µs | 12,440× | 1.07× | 4,063 | found |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 239 µs | 11,347× | 0.97× | 12,839 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -153,6 +156,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 157 ms | 91.4× | 1.09× | 397,315,658 | solutions=136245247 |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 132 ms | 109× | 1.19× | 192,987,066 | solutions=136245247 |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 129 ms | 111× | 1.02× | 192,987,066 | solutions=136245247 |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 135 ms | 106× | 0.97× | 186,976,700 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -187,6 +191,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 1.20 s | 47.9× | 1.06× | 2,142,627,416 | solutions=114846713 |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 864 ms | 66.8× | 1.39× | 614,200,383 | solutions=114846713 |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 875 ms | 66.0× | 0.99× | 614,200,383 | solutions=114846713 |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 894 ms | 64.5× | 0.97× | 520,773,017 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -221,6 +226,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 92.3 ms | 63.6× | 1.06× | 132,592,160 | solutions=4453472 |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 88.1 ms | 66.6× | 1.05× | 107,976,321 | solutions=4453472 |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 88.5 ms | 66.3× | 0.99× | 107,976,321 | solutions=4453472 |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 91.7 ms | 64.0× | 0.96× | 103,574,244 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -255,6 +261,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 134 ms | 13.5× | 1.04× | 38,756,145 | found |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 129 ms | 14.0× | 1.03× | 38,535,200 | found |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 166 ms | 10.9× | 0.78× | 27,595,197 | found |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 139 ms | 13.0× | 0.93× | 38,958,171 | found |
 
 ## B8 · find first 6×7
 
@@ -289,6 +296,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 117 ms | 12.6× | 1.04× | 32,157,298 | found |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 115 ms | 12.7× | 1.01× | 32,211,585 | found |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 151 ms | 9.71× | 0.76× | 21,378,918 | found |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 118 ms | 12.4× | 0.97× | 32,254,682 | found |
 
 ## B9 · find first 5×9
 
@@ -323,6 +331,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 195 ms | 42.8× | 1.07× | 157,768,319 | found |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 194 ms | 43.1× | 1.01× | 157,908,801 | found |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 233 ms | 35.9× | 0.83× | 92,752,657 | found |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 201 ms | 41.6× | 0.96× | 157,911,332 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -353,6 +362,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 3.91 s | 4.07× | 1.07× | 5,393,001,298 | solutions=80364530 |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 3.95 s | 4.03× | 0.99× | 3,269,576,133 | solutions=80364530 |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 3.99 s | 3.99× | 0.99× | 3,269,576,133 | solutions=80364530 |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 4.16 s | 3.83× | 0.95× | 3,132,362,493 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -383,6 +393,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 2.19 s | 2.29× | 1.04× | 3,243,793,909 | solutions=37812638 |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 1.59 s | 3.16× | 1.38× | 1,046,986,844 | solutions=37812638 |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 1.59 s | 3.16× | 1.00× | 1,046,986,844 | solutions=37812638 |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 1.64 s | 3.06× | 0.97× | 879,701,744 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -413,6 +424,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 1.01 s | 2.61× | 1.05× | 1,009,792,440 | found |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 1.03 s | 2.58× | 0.99× | 1,009,835,868 | found |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 1.09 s | 2.42× | 0.94× | 689,508,612 | found |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 1.05 s | 2.51× | 0.98× | 1,009,795,823 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -443,6 +455,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 985 ms | 2.49× | 1.04× | 976,239,922 | no solution: 5x10 exhausted |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 976 ms | 2.52× | 1.01× | 976,239,922 | no solution: 5x10 exhausted |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 1.13 s | 2.18× | 0.87× | 604,160,888 | no solution: 5x10 exhausted |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 1.02 s | 2.41× | 0.96× | 976,239,922 | no solution: 5x10 exhausted |
 
 ## B14 · count all 6×4 (exhaustive)
 
@@ -473,6 +486,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 2.18 s | 4.42× | 1.04× | 3,243,793,909 | solutions=37812638 |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 1.59 s | 6.05× | 1.37× | 1,046,986,844 | solutions=37812638 |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 1.59 s | 6.06× | 1.00× | 1,046,986,844 | solutions=37812638 |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 1.65 s | 5.86× | 0.97× | 879,701,744 | solutions=37812638 |
 
 ## B15 · count all 5×6 (exhaustive)
 
@@ -503,6 +517,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 13.5 s | 2.22× | 1.05× | 16,304,002,974 | solutions=7424362 |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 12.4 s | 2.41× | 1.08× | 8,497,208,081 | solutions=7424362 |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 12.5 s | 2.39× | 0.99× | 8,497,208,081 | solutions=7424362 |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 12.9 s | 2.31× | 0.96× | 7,498,274,099 | solutions=7424362 |
 
 ## B16 · prove no 6×9 exists (exhaustive)
 
@@ -533,3 +548,4 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 9.93 s | 2.62× | 1.06× | 10,489,967,076 | no solution: 6x9 exhausted |
 | ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 9.91 s | 2.62× | 1.00× | 10,489,967,076 | no solution: 6x9 exhausted |
 | ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 10.8 s | 2.40× | 0.91× | 6,986,049,229 | no solution: 6x9 exhausted |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 10.3 s | 2.51× | 0.96× | 10,489,967,076 | no solution: 6x9 exhausted |

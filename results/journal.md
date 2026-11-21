@@ -744,3 +744,29 @@ with almost no fewer nodes, because on 8–10 letter rows the set overflows its 
 **Verdict:** reverted. The count kernel won because the set also *replaced* the last-row walk.
 Here it only prunes, and 33–38% fewer nodes don't pay for building the set plus a 256-byte
 buffer in every frame.
+
+### 2026-11-21: column look-ahead on the next-row set (`ab2d8f3`) ❌ reverted
+
+**Idea:** column-trie nodes get a `next` mask (the letters the column allows one row further
+down). While building the next-row set, drop every prefix whose letters at c, c+1, c+2 (`mask`,
+`next`, `next2` of the row node) can't fit what columns c, c+1, c+2 allow one row down. If the
+set becomes empty, the cell dies before trying any letter.
+
+| Benchmark | Before (exact next-row set) | After | Change |
+|---|---|---|---|
+| B5 count 4×5 | 0.864 s · 614 M nodes | 0.894 s · 521 M | 0.97× |
+| B10 count 5×5 | 3.95 s · 3.27 G | 4.16 s · 3.13 G | 0.95× |
+| B11 count 4×6 | 1.59 s · 1.05 G | 1.64 s · 0.88 G | 0.97× |
+| B15 count 5×6 | 12.43 s · 8.50 G | 12.95 s · 7.50 G | 0.96× |
+| B16 prove no 6×9 | 9.91 s | 10.35 s | 0.96× |
+
+The 12-byte column node alone (without the filter) costs 2–3% everywhere. The filter cuts nodes by
+4–17% but costs about as much as it saves.
+
+**Verdict:** reverted. The column's "one row down" mask is a union over every letter the current
+row might still put there, which is too loose to prune much. Same lesson as "backward next-row bound".
+
+Also in this round: the next-row set is now tracked only on rows of **≤ 8 letters**
+(compile-time per width). On 9-letter rows it overflows its 16 slots at once (count 6×9: 10.5 s
+with it, 9.4 s without), while 8-letter rows still gain (count 4×8: 2.38 → 2.10 s). No current
+benchmark counts rows that wide, so this has no bar of its own.
