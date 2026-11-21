@@ -19,7 +19,7 @@
 use crate::trie::{CNode, CTrie, Node, Trie};
 
 // Layout guard (rust-skills `mem-assert-type-size`): the kernels are tuned for these sizes.
-const _: () = assert!(size_of::<Node>() == 16 && size_of::<CNode>() == 8);
+const _: () = assert!(size_of::<Node>() == 16 && size_of::<CNode>() == 12);
 use crate::{Grid, Solver, Stats};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
@@ -388,25 +388,40 @@ impl<const W: usize> Kernel<'_, W> {
         } else if pm == SELF {
             (ps, ps.iter().fold(0, |a, n| a | n.mask))
         } else {
+            // keep only next-row prefixes that still fit what columns c, c+1, c+2 allow one row down
+            let g0 = colv[c].next;
+            let g1 = if c + 1 < W { colv[c + 1].next } else { !0 };
+            let g2 = if c + 2 < W { colv[c + 2].next } else { !0 };
             let mut n = 0;
             let mut base = 0;
+            let mut over = false;
             'fill: for sn in ps {
                 let mut m = sn.mask & pm;
                 while m != 0 {
                     let x = m.trailing_zeros();
                     m &= m - 1;
-                    if n == S_CAP {
-                        n = 0;
-                        break 'fill;
-                    }
                     // SAFETY: `x` is a bit of `sn.mask`, `sn` a row-trie node.
                     let ch = unsafe { self.rstep(*sn, x) };
+                    let ok = (ch.mask & g0 != 0) & (c + 1 >= W || ch.next & g1 != 0) & (c + 2 >= W || ch.next2 & g2 != 0);
+                    if !ok {
+                        continue;
+                    }
+                    if n == S_CAP {
+                        over = true;
+                        break 'fill;
+                    }
                     base |= ch.mask;
                     buf[n] = ch;
                     n += 1;
                 }
             }
-            if n == 0 { (&[], self.uni(c - 1, f)) } else { (&buf[..n], base) }
+            if over {
+                (&[], self.uni(c - 1, f))
+            } else if n == 0 {
+                return 0; // no next row fits the columns
+            } else {
+                (&buf[..n], base)
+            }
         };
         let mut total = 0;
         if c == (W - 1) {
