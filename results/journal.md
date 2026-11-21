@@ -851,3 +851,46 @@ small there. So: track it only in that row when W > 8.
 
 **Verdict:** reverted. The node count barely moves: even in the second-to-last row, 9–10 letter rows
 have more than 16 compatible next-row prefixes, so the set overflows and only adds cost.
+
+### 2026-11-22: second-to-last-row kernel + uninitialized set buffers (`a3bbca3` ❌, `38ed419` ✅)
+
+**Why:** the new heatmap (`charts/heatmap.svg`) shows the second-to-last row taking 60–70% of all
+count nodes, and it ran through the generic kernel and all its branches.
+
+**Idea:** `count_pen`, a kernel just for that row, where the next-row set (the possible last rows)
+is always known:
+- no bigram fallback and no row change;
+- a set cap of 32 instead of 16;
+- the **last two cells fused**: for letter l and last letter x, add up
+  `popcount(child.mask & column_end(x))` over the set's children, with no call and no set buffer;
+- if the set overflows, the generic kernel takes over.
+
+Plus a separate fix found on the way: the set buffer was **zero-initialized at every node**
+(`[Node::default(); 16]`, a 256-byte memset). It is now `MaybeUninit` (`SetBuf`).
+
+The first version (`a3bbca3`, bar "second-to-last-row kernel (failed)") used `count_pen` everywhere:
+
+| Shape | generic + uninit buffers | with count_pen | |
+|---|---:|---:|---|
+| 4×4 | 0.133 s | 0.115 s | 1.16× |
+| 4×5 | 0.866 s | 0.773 s | 1.12× |
+| 3×5 · 3×7 | 0.031 · 0.089 s | 0.027 · 0.086 s | 1.1× · 1.03× |
+| 4×7 | 2.17 s | 2.23 s | 0.97× |
+| 5×5 · 5×6 | 3.90 · 12.5 s | 4.01 · 12.8 s | 0.97× |
+| 6×6 | 20.5 s | 21.4 s | 0.96× |
+
+I couldn't isolate the 5+ row slowdown without a profiler (fusion on or off, `inline(never)`: no change).
+It also showed up when 5-row grids never *called* `count_pen` (a runtime `rows <= 4` check): the call
+site alone cost the generic kernel 2–3%. So the kept version (`38ed419`) picks it **at compile time**:
+`count`/`count_sym` get a const `P`, and only grids of ≤ 4 rows and ≤ 6 columns run the `P = true`
+instance. Everything else runs code identical to the generic kernel.
+
+| Benchmark | Before (count-kernel job test) | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 0.132 s | 0.117 s | 1.13× faster |
+| B5 count 4×5 | 0.872 s | 0.761 s | 1.15× faster |
+| B10 count 5×5 | 3.99 s | 3.93 s | ≈ |
+| B11 count 4×6 | 1.584 s | 1.582 s | ≈ |
+| B15 count 5×6 | 12.41 s | 12.47 s | ≈ |
+
+**Verdict:** kept: 13–15% on the 4-row counts, neutral elsewhere.
