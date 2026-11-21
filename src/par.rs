@@ -203,6 +203,10 @@ impl<'t, const W: usize> Kernel<'t, W> {
 }
 
 impl<const W: usize> Kernel<'_, W> {
+    /// Track the exact next-row set only on rows of up to 8 letters: on longer rows it overflows
+    /// `S_CAP` almost at once and only costs time (6×9 count: 10.5 s with it, 9.4 s without).
+    const TRACK: bool = W <= 8;
+
     /// Last row, cell `c`: completions of `row` with letter `c'` in `masks[c']` for every c' >= c.
     fn count_last(&self, c: usize, row: Node, masks: &[u32; W], nodes: &mut u64) -> u64 {
         *nodes += 1;
@@ -379,7 +383,7 @@ impl<const W: usize> Kernel<'_, W> {
         }
         // materialize S (or give up on it if it is too big)
         let mut buf = [Node::default(); S_CAP];
-        let (s, base): (&[Node], u32) = if ps.is_empty() {
+        let (s, base): (&[Node], u32) = if !Self::TRACK || ps.is_empty() {
             (&[], if c == 0 { self.root.mask } else { self.uni(c - 1, f) })
         } else if pm == SELF {
             (ps, ps.iter().fold(0, |a, n| a | n.mask))
