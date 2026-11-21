@@ -770,3 +770,19 @@ Also in this round: the next-row set is now tracked only on rows of **≤ 8 lett
 (compile-time per width). On 9-letter rows it overflows its 16 slots at once (count 6×9: 10.5 s
 with it, 9.4 s without), while 8-letter rows still gain (count 4×8: 2.38 → 2.10 s). No current
 benchmark counts rows that wide, so this has no bar of its own.
+
+### 2026-11-21: reuse the look-ahead's row children (`009f4fe`) ❌ reverted
+
+**Idea (PLAN idea 3):** `good()` already steps into the row child of every allowed letter. Keep those
+children in a 26-slot `MaybeUninit` stack buffer (branch-free compaction), so the main loop and
+the last-row walk don't step the trie a second time.
+
+| Benchmark | Before (exact next-row set) | After | Change |
+|---|---|---|---|
+| B5 count 4×5 | 0.864 s | 0.872 s | ≈ |
+| B10 count 5×5 | 3.95 s | 4.02 s | 0.98× |
+| B11 count 4×6 | 1.59 s | 1.65 s | 0.96× |
+| B15 count 5×6 | 12.43 s | 12.86 s | 0.97× |
+
+**Verdict:** reverted. The second step is an L1 hit (the child was loaded a few cycles earlier), so
+it costs a popcount and a load. A store per letter into a 416-byte buffer, plus a counter, costs more.
