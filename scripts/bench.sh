@@ -2,7 +2,7 @@
 # Usage: scripts/bench.sh [all|quick|heavy|huge|B<n>] [--release] [--solver NAME] [--runs N] [--label TEXT]
 #   default: all benchmarks, `fast` profile, par solver (the CLI default).
 #   quick = B1–B3 (seconds): 1 warmup run (shown) + N timed runs (default 5).
-#   heavy = B4–B9, huge = B10+ : ONE timed run each, no warmup.
+#   heavy = B4–B9, huge = B10+ : median of 3 timed runs (no warmup; one run each until 2026-11-22).
 #   --release  : build with the full release profile (LTO), use for journal numbers.
 #   --label    : name of this step in the charts (default: solver name),
 #                e.g. --label "trie + masks". Use a new label for every improvement.
@@ -100,7 +100,13 @@ for b in "${BENCHES[@]}"; do
   result=$(grep -E '^(solutions=|found|no solution)' <<< "$out" | head -1 | tr ',' ' ' | sed 's/ (validated)://')
 
   if [[ -n $heavy ]]; then
-    n=1; wall_ns=$((e - s)); searches=("$(search_time "$out")")
+    # median of 3 (the first run + 2 more): steps now gain 3–8%, about the noise of a single run
+    n=3; wall_ns=$((e - s)); searches=("$(search_time "$out")")
+    for ((i = 1; i < n; i++)); do
+      s=$(date +%s%N); o=$("$BIN" $args --solver "$solver" --stats); e=$(date +%s%N)
+      wall_ns=$((wall_ns + e - s))
+      searches+=("$(search_time "$o")")
+    done
   else
     n=$runs; wall_ns=0; searches=()
     for ((i = 0; i < n; i++)); do
