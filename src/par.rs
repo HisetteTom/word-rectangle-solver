@@ -126,7 +126,7 @@ impl<'a> Worker<'a> {
             }
             k.count_sym(r, c, row, &mut colv, &mut nodes, &mut row0)
         } else {
-            let ps: &[Node] = if c == 0 && (Kernel::<W>::TRACK || r + 1 == k.last_r) { std::slice::from_ref(&k.root) } else { &[] };
+            let ps: &[Node] = if c == 0 { std::slice::from_ref(&k.root) } else { &[] };
             if plain.is_some() { k.count::<true>(r, c, row, &mut colv, &mut nodes, !0, ps, SELF) } else { k.count::<false>(r, c, row, &mut colv, &mut nodes, !0, ps, SELF) }
         };
         self.nodes += nodes;
@@ -211,9 +211,8 @@ impl<'t, const W: usize> Kernel<'t, W> {
 }
 
 impl<const W: usize> Kernel<'_, W> {
-    /// Track the exact next-row set in every row only on rows of up to 8 letters. On longer rows it
-    /// overflows `S_CAP` at once in the upper rows (6×9 count: 10.5 s with it, 9.4 s without), so
-    /// there it is tracked only in the second-to-last row, where the columns allow few letters.
+    /// Track the exact next-row set only on rows of up to 8 letters: on longer rows it overflows
+    /// `S_CAP` almost at once and only costs time (6×9 count: 10.5 s with it, 9.4 s without).
     const TRACK: bool = W <= 8;
 
     /// Last row, cell `c`: completions of `row` with letter `c'` in `masks[c']` for every c' >= c.
@@ -294,7 +293,7 @@ impl<const W: usize> Kernel<'_, W> {
             // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
             let (nr, nc, nrow) = if c == (W - 1) { (r + 1, 0, self.root) } else { (r, c + 1, unsafe { self.rstep(row, l) }) };
             total += if tie_cell && l > w {
-                2 * self.count::<false>(nr, nc, nrow, colv, nodes, !0, if nc == 0 && (Self::TRACK || nr + 1 == self.last_r) { std::slice::from_ref(&self.root) } else { &[] }, SELF)
+                2 * self.count::<false>(nr, nc, nrow, colv, nodes, !0, if nc == 0 { std::slice::from_ref(&self.root) } else { &[] }, SELF)
             } else {
                 self.count_sym(nr, nc, nrow, colv, nodes, row0)
             };
@@ -408,7 +407,7 @@ impl<const W: usize> Kernel<'_, W> {
         }
         // materialize S (or give up on it if it is too big)
         let mut buf = [Node::default(); S_CAP];
-        let (s, base): (&[Node], u32) = if ps.is_empty() {
+        let (s, base): (&[Node], u32) = if !Self::TRACK || ps.is_empty() {
             (&[], if c == 0 { self.root.mask } else { self.uni(c - 1, f) })
         } else if pm == SELF {
             (ps, ps.iter().fold(0, |a, n| a | n.mask))
@@ -451,8 +450,7 @@ impl<const W: usize> Kernel<'_, W> {
                     continue;
                 }
                 colv[c] = cn;
-                let ps: &[Node] = if Self::TRACK || r + 2 == self.last_r { std::slice::from_ref(&self.root) } else { &[] };
-                total += self.count::<ANY>(r + 1, 0, self.root, colv, nodes, !0, ps, SELF);
+                total += self.count::<ANY>(r + 1, 0, self.root, colv, nodes, !0, std::slice::from_ref(&self.root), SELF);
                 if ANY && total > 0 {
                     break;
                 }
