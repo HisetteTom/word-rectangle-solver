@@ -57,13 +57,20 @@ BENCHES=(
   "B13|find --rows 5 --cols 10|prove no 5x10 exists (exhaustive)|huge"
   # tall shape (more rows than columns), added at "next-row forward check"
   "B14|count --rows 6 --cols 4|count all 6x4 (tall, exhaustive)|huge"
+  # giant suite, added when hephaestus became the main machine (~10 s each at "unchecked trie steps")
+  "B15|count --rows 5 --cols 6|count all 5x6 (exhaustive)|huge"
+  "B16|find --rows 6 --cols 9|prove no 6x9 exists (exhaustive)|huge"
 )
 
 commit=$(git rev-parse --short HEAD 2>/dev/null || echo unknown)
 [[ -n "$(git status --porcelain --untracked-files=no -- src Cargo.toml 2>/dev/null)" ]] && commit="$commit-dirty"
 [[ $commit == *-dirty ]] && echo "${YE}warning: uncommitted changes in src/ — commit first so the log points at real code${R}"
+# The log only holds runs from ONE machine (results/legacy/ = the old one). Compare like with like.
+MAIN_MACHINE=hephaestus
+machine=$(hostname)
+[[ $machine == "$MAIN_MACHINE" ]] || { echo "${RD}this is '$machine', not $MAIN_MACHINE: numbers would not be comparable. Refusing to log.${R}"; exit 1; }
 log=results/bench-log.csv
-[[ -f $log ]] || echo "date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label" > "$log"
+[[ -f $log ]] || echo "date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine" > "$log"
 
 search_time() { grep -o 'time=[0-9.]*' <<< "$1" | head -1 | cut -d= -f2; }
 
@@ -105,7 +112,7 @@ for b in "${BENCHES[@]}"; do
   mean=$(awk -v t="$wall_ns" -v n="$n" 'BEGIN { printf "%.4f", t / n / 1e9 }')
   search=$(printf '%s\n' "${searches[@]}" | sort -g | awk '{ a[NR] = $1 } END { m = (NR % 2) ? a[(NR + 1) / 2] : (a[NR / 2] + a[NR / 2 + 1]) / 2; printf "%.6f", m }')
   echo "search (median of $n): ${B}${YE}${search}s${R}   ${D}wall mean ${mean}s${R}"
-  echo "$(date +%F),$commit,$profile,$solver,$id,$args,$mean,$nodes,$result,$search,$label" >> "$log"
+  echo "$(date +%F),$commit,$profile,$solver,$id,$args,$mean,$nodes,$result,$search,$label,$machine" >> "$log"
   echo
 done
 echo "${D}logged to $log${R}"

@@ -1,0 +1,312 @@
+date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label
+2026-11-07,6701267,fast,naive,B1,count --rows 3 --cols 3,12.2535,2034829,solutions=1909732,,
+2026-11-07,6701267,fast,naive,B2,find --rows 5 --cols 6,2.5542,1919,found,,
+2026-11-07,6701267,fast,naive,B3,find --rows 6 --cols 6,5.8121,4505,found,,
+2026-11-07,def6187-dirty,fast,naive,B1,count --rows 3 --cols 3,11.9734,2034829,solutions=1909732,,
+2026-11-07,def6187-dirty,fast,naive,B2,find --rows 5 --cols 6,2.5275,1919,found,,
+2026-11-07,def6187-dirty,fast,naive,B3,find --rows 6 --cols 6,5.7346,4505,found,,
+2026-11-07,60c0927,fast,naive,B1,count --rows 3 --cols 3,12.0839,2034829,solutions=1909732,11.851750,naive
+2026-11-07,60c0927,fast,naive,B2,find --rows 5 --cols 6,2.5390,1919,found,2.339885,naive
+2026-11-07,60c0927,fast,naive,B3,find --rows 6 --cols 6,5.7295,4505,found,5.652774,naive
+2026-11-07,60c0927,fast,trie,B1,count --rows 3 --cols 3,0.2442,4031868,solutions=1909732,0.077146,trie + masks
+2026-11-07,60c0927,fast,trie,B2,find --rows 5 --cols 6,0.1897,22841,found,0.000900,trie + masks
+2026-11-07,60c0927,fast,trie,B3,find --rows 6 --cols 6,0.1928,49782,found,0.001911,trie + masks
+2026-11-07,166edb9,fast,trie,B4,count --rows 4 --cols 4,37.6937,1435800420,solutions=136245247,37.524040,trie + masks
+2026-11-07,166edb9,fast,trie,B5,count --rows 4 --cols 5,153.2303,5169522478,solutions=114846713,153.063593,trie + masks
+2026-11-07,166edb9,fast,trie,B6,count --rows 3 --cols 7,16.4808,489739310,solutions=4453472,16.314218,trie + masks
+2026-11-07,166edb9,fast,trie,B7,find --rows 7 --cols 7,5.2025,141510783,found,5.023361,trie + masks
+2026-11-07,166edb9,fast,trie,B8,find --rows 6 --cols 7,4.2111,117670090,found,4.035408,trie + masks
+2026-11-07,166edb9,fast,trie,B9,find --rows 5 --cols 9,23.9872,604041773,found,23.794776,trie + masks
+2026-11-07,d3df964,fast,trie,B1,count --rows 3 --cols 3,0.2401,4031868,solutions=1909732,0.073873,compact trie
+2026-11-07,d3df964,fast,trie,B2,find --rows 5 --cols 6,0.1793,22841,found,0.000691,compact trie
+2026-11-07,d3df964,fast,trie,B3,find --rows 6 --cols 6,0.1768,49782,found,0.001409,compact trie
+2026-11-07,d3df964,fast,trie,B4,count --rows 4 --cols 4,33.8200,1435800420,solutions=136245247,33.658816,compact trie
+2026-11-07,d3df964,fast,trie,B5,count --rows 4 --cols 5,129.9942,5169522478,solutions=114846713,129.831359,compact trie
+2026-11-07,d3df964,fast,trie,B6,count --rows 3 --cols 7,12.8329,489739310,solutions=4453472,12.656363,compact trie
+2026-11-07,d3df964,fast,trie,B7,find --rows 7 --cols 7,4.1752,141510783,found,3.958462,compact trie
+2026-11-07,d3df964,fast,trie,B8,find --rows 6 --cols 7,3.4478,117670090,found,3.266707,compact trie
+2026-11-07,d3df964,fast,trie,B9,find --rows 5 --cols 9,17.9596,604041773,found,17.752741,compact trie
+2026-11-07,072145f,fast,mrv,B1,count --rows 3 --cols 3,0.2549,4063089,solutions=1909732,0.090748,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B2,find --rows 5 --cols 6,0.1836,67477,found,0.002603,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B3,find --rows 6 --cols 6,0.1875,12263,found,0.000535,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B4,count --rows 4 --cols 4,37.9566,1232007295,solutions=136245247,37.801943,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B5,count --rows 4 --cols 5,188.9375,5745769138,solutions=114846713,188.768326,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B6,count --rows 3 --cols 7,25.9799,799291031,solutions=4453472,25.802075,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B7,find --rows 7 --cols 7,8.0715,214037348,found,7.891566,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B8,find --rows 6 --cols 7,6.5325,173754350,found,6.355779,staircase MRV (failed)
+2026-11-07,072145f,fast,mrv,B9,find --rows 5 --cols 9,62.9769,1819147498,found,62.783765,staircase MRV (failed)
+2026-11-07,e12b165,fast,trie,B1,count --rows 3 --cols 3,0.2181,2122136,solutions=1909732,0.031521,leaf counting
+2026-11-07,e12b165,fast,trie,B2,find --rows 5 --cols 6,0.1780,22841,found,0.000718,leaf counting
+2026-11-07,e12b165,fast,trie,B3,find --rows 6 --cols 6,0.1812,49782,found,0.001443,leaf counting
+2026-11-07,e12b165,fast,trie,B4,count --rows 4 --cols 4,26.9292,1299555173,solutions=136245247,26.761466,leaf counting
+2026-11-07,e12b165,fast,trie,B5,count --rows 4 --cols 5,120.4100,5054675765,solutions=114846713,120.236069,leaf counting
+2026-11-07,e12b165,fast,trie,B6,count --rows 3 --cols 7,12.3435,485285838,solutions=4453472,12.139549,leaf counting
+2026-11-07,e12b165,fast,trie,B7,find --rows 7 --cols 7,4.2818,141510783,found,4.100438,leaf counting
+2026-11-07,e12b165,fast,trie,B8,find --rows 6 --cols 7,3.5757,117670090,found,3.392252,leaf counting
+2026-11-07,e12b165,fast,trie,B9,find --rows 5 --cols 9,18.2561,604041773,found,18.049626,leaf counting
+2026-11-07,ecc8a36,fast,par,B1,count --rows 3 --cols 3,0.1709,2122136,solutions=1909732,0.007821,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B2,find --rows 5 --cols 6,0.1720,22841,found,0.000732,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B3,find --rows 6 --cols 6,0.1902,49782,found,0.001513,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B4,count --rows 4 --cols 4,1.6459,1299555173,solutions=136245247,1.483298,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B5,count --rows 4 --cols 5,6.5088,5054675765,solutions=114846713,6.427753,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B6,count --rows 3 --cols 7,0.7151,485285838,solutions=4453472,0.627628,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B7,find --rows 7 --cols 7,0.7899,157038815,found,0.698162,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B8,find --rows 6 --cols 7,0.7522,120820550,found,0.625990,parallel 22 threads
+2026-11-07,ecc8a36,fast,par,B9,find --rows 5 --cols 9,1.2119,610338537,found,1.060230,parallel 22 threads
+2026-11-07,ad3fb0c,fast,par,B1,count --rows 3 --cols 3,0.1461,2122136,solutions=1909732,0.006731,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B2,find --rows 5 --cols 6,0.1812,22841,found,0.000849,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B3,find --rows 6 --cols 6,0.2017,49782,found,0.001649,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B4,count --rows 4 --cols 4,1.7895,1299555173,solutions=136245247,1.640952,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B5,count --rows 4 --cols 5,6.9745,5054675765,solutions=114846713,6.888067,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B6,count --rows 3 --cols 7,0.8286,485285838,solutions=4453472,0.734826,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B7,find --rows 7 --cols 7,0.7214,157586299,found,0.607604,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B8,find --rows 6 --cols 7,0.7738,120691906,found,0.593805,DAWG (failed)
+2026-11-07,ad3fb0c,fast,par,B9,find --rows 5 --cols 9,1.3315,608074075,found,1.139949,DAWG (failed)
+2026-11-07,7a14702,fast,par,B1,count --rows 3 --cols 3,0.0929,2122136,solutions=1909732,0.007154,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B2,find --rows 5 --cols 6,0.1790,22841,found,0.000811,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B3,find --rows 6 --cols 6,0.2006,49782,found,0.001639,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B4,count --rows 4 --cols 4,2.6413,1186892215,solutions=136245247,2.463435,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B5,count --rows 4 --cols 5,8.6122,5005168405,solutions=114846713,8.444984,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B6,count --rows 3 --cols 7,0.8904,485285838,solutions=4453472,0.720550,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B7,find --rows 7 --cols 7,0.8977,157530723,found,0.694814,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B8,find --rows 6 --cols 7,0.8366,121022023,found,0.637492,DAWG + row memo (failed)
+2026-11-07,7a14702,fast,par,B9,find --rows 5 --cols 9,1.3251,608125901,found,1.137499,DAWG + row memo (failed)
+2026-11-07,6da98c6,fast,par,B1,count --rows 3 --cols 3,0.1616,2122136,solutions=1909732,0.006370,by-value node kernel
+2026-11-07,6da98c6,fast,par,B2,find --rows 5 --cols 6,0.1629,22840,found,0.000586,by-value node kernel
+2026-11-07,6da98c6,fast,par,B3,find --rows 6 --cols 6,0.2015,49781,found,0.001229,by-value node kernel
+2026-11-07,6da98c6,fast,par,B4,count --rows 4 --cols 4,1.2695,1299555173,solutions=136245247,1.117181,by-value node kernel
+2026-11-07,6da98c6,fast,par,B5,count --rows 4 --cols 5,4.9948,5054675765,solutions=114846713,4.840369,by-value node kernel
+2026-11-07,6da98c6,fast,par,B6,count --rows 3 --cols 7,0.6195,485285838,solutions=4453472,0.483824,by-value node kernel
+2026-11-07,6da98c6,fast,par,B7,find --rows 7 --cols 7,0.5544,159127185,found,0.462352,by-value node kernel
+2026-11-07,6da98c6,fast,par,B8,find --rows 6 --cols 7,0.5349,120902270,found,0.394178,by-value node kernel
+2026-11-07,6da98c6,fast,par,B9,find --rows 5 --cols 9,1.0288,608264071,found,0.862979,by-value node kernel
+2026-11-07,1449b66,fast,par,B10,count --rows 5 --cols 5,30.7490,30730973507,solutions=80364530,30.614587,by-value node kernel
+2026-11-07,1449b66,fast,par,B11,count --rows 4 --cols 6,9.6109,9588114365,solutions=37812638,9.499298,by-value node kernel
+2026-11-07,1449b66,fast,par,B12,find --rows 6 --cols 8,5.1969,4132728056,found,5.101496,by-value node kernel
+2026-11-07,1449b66,fast,par,B13,find --rows 5 --cols 10,5.0374,3802792308,no solution: 5x10 exhausted,4.943884,by-value node kernel
+2026-11-07,04bbb6c,fast,par,B1,count --rows 3 --cols 3,0.0989,2122136,solutions=1909732,0.005939,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B2,find --rows 5 --cols 6,0.1274,22840,found,0.000588,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B3,find --rows 6 --cols 6,0.1678,49781,found,0.001201,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B4,count --rows 4 --cols 4,1.0726,1299555173,solutions=136245247,0.922769,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B5,count --rows 4 --cols 5,4.4530,5054675765,solutions=114846713,4.297200,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B6,count --rows 3 --cols 7,0.5577,485285838,solutions=4453472,0.397356,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B7,find --rows 7 --cols 7,0.6198,158604931,found,0.477230,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B8,find --rows 6 --cols 7,0.6823,120838089,found,0.563942,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B9,find --rows 5 --cols 9,1.0790,607918285,found,0.905993,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B10,count --rows 5 --cols 5,31.0496,30730973507,solutions=80364530,30.886714,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B11,count --rows 4 --cols 6,9.1170,9588114365,solutions=37812638,8.957842,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B12,find --rows 6 --cols 8,5.4209,4132932128,found,5.254856,last-row count kernel
+2026-11-07,04bbb6c,fast,par,B13,find --rows 5 --cols 10,5.0607,3802792308,no solution: 5x10 exhausted,4.894108,last-row count kernel
+2026-11-07,43cfaf9,fast,par,B1,count --rows 3 --cols 3,0.1572,1102846,solutions=1909732,0.003540,square symmetry
+2026-11-07,43cfaf9,fast,par,B2,find --rows 5 --cols 6,0.0973,22840,found,0.000393,square symmetry
+2026-11-07,43cfaf9,fast,par,B3,find --rows 6 --cols 6,0.1730,49781,found,0.001218,square symmetry
+2026-11-07,43cfaf9,fast,par,B4,count --rows 4 --cols 4,0.6239,660528401,solutions=136245247,0.471223,square symmetry
+2026-11-07,43cfaf9,fast,par,B5,count --rows 4 --cols 5,4.4758,5054675765,solutions=114846713,4.324628,square symmetry
+2026-11-07,43cfaf9,fast,par,B6,count --rows 3 --cols 7,0.5569,485285838,solutions=4453472,0.397795,square symmetry
+2026-11-07,43cfaf9,fast,par,B7,find --rows 7 --cols 7,0.7646,159148928,found,0.607783,square symmetry
+2026-11-07,43cfaf9,fast,par,B8,find --rows 6 --cols 7,0.7313,120887650,found,0.551974,square symmetry
+2026-11-07,43cfaf9,fast,par,B9,find --rows 5 --cols 9,1.0478,608152499,found,0.875231,square symmetry
+2026-11-07,43cfaf9,fast,par,B10,count --rows 5 --cols 5,16.0984,15549963977,solutions=80364530,15.949404,square symmetry
+2026-11-07,43cfaf9,fast,par,B11,count --rows 4 --cols 6,9.2039,9588114365,solutions=37812638,9.119630,square symmetry
+2026-11-07,43cfaf9,fast,par,B12,find --rows 6 --cols 8,5.3377,4132541447,found,5.243593,square symmetry
+2026-11-07,43cfaf9,fast,par,B13,find --rows 5 --cols 10,5.1321,3802792308,no solution: 5x10 exhausted,5.040092,square symmetry
+2026-11-07,e5a081e,fast,par,B1,count --rows 3 --cols 3,0.1677,1049457,solutions=1909732,0.003451,row look-ahead
+2026-11-07,e5a081e,fast,par,B2,find --rows 5 --cols 6,0.0846,12444,found,0.000354,row look-ahead
+2026-11-07,e5a081e,fast,par,B3,find --rows 6 --cols 6,0.1052,26012,found,0.000718,row look-ahead
+2026-11-07,e5a081e,fast,par,B4,count --rows 4 --cols 4,0.6759,559509989,solutions=136245247,0.519570,row look-ahead
+2026-11-07,e5a081e,fast,par,B5,count --rows 4 --cols 5,4.3668,3364600156,solutions=114846713,4.214466,row look-ahead
+2026-11-07,e5a081e,fast,par,B6,count --rows 3 --cols 7,0.5002,182615542,solutions=4453472,0.342504,row look-ahead
+2026-11-07,e5a081e,fast,par,B7,find --rows 7 --cols 7,0.6152,55119689,found,0.439004,row look-ahead
+2026-11-07,e5a081e,fast,par,B8,find --rows 6 --cols 7,0.5829,46110613,found,0.413071,row look-ahead
+2026-11-07,e5a081e,fast,par,B9,find --rows 5 --cols 9,0.8969,237520689,found,0.748415,row look-ahead
+2026-11-07,e5a081e,fast,par,B10,count --rows 5 --cols 5,14.5152,9533780804,solutions=80364530,14.432836,row look-ahead
+2026-11-07,e5a081e,fast,par,B11,count --rows 4 --cols 6,7.7208,4952123756,solutions=37812638,7.636107,row look-ahead
+2026-11-07,e5a081e,fast,par,B12,find --rows 6 --cols 8,3.9672,1514385525,found,3.873844,row look-ahead
+2026-11-07,e5a081e,fast,par,B13,find --rows 5 --cols 10,3.7966,1432485110,no solution: 5x10 exhausted,3.678839,row look-ahead
+2026-11-07,86cf07a,fast,par,B1,count --rows 3 --cols 3,0.1615,1049457,solutions=1909732,0.003466,compact column trie
+2026-11-07,86cf07a,fast,par,B2,find --rows 5 --cols 6,0.1713,12444,found,0.000510,compact column trie
+2026-11-07,86cf07a,fast,par,B3,find --rows 6 --cols 6,0.1960,26012,found,0.000977,compact column trie
+2026-11-07,86cf07a,fast,par,B4,count --rows 4 --cols 4,0.6695,559509989,solutions=136245247,0.507825,compact column trie
+2026-11-07,86cf07a,fast,par,B5,count --rows 4 --cols 5,4.2878,3364600156,solutions=114846713,4.138785,compact column trie
+2026-11-07,86cf07a,fast,par,B6,count --rows 3 --cols 7,0.4939,182615542,solutions=4453472,0.334938,compact column trie
+2026-11-07,86cf07a,fast,par,B7,find --rows 7 --cols 7,0.5627,56870056,found,0.413279,compact column trie
+2026-11-07,86cf07a,fast,par,B8,find --rows 6 --cols 7,0.4719,45624156,found,0.354249,compact column trie
+2026-11-07,86cf07a,fast,par,B9,find --rows 5 --cols 9,0.8538,237653498,found,0.690678,compact column trie
+2026-11-07,86cf07a,fast,par,B10,count --rows 5 --cols 5,13.9137,9533780804,solutions=80364530,13.829744,compact column trie
+2026-11-07,86cf07a,fast,par,B11,count --rows 4 --cols 6,7.5172,4952123756,solutions=37812638,7.430516,compact column trie
+2026-11-07,86cf07a,fast,par,B12,find --rows 6 --cols 8,3.8336,1514358809,found,3.737755,compact column trie
+2026-11-07,86cf07a,fast,par,B13,find --rows 5 --cols 10,3.6197,1432485110,no solution: 5x10 exhausted,3.525200,compact column trie
+2026-11-07,ddbf60b,fast,par,B1,count --rows 3 --cols 3,0.1678,1049457,solutions=1909732,0.003822,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B2,find --rows 5 --cols 6,0.1985,12381,found,0.000552,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B3,find --rows 6 --cols 6,0.1746,26011,found,0.000967,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B4,count --rows 4 --cols 4,0.6602,559509989,solutions=136245247,0.524685,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B5,count --rows 4 --cols 5,4.2532,3364600156,solutions=114846713,4.169045,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B6,count --rows 3 --cols 7,0.4280,182615542,solutions=4453472,0.340233,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B7,find --rows 7 --cols 7,0.5199,55190603,found,0.407927,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B8,find --rows 6 --cols 7,0.6360,45614993,found,0.466725,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B9,find --rows 5 --cols 9,0.8647,237573187,found,0.708833,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B10,count --rows 5 --cols 5,13.8362,9533780804,solutions=80364530,13.752099,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B11,count --rows 4 --cols 6,7.5294,4952123756,solutions=37812638,7.444309,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B12,find --rows 6 --cols 8,3.8536,1514240914,found,3.734040,last-row search (failed)
+2026-11-07,ddbf60b,fast,par,B13,find --rows 5 --cols 10,3.7031,1432466342,no solution: 5x10 exhausted,3.607154,last-row search (failed)
+2026-11-07,1f12ee3,fast,par,B1,count --rows 3 --cols 3,0.1760,1049457,solutions=1909732,0.003242,const-generic width
+2026-11-07,1f12ee3,fast,par,B2,find --rows 5 --cols 6,0.1736,12444,found,0.000492,const-generic width
+2026-11-07,1f12ee3,fast,par,B3,find --rows 6 --cols 6,0.1741,26012,found,0.000896,const-generic width
+2026-11-07,1f12ee3,fast,par,B4,count --rows 4 --cols 4,0.6399,559509989,solutions=136245247,0.485721,const-generic width
+2026-11-07,1f12ee3,fast,par,B5,count --rows 4 --cols 5,4.0444,3364600156,solutions=114846713,3.887168,const-generic width
+2026-11-07,1f12ee3,fast,par,B6,count --rows 3 --cols 7,0.4158,182615542,solutions=4453472,0.326073,const-generic width
+2026-11-07,1f12ee3,fast,par,B7,find --rows 7 --cols 7,0.4660,54535752,found,0.370241,const-generic width
+2026-11-07,1f12ee3,fast,par,B8,find --rows 6 --cols 7,0.3963,45679334,found,0.281749,const-generic width
+2026-11-07,1f12ee3,fast,par,B9,find --rows 5 --cols 9,0.7019,238417829,found,0.608030,const-generic width
+2026-11-07,1f12ee3,fast,par,B10,count --rows 5 --cols 5,12.5675,9533780804,solutions=80364530,12.485073,const-generic width
+2026-11-07,1f12ee3,fast,par,B11,count --rows 4 --cols 6,7.1024,4952123756,solutions=37812638,7.012964,const-generic width
+2026-11-07,1f12ee3,fast,par,B12,find --rows 6 --cols 8,3.5585,1514323680,found,3.410620,const-generic width
+2026-11-07,1f12ee3,fast,par,B13,find --rows 5 --cols 10,3.2831,1432485110,no solution: 5x10 exhausted,3.189362,const-generic width
+2026-11-07,d8a5b29,fast,par,B1,count --rows 3 --cols 3,0.1666,1049457,solutions=1909732,0.003721,throttled stop check
+2026-11-07,d8a5b29,fast,par,B2,find --rows 5 --cols 6,0.0862,12444,found,0.000340,throttled stop check
+2026-11-07,d8a5b29,fast,par,B3,find --rows 6 --cols 6,0.1376,26012,found,0.000909,throttled stop check
+2026-11-07,d8a5b29,fast,par,B4,count --rows 4 --cols 4,0.6477,559509989,solutions=136245247,0.488009,throttled stop check
+2026-11-07,d8a5b29,fast,par,B5,count --rows 4 --cols 5,4.0438,3364600156,solutions=114846713,3.887951,throttled stop check
+2026-11-07,d8a5b29,fast,par,B6,count --rows 3 --cols 7,0.4660,182615542,solutions=4453472,0.323821,throttled stop check
+2026-11-07,d8a5b29,fast,par,B7,find --rows 7 --cols 7,0.4051,55604492,found,0.313043,throttled stop check
+2026-11-07,d8a5b29,fast,par,B8,find --rows 6 --cols 7,0.3828,46420838,found,0.293994,throttled stop check
+2026-11-07,d8a5b29,fast,par,B9,find --rows 5 --cols 9,0.7182,239671344,found,0.606107,throttled stop check
+2026-11-07,d8a5b29,fast,par,B10,count --rows 5 --cols 5,12.7035,9533780804,solutions=80364530,12.616928,throttled stop check
+2026-11-07,d8a5b29,fast,par,B11,count --rows 4 --cols 6,7.0259,4952123756,solutions=37812638,6.940897,throttled stop check
+2026-11-07,d8a5b29,fast,par,B12,find --rows 6 --cols 8,3.2744,1514229284,found,3.179645,throttled stop check
+2026-11-07,d8a5b29,fast,par,B13,find --rows 5 --cols 10,3.0546,1432485237,no solution: 5x10 exhausted,2.960715,throttled stop check
+2026-11-07,c8af9d0,fast,par,B1,count --rows 3 --cols 3,0.1572,1001786,solutions=1909732,0.003725,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B2,find --rows 5 --cols 6,0.1979,9611,found,0.000447,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B3,find --rows 6 --cols 6,0.1810,19902,found,0.000799,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B4,count --rows 4 --cols 4,0.6122,434317924,solutions=136245247,0.454310,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B5,count --rows 4 --cols 5,3.6552,2436976174,solutions=114846713,3.505780,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B6,count --rows 3 --cols 7,0.3925,136298665,solutions=4453472,0.254391,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B7,find --rows 7 --cols 7,0.3833,43868432,found,0.291099,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B8,find --rows 6 --cols 7,0.3886,36415982,found,0.272813,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B9,find --rows 5 --cols 9,0.6204,186928429,found,0.506473,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B10,count --rows 5 --cols 5,11.5716,6875817435,solutions=80364530,11.421116,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B11,count --rows 4 --cols 6,6.3602,3714990647,solutions=37812638,6.207043,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B12,find --rows 6 --cols 8,2.6614,1160859256,found,2.510368,branch-free look-ahead
+2026-11-07,c8af9d0,fast,par,B13,find --rows 5 --cols 10,2.7680,1139376699,no solution: 5x10 exhausted,2.657035,branch-free look-ahead
+2026-11-07,e25590c,fast,par,B1,count --rows 3 --cols 3,0.1668,1001786,solutions=1909732,0.003235,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B2,find --rows 5 --cols 6,0.1768,9611,found,0.000456,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B3,find --rows 6 --cols 6,0.1799,19902,found,0.000793,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B4,count --rows 4 --cols 4,0.6388,434317924,solutions=136245247,0.479433,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B5,count --rows 4 --cols 5,3.8038,2436976174,solutions=114846713,3.641601,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B6,count --rows 3 --cols 7,0.4191,136298665,solutions=4453472,0.259495,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B7,find --rows 7 --cols 7,0.5035,44224599,found,0.327081,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B8,find --rows 6 --cols 7,0.6164,36301319,found,0.466985,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B9,find --rows 5 --cols 9,0.5987,187060045,found,0.499010,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B10,count --rows 5 --cols 5,13.0748,6875817435,solutions=80364530,12.963777,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B11,count --rows 4 --cols 6,6.5343,3714990647,solutions=37812638,6.449865,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B12,find --rows 6 --cols 8,2.6328,1160948957,found,2.517669,iterative DFS (failed)
+2026-11-07,e25590c,fast,par,B13,find --rows 5 --cols 10,2.6949,1139376699,no solution: 5x10 exhausted,2.599852,iterative DFS (failed)
+2026-11-07,2c1dbf2,fast,par,B1,count --rows 3 --cols 3,0.1338,1001786,solutions=1909732,0.002927,DFS trie layout (failed)
+2026-11-07,2c1dbf2,fast,par,B2,find --rows 5 --cols 6,0.1526,9611,found,0.000438,DFS trie layout (failed)
+2026-11-07,2c1dbf2,fast,par,B3,find --rows 6 --cols 6,0.1064,19902,found,0.000538,DFS trie layout (failed)
+2026-11-07,2c1dbf2,fast,par,B4,count --rows 4 --cols 4,0.5638,434317924,solutions=136245247,0.480466,DFS trie layout (failed)
+2026-11-07,2c1dbf2,fast,par,B5,count --rows 4 --cols 5,3.7193,2436976174,solutions=114846713,3.632070,DFS trie layout (failed)
+2026-11-07,2c1dbf2,fast,par,B6,count --rows 3 --cols 7,0.3579,136298665,solutions=4453472,0.267729,DFS trie layout (failed)
+2026-11-07,2c1dbf2,fast,par,B7,find --rows 7 --cols 7,0.3639,43428196,found,0.264155,DFS trie layout (failed)
+2026-11-07,2c1dbf2,fast,par,B8,find --rows 6 --cols 7,0.3565,36483160,found,0.234036,DFS trie layout (failed)
+2026-11-07,2c1dbf2,fast,par,B9,find --rows 5 --cols 9,0.5988,187015999,found,0.501360,DFS trie layout (failed)
+2026-11-07,2c1dbf2,fast,par,B10,count --rows 5 --cols 5,12.1865,6875817435,solutions=80364530,12.050434,DFS trie layout (failed)
+2026-11-07,2c1dbf2,fast,par,B11,count --rows 4 --cols 6,6.7465,3714990647,solutions=37812638,6.593198,DFS trie layout (failed)
+2026-11-07,2c1dbf2,fast,par,B12,find --rows 6 --cols 8,2.6955,1160896403,found,2.575432,DFS trie layout (failed)
+2026-11-07,2c1dbf2,fast,par,B13,find --rows 5 --cols 10,2.7831,1139376699,no solution: 5x10 exhausted,2.664486,DFS trie layout (failed)
+2026-11-07,022d173,fast,par,B1,count --rows 3 --cols 3,0.1663,994996,solutions=1909732,0.003128,next-row forward check
+2026-11-07,022d173,fast,par,B2,find --rows 5 --cols 6,0.1870,7220,found,0.000392,next-row forward check
+2026-11-07,022d173,fast,par,B3,find --rows 6 --cols 6,0.1878,12839,found,0.000603,next-row forward check
+2026-11-07,022d173,fast,par,B4,count --rows 4 --cols 4,0.6106,397315658,solutions=136245247,0.452312,next-row forward check
+2026-11-07,022d173,fast,par,B5,count --rows 4 --cols 5,3.5074,2142627416,solutions=114846713,3.362797,next-row forward check
+2026-11-07,022d173,fast,par,B6,count --rows 3 --cols 7,0.3457,132592160,solutions=4453472,0.250476,next-row forward check
+2026-11-07,022d173,fast,par,B7,find --rows 7 --cols 7,0.4051,35683279,found,0.286123,next-row forward check
+2026-11-07,022d173,fast,par,B8,find --rows 6 --cols 7,0.3738,31520070,found,0.255629,next-row forward check
+2026-11-07,022d173,fast,par,B9,find --rows 5 --cols 9,0.6217,157551855,found,0.516777,next-row forward check
+2026-11-07,022d173,fast,par,B10,count --rows 5 --cols 5,10.5271,5393001298,solutions=80364530,10.436954,next-row forward check
+2026-11-07,022d173,fast,par,B11,count --rows 4 --cols 6,5.9026,3243793909,solutions=37812638,5.814520,next-row forward check
+2026-11-07,022d173,fast,par,B12,find --rows 6 --cols 8,2.5949,1009874380,found,2.490908,next-row forward check
+2026-11-07,022d173,fast,par,B13,find --rows 5 --cols 10,2.6417,976239922,no solution: 5x10 exhausted,2.533463,next-row forward check
+2026-11-07,bd0c975,fast,par,B1,count --rows 3 --cols 3,0.1622,994996,solutions=1909732,0.003370,two-rows-ahead check (failed)
+2026-11-07,bd0c975,fast,par,B2,find --rows 5 --cols 6,0.1874,7220,found,0.000398,two-rows-ahead check (failed)
+2026-11-07,bd0c975,fast,par,B3,find --rows 6 --cols 6,0.1896,12839,found,0.000614,two-rows-ahead check (failed)
+2026-11-07,bd0c975,fast,par,B4,count --rows 4 --cols 4,0.6095,397275206,solutions=136245247,0.443120,two-rows-ahead check (failed)
+2026-11-07,bd0c975,fast,par,B5,count --rows 4 --cols 5,3.5586,2142095698,solutions=114846713,3.398013,two-rows-ahead check (failed)
+2026-11-07,bd0c975,fast,par,B6,count --rows 3 --cols 7,0.4332,132592160,solutions=4453472,0.259238,two-rows-ahead check (failed)
+2026-11-07,bd0c975,fast,par,B7,find --rows 7 --cols 7,0.4873,35657392,found,0.294355,two-rows-ahead check (failed)
+2026-11-07,bd0c975,fast,par,B8,find --rows 6 --cols 7,0.5860,31084090,found,0.393974,two-rows-ahead check (failed)
+2026-11-07,bd0c975,fast,par,B9,find --rows 5 --cols 9,0.7214,157549514,found,0.548758,two-rows-ahead check (failed)
+2026-11-07,bd0c975,fast,par,B10,count --rows 5 --cols 5,10.9268,5151710138,solutions=80364530,10.811625,two-rows-ahead check (failed)
+2026-11-07,bd0c975,fast,par,B11,count --rows 4 --cols 6,6.0168,3242807579,solutions=37812638,5.926412,two-rows-ahead check (failed)
+2026-11-07,bd0c975,fast,par,B12,find --rows 6 --cols 8,2.6613,1009822614,found,2.558147,two-rows-ahead check (failed)
+2026-11-07,bd0c975,fast,par,B13,find --rows 5 --cols 10,2.6021,976239922,no solution: 5x10 exhausted,2.492544,two-rows-ahead check (failed)
+2026-11-07,1a4c1f0,fast,par,B1,count --rows 3 --cols 3,0.1505,994996,solutions=1909732,0.003457,branch-free forward check (failed)
+2026-11-07,1a4c1f0,fast,par,B2,find --rows 5 --cols 6,0.1801,7220,found,0.000404,branch-free forward check (failed)
+2026-11-07,1a4c1f0,fast,par,B3,find --rows 6 --cols 6,0.1873,12839,found,0.000601,branch-free forward check (failed)
+2026-11-07,1a4c1f0,fast,par,B4,count --rows 4 --cols 4,0.5688,397315658,solutions=136245247,0.433510,branch-free forward check (failed)
+2026-11-07,1a4c1f0,fast,par,B5,count --rows 4 --cols 5,3.3384,2142627416,solutions=114846713,3.253445,branch-free forward check (failed)
+2026-11-07,1a4c1f0,fast,par,B6,count --rows 3 --cols 7,0.3522,132592160,solutions=4453472,0.258029,branch-free forward check (failed)
+2026-11-07,1a4c1f0,fast,par,B7,find --rows 7 --cols 7,0.5368,36737933,found,0.432340,branch-free forward check (failed)
+2026-11-07,1a4c1f0,fast,par,B8,find --rows 6 --cols 7,0.5897,31333531,found,0.408308,branch-free forward check (failed)
+2026-11-07,1a4c1f0,fast,par,B9,find --rows 5 --cols 9,0.7345,157538338,found,0.538428,branch-free forward check (failed)
+2026-11-07,1a4c1f0,fast,par,B10,count --rows 5 --cols 5,10.4915,5393001298,solutions=80364530,10.310277,branch-free forward check (failed)
+2026-11-07,1a4c1f0,fast,par,B11,count --rows 4 --cols 6,6.0006,3243793909,solutions=37812638,5.854619,branch-free forward check (failed)
+2026-11-07,1a4c1f0,fast,par,B12,find --rows 6 --cols 8,2.5948,1009905272,found,2.467877,branch-free forward check (failed)
+2026-11-07,1a4c1f0,fast,par,B13,find --rows 5 --cols 10,2.6686,976239922,no solution: 5x10 exhausted,2.536136,branch-free forward check (failed)
+2026-11-07,c539608,fast,par,B14,count --rows 6 --cols 4,14.4519,7691811606,solutions=37812638,14.288183,B14 baseline (tall count)
+2026-11-07,e9dd7bb,fast,par,B1,count --rows 3 --cols 3,0.1588,994996,solutions=1909732,0.003348,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B2,find --rows 5 --cols 6,0.1880,7220,found,0.000390,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B3,find --rows 6 --cols 6,0.1860,12839,found,0.000593,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B4,count --rows 4 --cols 4,0.5987,397315658,solutions=136245247,0.437322,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B5,count --rows 4 --cols 5,3.4016,2142627416,solutions=114846713,3.256101,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B6,count --rows 3 --cols 7,0.3426,132592160,solutions=4453472,0.247161,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B7,find --rows 7 --cols 7,0.3988,35926381,found,0.299745,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B8,find --rows 6 --cols 7,0.3334,31362556,found,0.230518,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B9,find --rows 5 --cols 9,0.6728,157771656,found,0.533910,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B10,count --rows 5 --cols 5,10.3913,5393001298,solutions=80364530,10.304604,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B11,count --rows 4 --cols 6,5.7792,3243793909,solutions=37812638,5.687176,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B12,find --rows 6 --cols 8,2.5365,1009922905,found,2.434040,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B13,find --rows 5 --cols 10,2.6929,976239922,no solution: 5x10 exhausted,2.570258,tall grids transposed
+2026-11-07,e9dd7bb,fast,par,B14,count --rows 6 --cols 4,5.7804,3243793909,solutions=37812638,5.686319,tall grids transposed
+2026-11-07,864443e,fast,par,B1,count --rows 3 --cols 3,0.1570,994996,solutions=1909732,0.003497,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B2,find --rows 5 --cols 6,0.1861,7220,found,0.000394,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B3,find --rows 6 --cols 6,0.1880,12839,found,0.000614,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B4,count --rows 4 --cols 4,0.5768,221286896,solutions=136245247,0.426163,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B5,count --rows 4 --cols 5,3.5979,946918563,solutions=114846713,3.510497,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B6,count --rows 3 --cols 7,0.8455,238449733,solutions=4453472,0.731848,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B7,find --rows 7 --cols 7,0.3856,34977454,found,0.281647,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B8,find --rows 6 --cols 7,0.3619,31620121,found,0.234074,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B9,find --rows 5 --cols 9,0.6110,157785037,found,0.505739,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B10,count --rows 5 --cols 5,12.8182,4069141452,solutions=80364530,12.733996,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B11,count --rows 4 --cols 6,7.0539,1629669482,solutions=37812638,6.963922,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B12,find --rows 6 --cols 8,2.5521,1009948684,found,2.429971,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B13,find --rows 5 --cols 10,2.6097,976239922,no solution: 5x10 exhausted,2.510960,paired last two rows (failed)
+2026-11-07,864443e,fast,par,B14,count --rows 6 --cols 4,7.0532,1629669482,solutions=37812638,6.942869,paired last two rows (failed)
+2026-11-07,7901ad2,fast,par,B1,count --rows 3 --cols 3,0.1822,994995,solutions=1909732,0.003120,backward next-row bound (failed)
+2026-11-07,7901ad2,fast,par,B2,find --rows 5 --cols 6,0.1969,7220,found,0.000391,backward next-row bound (failed)
+2026-11-07,7901ad2,fast,par,B3,find --rows 6 --cols 6,0.1881,12839,found,0.000632,backward next-row bound (failed)
+2026-11-07,7901ad2,fast,par,B4,count --rows 4 --cols 4,0.5923,396848007,solutions=136245247,0.437374,backward next-row bound (failed)
+2026-11-07,7901ad2,fast,par,B5,count --rows 4 --cols 5,3.4521,2139564798,solutions=114846713,3.297073,backward next-row bound (failed)
+2026-11-07,7901ad2,fast,par,B6,count --rows 3 --cols 7,0.4547,132590961,solutions=4453472,0.259608,backward next-row bound (failed)
+2026-11-07,7901ad2,fast,par,B7,find --rows 7 --cols 7,0.5979,35869980,found,0.396330,backward next-row bound (failed)
+2026-11-07,7901ad2,fast,par,B8,find --rows 6 --cols 7,0.5094,31315893,found,0.304777,backward next-row bound (failed)
+2026-11-07,7901ad2,fast,par,B9,find --rows 5 --cols 9,0.7457,157552124,found,0.531329,backward next-row bound (failed)
+2026-11-07,7901ad2,fast,par,B10,count --rows 5 --cols 5,11.8849,5039898387,solutions=80364530,11.726412,backward next-row bound (failed)
+2026-11-07,7901ad2,fast,par,B11,count --rows 4 --cols 6,6.0480,3239551826,solutions=37812638,5.875954,backward next-row bound (failed)
+2026-11-07,7901ad2,fast,par,B12,find --rows 6 --cols 8,2.7949,1009858645,found,2.600683,backward next-row bound (failed)
+2026-11-07,7901ad2,fast,par,B13,find --rows 5 --cols 10,2.7022,976239922,no solution: 5x10 exhausted,2.536833,backward next-row bound (failed)
+2026-11-07,7901ad2,fast,par,B14,count --rows 6 --cols 4,5.8763,3239551826,solutions=37812638,5.758177,backward next-row bound (failed)
+2026-11-07,b1b1b4e,fast,par,B1,count --rows 3 --cols 3,0.1634,994996,solutions=1909732,0.003025,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B2,find --rows 5 --cols 6,0.1661,7220,found,0.000366,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B3,find --rows 6 --cols 6,0.1877,12839,found,0.000626,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B4,count --rows 4 --cols 4,0.5460,397315658,solutions=136245247,0.401723,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B5,count --rows 4 --cols 5,3.1532,2142627416,solutions=114846713,3.067149,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B6,count --rows 3 --cols 7,0.3884,132592160,solutions=4453472,0.237792,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B7,find --rows 7 --cols 7,0.3845,35717482,found,0.285871,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B8,find --rows 6 --cols 7,0.3346,31406853,found,0.218520,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B9,find --rows 5 --cols 9,0.5688,158204160,found,0.465009,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B10,count --rows 5 --cols 5,9.9160,5393001298,solutions=80364530,9.814389,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B11,count --rows 4 --cols 6,5.5807,3243793909,solutions=37812638,5.490885,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B12,find --rows 6 --cols 8,2.5428,1009794563,found,2.437931,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B13,find --rows 5 --cols 10,2.5042,976239922,no solution: 5x10 exhausted,2.401629,unchecked trie steps
+2026-11-07,b1b1b4e,fast,par,B14,count --rows 6 --cols 4,5.6689,3243793909,solutions=37812638,5.549312,unchecked trie steps

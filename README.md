@@ -14,18 +14,22 @@ Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal
 
 ## 📈 Progress
 
-Search time for each optimization step, oldest at the top (shorter is better). **Solid blue** = kept,
-**bright blue ◀ current** = the code in the tree now, **grey hatched ✗ reverted** = a failed experiment
-(measured, then undone; it is never part of the code). Full tables: [`results/BENCHMARKS.md`](results/BENCHMARKS.md),
-story of each step: [`results/journal.md`](results/journal.md).
+![progress](results/charts/progress.svg)
 
-**Quick suite** (seconds, baseline = naive):
+Every optimization step ever tried — including the failed ones — was rebuilt from its commit and
+re-run on **one machine** (hephaestus · Ryzen 9 3950X · 32 threads), so every bar below is directly
+comparable. **Solid blue** = kept, **bright blue ◀ current** = the code in the tree now,
+**grey hatched ✗ reverted** = a failed experiment (measured, then undone; never part of the code).
+Full tables: [`results/BENCHMARKS.md`](results/BENCHMARKS.md), story of each step:
+[`results/journal.md`](results/journal.md).
+
+**Quick suite** (baseline = naive, the only suite it can finish):
 
 ![B1](results/charts/B1.svg)
 ![B2](results/charts/B2.svg)
 ![B3](results/charts/B3.svg)
 
-**Heavy suite** (minutes, baseline = trie + masks; naive can't finish these):
+**Heavy suite** (baseline = trie + masks; naive can't finish these):
 
 ![B4](results/charts/B4.svg)
 ![B5](results/charts/B5.svg)
@@ -34,16 +38,15 @@ story of each step: [`results/journal.md`](results/journal.md).
 ![B8](results/charts/B8.svg)
 ![B9](results/charts/B9.svg)
 
-**Huge suite** (added when the heavy suite dropped to ~8 s; baseline = by-value node kernel, 22 threads):
+**Huge suite** (baseline = the first parallel version; single-threaded steps would take hours):
 
 ![B10](results/charts/B10.svg)
 ![B11](results/charts/B11.svg)
 ![B12](results/charts/B12.svg)
 ![B13](results/charts/B13.svg)
-
-**Tall shape** (added at "next-row forward check"; baseline = that code, before tall counts were transposed):
-
 ![B14](results/charts/B14.svg)
+![B15](results/charts/B15.svg)
+![B16](results/charts/B16.svg)
 
 ---
 
@@ -57,7 +60,7 @@ story of each step: [`results/journal.md`](results/journal.md).
 ./wr count 3x3    # count all 3×3
 ./wr test         # tests
 ./wr bench        # full benchmark suite (~1 min now)
-./wr bench quick  # B1–B3 only (seconds); ./wr bench heavy = B4–B9; ./wr bench huge = B10–B13; ./wr bench B2 = one
+./wr bench quick  # B1–B3 only (seconds); ./wr bench heavy = B4–B9; ./wr bench huge = B10–B16; ./wr bench B2 = one
 ./wr bench --label "my step"   # record an optimization step → charts
 ./wr charts       # regenerate charts from results/bench-log.csv
 ./wr release      # benchmark with full release build (official numbers)
@@ -387,33 +390,36 @@ Target suite (once the trie solver exists):
 | `B3` | Exhaust one hard size with no solution | Measures pure pruning power |
 | `B4` | Find first solution of the current record size | Measures "time to record" |
 
-**Current suite in `scripts/bench.sh` (naive era)** — sized so the naive solver finishes:
+**Current suite in `scripts/bench.sh`.** Times are search times on hephaestus, at the step where each
+suite was introduced and at the current code ("unchecked trie steps"). IDs never change meaning:
+when the code gets too fast for a suite, a bigger one is added.
 
-| ID | Task | Naive time |
-|---|---|---|
-| `B1` | `count --rows 3 --cols 3` | ~12 s |
-| `B2` | `find --rows 5 --cols 6` | ~2.4 s |
-| `B3` | `find --rows 6 --cols 6` | ~5.7 s |
+| ID | Task | At its baseline | Now |
+|---|---|---:|---:|
+| `B1` | `count --rows 3 --cols 3` (1,909,732 solutions) | naive 5.87 s | 1.67 ms |
+| `B2` | `find --rows 5 --cols 6` | naive 1.15 s | 0.15 ms |
+| `B3` | `find --rows 6 --cols 6` | naive 2.71 s | 0.24 ms |
+| `B4` | `count --rows 4 --cols 4` | trie + masks 14.3 s | 0.16 s |
+| `B5` | `count --rows 4 --cols 5` | trie + masks 57.7 s | 1.20 s |
+| `B6` | `count --rows 3 --cols 7` | trie + masks 5.87 s | 0.09 s |
+| `B7` | `find --rows 7 --cols 7` | trie + masks 1.81 s | 0.13 s |
+| `B8` | `find --rows 6 --cols 7` | trie + masks 1.47 s | 0.12 s |
+| `B9` | `find --rows 5 --cols 9` | trie + masks 8.36 s | 0.20 s |
+| `B10` | `count --rows 5 --cols 5` (80,364,530 solutions) | parallel 15.9 s | 3.91 s |
+| `B11` | `count --rows 4 --cols 6` | parallel 5.02 s | 2.19 s |
+| `B12` | `find --rows 6 --cols 8` | parallel 2.64 s | 1.01 s |
+| `B13` | `find --rows 5 --cols 10` (no 5×10 exists: exhaustive proof) | parallel 2.46 s | 0.99 s |
+| `B14` | `count --rows 6 --cols 4` (tall shape) | parallel 9.63 s | 2.18 s |
+| `B15` | `count --rows 5 --cols 6` (7,424,362 solutions) | parallel 30.0 s | 13.5 s |
+| `B16` | `find --rows 6 --cols 9` (no 6×9 exists: exhaustive proof) | parallel 26.0 s | 9.93 s |
 
-**Heavy suite** (added when B2/B3 hit ~1 ms; each runs once; sized at "trie + masks"):
+Suite history: B1–B3 were sized for naive; B4–B9 were added when B2/B3 hit ~1 ms; B10–B13 when the heavy
+suite hit ~8 s; B14 to cover tall grids; B15–B16 when hephaestus became the main machine.
 
-| ID | Task | Trie + masks time |
-|---|---|---|
-| `B4` | `count --rows 4 --cols 4` | 38 s |
-| `B5` | `count --rows 4 --cols 5` | 153 s |
-| `B6` | `count --rows 3 --cols 7` | 16 s |
-| `B7` | `find --rows 7 --cols 7` | 5 s |
-| `B8` | `find --rows 6 --cols 7` | 4 s |
-| `B9` | `find --rows 5 --cols 9` | 24 s |
-
-**Huge suite** (added when the heavy suite hit ~8 s total; each runs once; sized at "by-value node kernel", 22 threads):
-
-| ID | Task | By-value kernel time |
-|---|---|---|
-| `B10` | `count --rows 5 --cols 5` | 31 s (80,364,530 solutions) |
-| `B11` | `count --rows 4 --cols 6` | 9.6 s |
-| `B12` | `find --rows 6 --cols 8` | 5.2 s |
-| `B13` | `find --rows 5 --cols 10` | 4.9 s (no 5×10 exists: exhaustive proof) |
+**One machine.** `bench.sh` refuses to log on any host other than `MAIN_MACHINE` (hephaestus). Runs from
+the previous machine are kept in `results/legacy/bench-log.csv` but not charted. If the main machine
+ever changes, `python3 scripts/replay.py` rebuilds every step from its commit and re-runs the whole
+history (about 50 min here).
 
 Every run is appended to `results/bench-log.csv` (`search_s` = median search time, dictionary load
 excluded; `label` = optimization step). `scripts/charts.py` turns it into `results/charts/*.svg` and
@@ -465,7 +471,8 @@ word-rectangle-solver/
 │   └── HASHES.txt
 ├── scripts/
 │   ├── bench.sh         ← benchmark suite → results/bench-log.csv
-│   └── charts.py        ← bench-log.csv → charts/*.svg + BENCHMARKS.md
+│   ├── replay.py        ← rebuild + re-run every step on a new main machine
+│   └── charts.py        ← bench-log.csv → charts/*.svg (+ progress.svg) + BENCHMARKS.md
 ├── src/
 │   ├── main.rs          ← CLI
 │   ├── lib.rs
@@ -480,7 +487,8 @@ word-rectangle-solver/
 └── results/
     ├── records.md
     ├── journal.md
-    ├── bench-log.csv    ← every benchmark run ever (source of truth)
+    ├── bench-log.csv    ← every benchmark run on the main machine (source of truth)
+    ├── legacy/          ← runs from the previous machine (not charted)
     ├── BENCHMARKS.md    ← generated tables
     └── charts/          ← generated SVG charts
 ```

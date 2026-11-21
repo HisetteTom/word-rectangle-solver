@@ -30,6 +30,10 @@ highlight them; the highlighted "◀ current" bar is the latest kept step.
 
 Suites: `./wr bench quick` (B1–B3, seconds) for fast iteration while developing; the recorded step
 must be a full `./wr bench` (~1 min now) so every chart gets the new bar.
+
+**One machine only: hephaestus** (Ryzen 9 3950X, 32 threads). `bench.sh` refuses to log anywhere else;
+numbers from different CPUs are not comparable. `results/legacy/` holds the old machine's runs (not charted).
+If the main machine changes: `python3 scripts/replay.py` re-runs the whole history (~50 min).
 Use `./wr release --label ...` for official numbers; `fast` profile is fine day to day.
 When a benchmark drops below ~1 ms, add a bigger benchmark (`B4`, …) to `BENCHES` in
 `scripts/bench.sh` instead of changing existing ones — old IDs must keep meaning the same task.

@@ -2,3 +2,4 @@
 /results/*.json
 perf.data*
 flamegraph.svg
+__pycache__/

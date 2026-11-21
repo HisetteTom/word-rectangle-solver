@@ -1,133 +1,137 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="860" height="1140" viewBox="0 0 860 1140" font-family="ui-sans-serif,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="914" height="1140" viewBox="0 0 914 1140" font-family="ui-sans-serif,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
 <style>
   .bg{fill:#ffffff} .t{fill:#1f2328} .m{fill:#59636e} .g{stroke:#d1d9e0}
   .bar{fill:#8fb8de} .best{fill:#1f6feb} .x{fill:#1a7f37;font-weight:600}
   .fail{fill:url(#hatch)} .hs{stroke:#afb8c1} .hb{fill:#eaeef2} .f{fill:#cf222e;font-weight:600}
   .ft{fill:#8c959f} .cur{fill:#1f6feb;font-weight:700}
+  .ln{stroke:#1f6feb;fill:none} .lnf{fill:#1f6feb} .ctx{stroke:#afb8c1;fill:none} .ring{stroke:#ffffff}
+  .fx{stroke:#8c959f;fill:none} .area{fill:#1f6feb;fill-opacity:.08} .tile{fill:#f6f8fa;stroke:#d1d9e0}
+  .big{fill:#1f6feb;font-weight:800}
   @media (prefers-color-scheme: dark){
     .bg{fill:#0d1117} .t{fill:#e6edf3} .m{fill:#9198a1} .g{stroke:#30363d}
     .bar{fill:#2f5f8f} .best{fill:#4493f8} .x{fill:#3fb950}
     .hs{stroke:#484f58} .hb{fill:#21262d} .f{fill:#f85149} .ft{fill:#6e7681} .cur{fill:#4493f8}
+    .ln{stroke:#4493f8} .lnf{fill:#4493f8} .ctx{stroke:#484f58} .ring{stroke:#0d1117}
+    .fx{stroke:#6e7681} .area{fill:#4493f8;fill-opacity:.10} .tile{fill:#161b22;stroke:#30363d} .big{fill:#4493f8}
   }
 </style>
 <defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect class="hb" width="6" height="6"/><line class="hs" x1="0" y1="0" x2="0" y2="6" stroke-width="2.5"/></pattern></defs>
-<rect class="bg" width="860" height="1140" rx="8"/>
+<rect class="bg" width="914" height="1140" rx="8"/>
 <text class="t" x="20" y="30" font-size="17" font-weight="700">B1 · count all 3×3 (exhaustive)</text>
 <text class="m" x="20" y="50" font-size="12">search time, log scale · shorter is better · speedup vs naive · hatched = failed experiment, reverted</text>
-<line class="g" x1="230.0" x2="230.0" y1="60" y2="1112" stroke-dasharray="2 3"/>
-<text class="m" x="230.0" y="1128" font-size="11" text-anchor="middle">1 ms</text>
-<line class="g" x1="306.0" x2="306.0" y1="60" y2="1112" stroke-dasharray="2 3"/>
-<text class="m" x="306.0" y="1128" font-size="11" text-anchor="middle">10 ms</text>
-<line class="g" x1="382.0" x2="382.0" y1="60" y2="1112" stroke-dasharray="2 3"/>
-<text class="m" x="382.0" y="1128" font-size="11" text-anchor="middle">100 ms</text>
-<line class="g" x1="458.0" x2="458.0" y1="60" y2="1112" stroke-dasharray="2 3"/>
-<text class="m" x="458.0" y="1128" font-size="11" text-anchor="middle">1 s</text>
-<line class="g" x1="534.0" x2="534.0" y1="60" y2="1112" stroke-dasharray="2 3"/>
-<text class="m" x="534.0" y="1128" font-size="11" text-anchor="middle">10 s</text>
-<line class="g" x1="610.0" x2="610.0" y1="60" y2="1112" stroke-dasharray="2 3"/>
-<text class="m" x="610.0" y="1128" font-size="11" text-anchor="middle">100 s</text>
-<text class="t" x="218" y="79.0" font-size="13" font-weight="600" text-anchor="end">naive</text>
-<text class="m" x="218" y="93.0" font-size="10" text-anchor="end">60c0927 · fast</text>
-<rect class="bar" x="230" y="66" width="309.6" height="24" rx="3"/>
-<text class="t" x="547.6" y="82.0" font-size="13">11.9 s<tspan class="m" dx="8">baseline</tspan></text>
-<text class="t" x="218" y="119.0" font-size="13" font-weight="600" text-anchor="end">trie + masks</text>
-<text class="m" x="218" y="133.0" font-size="10" text-anchor="end">60c0927 · fast</text>
-<rect class="bar" x="230" y="106" width="143.4" height="24" rx="3"/>
-<text class="t" x="381.4" y="122.0" font-size="13">77.1 ms<tspan class="x" dx="8">154× faster</tspan></text>
-<text class="t" x="218" y="159.0" font-size="13" font-weight="600" text-anchor="end">compact trie</text>
-<text class="m" x="218" y="173.0" font-size="10" text-anchor="end">d3df964 · fast</text>
-<rect class="bar" x="230" y="146" width="142.0" height="24" rx="3"/>
-<text class="t" x="380.0" y="162.0" font-size="13">73.9 ms<tspan class="x" dx="8">160× faster</tspan></text>
-<text class="ft" x="218" y="199.0" font-size="13" font-weight="600" text-anchor="end">staircase MRV (failed)</text>
-<text class="m" x="218" y="213.0" font-size="10" text-anchor="end">072145f · fast</text>
-<rect class="fail" x="230" y="186" width="148.8" height="24" rx="3"/>
-<text class="ft" x="386.8" y="202.0" font-size="13">90.7 ms<tspan class="m" dx="8">131× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
-<text class="t" x="218" y="239.0" font-size="13" font-weight="600" text-anchor="end">leaf counting</text>
-<text class="m" x="218" y="253.0" font-size="10" text-anchor="end">e12b165 · fast</text>
-<rect class="bar" x="230" y="226" width="113.9" height="24" rx="3"/>
-<text class="t" x="351.9" y="242.0" font-size="13">31.5 ms<tspan class="x" dx="8">376× faster</tspan></text>
-<text class="t" x="218" y="279.0" font-size="13" font-weight="600" text-anchor="end">parallel 22 threads</text>
-<text class="m" x="218" y="293.0" font-size="10" text-anchor="end">ecc8a36 · fast</text>
-<rect class="bar" x="230" y="266" width="67.9" height="24" rx="3"/>
-<text class="t" x="305.9" y="282.0" font-size="13">7.82 ms<tspan class="x" dx="8">1,515× faster</tspan></text>
-<text class="ft" x="218" y="319.0" font-size="13" font-weight="600" text-anchor="end">DAWG (failed)</text>
-<text class="m" x="218" y="333.0" font-size="10" text-anchor="end">ad3fb0c · fast</text>
-<rect class="fail" x="230" y="306" width="62.9" height="24" rx="3"/>
-<text class="ft" x="300.9" y="322.0" font-size="13">6.73 ms<tspan class="m" dx="8">1,761× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
-<text class="ft" x="218" y="359.0" font-size="13" font-weight="600" text-anchor="end">DAWG + row memo (failed)</text>
-<text class="m" x="218" y="373.0" font-size="10" text-anchor="end">7a14702 · fast</text>
-<rect class="fail" x="230" y="346" width="64.9" height="24" rx="3"/>
-<text class="ft" x="302.9" y="362.0" font-size="13">7.15 ms<tspan class="m" dx="8">1,657× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
-<text class="t" x="218" y="399.0" font-size="13" font-weight="600" text-anchor="end">by-value node kernel</text>
-<text class="m" x="218" y="413.0" font-size="10" text-anchor="end">6da98c6 · fast</text>
-<rect class="bar" x="230" y="386" width="61.1" height="24" rx="3"/>
-<text class="t" x="299.1" y="402.0" font-size="13">6.37 ms<tspan class="x" dx="8">1,861× faster</tspan></text>
-<text class="t" x="218" y="439.0" font-size="13" font-weight="600" text-anchor="end">last-row count kernel</text>
-<text class="m" x="218" y="453.0" font-size="10" text-anchor="end">04bbb6c · fast</text>
-<rect class="bar" x="230" y="426" width="58.8" height="24" rx="3"/>
-<text class="t" x="296.8" y="442.0" font-size="13">5.94 ms<tspan class="x" dx="8">1,996× faster</tspan></text>
-<text class="t" x="218" y="479.0" font-size="13" font-weight="600" text-anchor="end">square symmetry</text>
-<text class="m" x="218" y="493.0" font-size="10" text-anchor="end">43cfaf9 · fast</text>
-<rect class="bar" x="230" y="466" width="41.7" height="24" rx="3"/>
-<text class="t" x="279.7" y="482.0" font-size="13">3.54 ms<tspan class="x" dx="8">3,348× faster</tspan></text>
-<text class="t" x="218" y="519.0" font-size="13" font-weight="600" text-anchor="end">row look-ahead</text>
-<text class="m" x="218" y="533.0" font-size="10" text-anchor="end">e5a081e · fast</text>
-<rect class="bar" x="230" y="506" width="40.9" height="24" rx="3"/>
-<text class="t" x="278.9" y="522.0" font-size="13">3.45 ms<tspan class="x" dx="8">3,434× faster</tspan></text>
-<text class="t" x="218" y="559.0" font-size="13" font-weight="600" text-anchor="end">compact column trie</text>
-<text class="m" x="218" y="573.0" font-size="10" text-anchor="end">86cf07a · fast</text>
-<rect class="bar" x="230" y="546" width="41.0" height="24" rx="3"/>
-<text class="t" x="279.0" y="562.0" font-size="13">3.47 ms<tspan class="x" dx="8">3,419× faster</tspan></text>
-<text class="ft" x="218" y="599.0" font-size="13" font-weight="600" text-anchor="end">last-row search (failed)</text>
-<text class="m" x="218" y="613.0" font-size="10" text-anchor="end">ddbf60b · fast</text>
-<rect class="fail" x="230" y="586" width="44.3" height="24" rx="3"/>
-<text class="ft" x="282.3" y="602.0" font-size="13">3.82 ms<tspan class="m" dx="8">3,101× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
-<text class="t" x="218" y="639.0" font-size="13" font-weight="600" text-anchor="end">const-generic width</text>
-<text class="m" x="218" y="653.0" font-size="10" text-anchor="end">1f12ee3 · fast</text>
-<rect class="bar" x="230" y="626" width="38.8" height="24" rx="3"/>
-<text class="t" x="276.8" y="642.0" font-size="13">3.24 ms<tspan class="x" dx="8">3,656× faster</tspan></text>
-<text class="t" x="218" y="679.0" font-size="13" font-weight="600" text-anchor="end">throttled stop check</text>
-<text class="m" x="218" y="693.0" font-size="10" text-anchor="end">d8a5b29 · fast</text>
-<rect class="bar" x="230" y="666" width="43.4" height="24" rx="3"/>
-<text class="t" x="281.4" y="682.0" font-size="13">3.72 ms<tspan class="x" dx="8">3,185× faster</tspan></text>
-<text class="t" x="218" y="719.0" font-size="13" font-weight="600" text-anchor="end">branch-free look-ahead</text>
-<text class="m" x="218" y="733.0" font-size="10" text-anchor="end">c8af9d0 · fast</text>
-<rect class="bar" x="230" y="706" width="43.4" height="24" rx="3"/>
-<text class="t" x="281.4" y="722.0" font-size="13">3.73 ms<tspan class="x" dx="8">3,182× faster</tspan></text>
-<text class="ft" x="218" y="759.0" font-size="13" font-weight="600" text-anchor="end">iterative DFS (failed)</text>
-<text class="m" x="218" y="773.0" font-size="10" text-anchor="end">e25590c · fast</text>
-<rect class="fail" x="230" y="746" width="38.8" height="24" rx="3"/>
-<text class="ft" x="276.8" y="762.0" font-size="13">3.23 ms<tspan class="m" dx="8">3,664× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
-<text class="ft" x="218" y="799.0" font-size="13" font-weight="600" text-anchor="end">DFS trie layout (failed)</text>
-<text class="m" x="218" y="813.0" font-size="10" text-anchor="end">2c1dbf2 · fast</text>
-<rect class="fail" x="230" y="786" width="35.4" height="24" rx="3"/>
-<text class="ft" x="273.4" y="802.0" font-size="13">2.93 ms<tspan class="m" dx="8">4,049× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
-<text class="t" x="218" y="839.0" font-size="13" font-weight="600" text-anchor="end">next-row forward check</text>
-<text class="m" x="218" y="853.0" font-size="10" text-anchor="end">022d173 · fast</text>
-<rect class="bar" x="230" y="826" width="37.6" height="24" rx="3"/>
-<text class="t" x="275.6" y="842.0" font-size="13">3.13 ms<tspan class="x" dx="8">3,789× faster</tspan></text>
-<text class="ft" x="218" y="879.0" font-size="13" font-weight="600" text-anchor="end">two-rows-ahead check (failed)</text>
-<text class="m" x="218" y="893.0" font-size="10" text-anchor="end">bd0c975 · fast</text>
-<rect class="fail" x="230" y="866" width="40.1" height="24" rx="3"/>
-<text class="ft" x="278.1" y="882.0" font-size="13">3.37 ms<tspan class="m" dx="8">3,517× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
-<text class="ft" x="218" y="919.0" font-size="13" font-weight="600" text-anchor="end">branch-free forward check (failed)</text>
-<text class="m" x="218" y="933.0" font-size="10" text-anchor="end">1a4c1f0 · fast</text>
-<rect class="fail" x="230" y="906" width="40.9" height="24" rx="3"/>
-<text class="ft" x="278.9" y="922.0" font-size="13">3.46 ms<tspan class="m" dx="8">3,428× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
-<text class="t" x="218" y="959.0" font-size="13" font-weight="600" text-anchor="end">tall grids transposed</text>
-<text class="m" x="218" y="973.0" font-size="10" text-anchor="end">e9dd7bb · fast</text>
-<rect class="bar" x="230" y="946" width="39.9" height="24" rx="3"/>
-<text class="t" x="277.9" y="962.0" font-size="13">3.35 ms<tspan class="x" dx="8">3,540× faster</tspan></text>
-<text class="ft" x="218" y="999.0" font-size="13" font-weight="600" text-anchor="end">paired last two rows (failed)</text>
-<text class="m" x="218" y="1013.0" font-size="10" text-anchor="end">864443e · fast</text>
-<rect class="fail" x="230" y="986" width="41.3" height="24" rx="3"/>
-<text class="ft" x="279.3" y="1002.0" font-size="13">3.5 ms<tspan class="m" dx="8">3,389× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
-<text class="ft" x="218" y="1039.0" font-size="13" font-weight="600" text-anchor="end">backward next-row bound (failed)</text>
-<text class="m" x="218" y="1053.0" font-size="10" text-anchor="end">7901ad2 · fast</text>
-<rect class="fail" x="230" y="1026" width="37.6" height="24" rx="3"/>
-<text class="ft" x="275.6" y="1042.0" font-size="13">3.12 ms<tspan class="m" dx="8">3,799× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
-<text class="t" x="218" y="1079.0" font-size="13" font-weight="600" text-anchor="end">unchecked trie steps</text>
-<text class="m" x="218" y="1093.0" font-size="10" text-anchor="end">b1b1b4e · fast</text>
-<rect class="best" x="230" y="1066" width="36.5" height="24" rx="3"/>
-<text class="t" x="274.5" y="1082.0" font-size="13">3.02 ms<tspan class="x" dx="8">3,918× faster</tspan><tspan class="cur" dx="8">◀ current</tspan></text>
+<text class="m" x="894" y="30" font-size="11" text-anchor="end">hephaestus · Ryzen 9 3950X · 16 cores / 32 threads</text>
+<line class="g" x1="284.0" x2="284.0" y1="60" y2="1112" stroke-dasharray="2 3"/>
+<text class="m" x="284.0" y="1128" font-size="11" text-anchor="middle">1 ms</text>
+<line class="g" x1="379.0" x2="379.0" y1="60" y2="1112" stroke-dasharray="2 3"/>
+<text class="m" x="379.0" y="1128" font-size="11" text-anchor="middle">10 ms</text>
+<line class="g" x1="474.0" x2="474.0" y1="60" y2="1112" stroke-dasharray="2 3"/>
+<text class="m" x="474.0" y="1128" font-size="11" text-anchor="middle">100 ms</text>
+<line class="g" x1="569.0" x2="569.0" y1="60" y2="1112" stroke-dasharray="2 3"/>
+<text class="m" x="569.0" y="1128" font-size="11" text-anchor="middle">1 s</text>
+<line class="g" x1="664.0" x2="664.0" y1="60" y2="1112" stroke-dasharray="2 3"/>
+<text class="m" x="664.0" y="1128" font-size="11" text-anchor="middle">10 s</text>
+<text class="t" x="272" y="79.0" font-size="13" font-weight="600" text-anchor="end">naive</text>
+<text class="m" x="272" y="93.0" font-size="10" text-anchor="end">60c0927 · fast</text>
+<rect class="bar" x="284" y="66" width="358.0" height="24" rx="3"/>
+<text class="t" x="650.0" y="82.0" font-size="13">5.87 s<tspan class="m" dx="8">baseline</tspan></text>
+<text class="t" x="272" y="119.0" font-size="13" font-weight="600" text-anchor="end">trie + masks</text>
+<text class="m" x="272" y="133.0" font-size="10" text-anchor="end">166edb9 · fast</text>
+<rect class="bar" x="284" y="106" width="141.6" height="24" rx="3"/>
+<text class="t" x="433.6" y="122.0" font-size="13">30.9 ms<tspan class="x" dx="8">190× faster</tspan></text>
+<text class="t" x="272" y="159.0" font-size="13" font-weight="600" text-anchor="end">compact trie</text>
+<text class="m" x="272" y="173.0" font-size="10" text-anchor="end">d3df964 · fast</text>
+<rect class="bar" x="284" y="146" width="141.0" height="24" rx="3"/>
+<text class="t" x="433.0" y="162.0" font-size="13">30.5 ms<tspan class="x" dx="8">192× faster</tspan></text>
+<text class="ft" x="272" y="199.0" font-size="13" font-weight="600" text-anchor="end">staircase MRV (failed)</text>
+<text class="m" x="272" y="213.0" font-size="10" text-anchor="end">072145f · fast</text>
+<rect class="fail" x="284" y="186" width="149.3" height="24" rx="3"/>
+<text class="ft" x="441.3" y="202.0" font-size="13">37.3 ms<tspan class="m" dx="8">157× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
+<text class="t" x="272" y="239.0" font-size="13" font-weight="600" text-anchor="end">leaf counting</text>
+<text class="m" x="272" y="253.0" font-size="10" text-anchor="end">e12b165 · fast</text>
+<rect class="bar" x="284" y="226" width="103.5" height="24" rx="3"/>
+<text class="t" x="395.5" y="242.0" font-size="13">12.3 ms<tspan class="x" dx="8">478× faster</tspan></text>
+<text class="t" x="272" y="279.0" font-size="13" font-weight="600" text-anchor="end">parallel (all cores)</text>
+<text class="m" x="272" y="293.0" font-size="10" text-anchor="end">ecc8a36 · fast</text>
+<rect class="bar" x="284" y="266" width="40.9" height="24" rx="3"/>
+<text class="t" x="332.9" y="282.0" font-size="13">2.7 ms<tspan class="x" dx="8">2,176× faster</tspan></text>
+<text class="ft" x="272" y="319.0" font-size="13" font-weight="600" text-anchor="end">DAWG (failed)</text>
+<text class="m" x="272" y="333.0" font-size="10" text-anchor="end">ad3fb0c · fast</text>
+<rect class="fail" x="284" y="306" width="51.2" height="24" rx="3"/>
+<text class="ft" x="343.2" y="322.0" font-size="13">3.46 ms<tspan class="m" dx="8">1,696× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
+<text class="ft" x="272" y="359.0" font-size="13" font-weight="600" text-anchor="end">DAWG + row memo (failed)</text>
+<text class="m" x="272" y="373.0" font-size="10" text-anchor="end">7a14702 · fast</text>
+<rect class="fail" x="284" y="346" width="47.5" height="24" rx="3"/>
+<text class="ft" x="339.5" y="362.0" font-size="13">3.17 ms<tspan class="m" dx="8">1,853× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
+<text class="t" x="272" y="399.0" font-size="13" font-weight="600" text-anchor="end">by-value node kernel</text>
+<text class="m" x="272" y="413.0" font-size="10" text-anchor="end">1449b66 · fast</text>
+<rect class="bar" x="284" y="386" width="42.9" height="24" rx="3"/>
+<text class="t" x="334.9" y="402.0" font-size="13">2.83 ms<tspan class="x" dx="8">2,074× faster</tspan></text>
+<text class="t" x="272" y="439.0" font-size="13" font-weight="600" text-anchor="end">last-row count kernel</text>
+<text class="m" x="272" y="453.0" font-size="10" text-anchor="end">04bbb6c · fast</text>
+<rect class="bar" x="284" y="426" width="36.4" height="24" rx="3"/>
+<text class="t" x="328.4" y="442.0" font-size="13">2.42 ms<tspan class="x" dx="8">2,427× faster</tspan></text>
+<text class="t" x="272" y="479.0" font-size="13" font-weight="600" text-anchor="end">square symmetry</text>
+<text class="m" x="272" y="493.0" font-size="10" text-anchor="end">43cfaf9 · fast</text>
+<rect class="bar" x="284" y="466" width="24.0" height="24" rx="3"/>
+<text class="t" x="316.0" y="482.0" font-size="13">1.79 ms<tspan class="x" dx="8">3,281× faster</tspan></text>
+<text class="t" x="272" y="519.0" font-size="13" font-weight="600" text-anchor="end">row look-ahead</text>
+<text class="m" x="272" y="533.0" font-size="10" text-anchor="end">e5a081e · fast</text>
+<rect class="bar" x="284" y="506" width="28.7" height="24" rx="3"/>
+<text class="t" x="320.7" y="522.0" font-size="13">2 ms<tspan class="x" dx="8">2,929× faster</tspan></text>
+<text class="t" x="272" y="559.0" font-size="13" font-weight="600" text-anchor="end">compact column trie</text>
+<text class="m" x="272" y="573.0" font-size="10" text-anchor="end">86cf07a · fast</text>
+<rect class="bar" x="284" y="546" width="24.8" height="24" rx="3"/>
+<text class="t" x="316.8" y="562.0" font-size="13">1.82 ms<tspan class="x" dx="8">3,218× faster</tspan></text>
+<text class="ft" x="272" y="599.0" font-size="13" font-weight="600" text-anchor="end">last-row search (failed)</text>
+<text class="m" x="272" y="613.0" font-size="10" text-anchor="end">ddbf60b · fast</text>
+<rect class="fail" x="284" y="586" width="28.6" height="24" rx="3"/>
+<text class="ft" x="320.6" y="602.0" font-size="13">2 ms<tspan class="m" dx="8">2,936× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
+<text class="t" x="272" y="639.0" font-size="13" font-weight="600" text-anchor="end">const-generic width</text>
+<text class="m" x="272" y="653.0" font-size="10" text-anchor="end">1f12ee3 · fast</text>
+<rect class="bar" x="284" y="626" width="21.8" height="24" rx="3"/>
+<text class="t" x="313.8" y="642.0" font-size="13">1.7 ms<tspan class="x" dx="8">3,459× faster</tspan></text>
+<text class="t" x="272" y="679.0" font-size="13" font-weight="600" text-anchor="end">throttled stop check</text>
+<text class="m" x="272" y="693.0" font-size="10" text-anchor="end">d8a5b29 · fast</text>
+<rect class="bar" x="284" y="666" width="20.5" height="24" rx="3"/>
+<text class="t" x="312.5" y="682.0" font-size="13">1.64 ms<tspan class="x" dx="8">3,568× faster</tspan></text>
+<text class="t" x="272" y="719.0" font-size="13" font-weight="600" text-anchor="end">branch-free look-ahead</text>
+<text class="m" x="272" y="733.0" font-size="10" text-anchor="end">c8af9d0 · fast</text>
+<rect class="bar" x="284" y="706" width="27.3" height="24" rx="3"/>
+<text class="t" x="319.3" y="722.0" font-size="13">1.94 ms<tspan class="x" dx="8">3,027× faster</tspan></text>
+<text class="ft" x="272" y="759.0" font-size="13" font-weight="600" text-anchor="end">iterative DFS (failed)</text>
+<text class="m" x="272" y="773.0" font-size="10" text-anchor="end">e25590c · fast</text>
+<rect class="fail" x="284" y="746" width="25.6" height="24" rx="3"/>
+<text class="ft" x="317.6" y="762.0" font-size="13">1.86 ms<tspan class="m" dx="8">3,154× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
+<text class="ft" x="272" y="799.0" font-size="13" font-weight="600" text-anchor="end">DFS trie layout (failed)</text>
+<text class="m" x="272" y="813.0" font-size="10" text-anchor="end">2c1dbf2 · fast</text>
+<rect class="fail" x="284" y="786" width="20.9" height="24" rx="3"/>
+<text class="ft" x="312.9" y="802.0" font-size="13">1.66 ms<tspan class="m" dx="8">3,534× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
+<text class="t" x="272" y="839.0" font-size="13" font-weight="600" text-anchor="end">next-row forward check</text>
+<text class="m" x="272" y="853.0" font-size="10" text-anchor="end">022d173 · fast</text>
+<rect class="bar" x="284" y="826" width="24.9" height="24" rx="3"/>
+<text class="t" x="316.9" y="842.0" font-size="13">1.83 ms<tspan class="x" dx="8">3,206× faster</tspan></text>
+<text class="ft" x="272" y="879.0" font-size="13" font-weight="600" text-anchor="end">two-rows-ahead check (failed)</text>
+<text class="m" x="272" y="893.0" font-size="10" text-anchor="end">bd0c975 · fast</text>
+<rect class="fail" x="284" y="866" width="24.9" height="24" rx="3"/>
+<text class="ft" x="316.9" y="882.0" font-size="13">1.83 ms<tspan class="m" dx="8">3,206× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
+<text class="ft" x="272" y="919.0" font-size="13" font-weight="600" text-anchor="end">branch-free forward check (failed)</text>
+<text class="m" x="272" y="933.0" font-size="10" text-anchor="end">1a4c1f0 · fast</text>
+<rect class="fail" x="284" y="906" width="22.8" height="24" rx="3"/>
+<text class="ft" x="314.8" y="922.0" font-size="13">1.74 ms<tspan class="m" dx="8">3,377× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
+<text class="t" x="272" y="959.0" font-size="13" font-weight="600" text-anchor="end">tall grids transposed</text>
+<text class="m" x="272" y="973.0" font-size="10" text-anchor="end">e9dd7bb · fast</text>
+<rect class="bar" x="284" y="946" width="24.6" height="24" rx="3"/>
+<text class="t" x="316.6" y="962.0" font-size="13">1.81 ms<tspan class="x" dx="8">3,232× faster</tspan></text>
+<text class="ft" x="272" y="999.0" font-size="13" font-weight="600" text-anchor="end">paired last two rows (failed)</text>
+<text class="m" x="272" y="1013.0" font-size="10" text-anchor="end">864443e · fast</text>
+<rect class="fail" x="284" y="986" width="22.8" height="24" rx="3"/>
+<text class="ft" x="314.8" y="1002.0" font-size="13">1.74 ms<tspan class="m" dx="8">3,373× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
+<text class="ft" x="272" y="1039.0" font-size="13" font-weight="600" text-anchor="end">backward next-row bound (failed)</text>
+<text class="m" x="272" y="1053.0" font-size="10" text-anchor="end">7901ad2 · fast</text>
+<rect class="fail" x="284" y="1026" width="27.8" height="24" rx="3"/>
+<text class="ft" x="319.8" y="1042.0" font-size="13">1.96 ms<tspan class="m" dx="8">2,993× faster</tspan><tspan class="f" dx="8">✗ reverted</tspan></text>
+<text class="t" x="272" y="1079.0" font-size="13" font-weight="600" text-anchor="end">unchecked trie steps</text>
+<text class="m" x="272" y="1093.0" font-size="10" text-anchor="end">b1b1b4e · fast</text>
+<rect class="best" x="284" y="1066" width="21.2" height="24" rx="3"/>
+<text class="t" x="313.2" y="1082.0" font-size="13">1.67 ms<tspan class="x" dx="8">3,507× faster</tspan><tspan class="cur" dx="8">◀ current</tspan></text>
 </svg>

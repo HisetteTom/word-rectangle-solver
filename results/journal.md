@@ -645,3 +645,45 @@ A/B before the bench (3 alternating runs each): 4×5 3.20–3.26 → 3.04–3.12
 
 **Verdict:** kept. A small, consistent win on every bench. This is the first rust-skills rule
 that paid off directly.
+
+### 2026-11-21: new main machine (hephaestus): whole history replayed, B15–B16 added
+
+**Why:** the first machine's numbers are not comparable with anything run elsewhere. Spot checks
+showed hephaestus (Ryzen 9 3950X, 16 cores / 32 threads) about **2.5× faster on every step**, and
+2.7× even single-threaded, so mixing the two in one chart would show a fake jump.
+
+**What:** `scripts/replay.py` rebuilt all 27 steps (kept and failed) from their own commits (`fast`
+profile, today's compiler) and ran each one on the current suite: naive on B1–B3, the single-threaded
+steps on B1–B9, every parallel step on B1–B16. That is 375 runs, about 50 min. Median of 5 runs under 0.5 s,
+median of 3 under 5 s, one run above that. Every step gives the same answer on every benchmark
+(solution counts, found / no solution). The old log moved to `results/legacy/bench-log.csv`.
+`bench.sh` now refuses to log on another host. The step "parallel 22 threads" is now "parallel (all cores)".
+The bench-only row "B14 baseline (tall count)" was dropped, because every step now has a B14 bar.
+
+**New benchmarks** (the heavy suite is now 0.1–1.2 s and B1–B3 are under 2 ms):
+
+| ID | Task | parallel (all cores) | unchecked trie steps |
+|---|---|---:|---:|
+| B15 | count all 5×6 (7,424,362 solutions) | 30.0 s | 13.5 s |
+| B16 | prove no 6×9 exists | 26.0 s | 9.93 s |
+
+(Prove no 7×8 exists took 60 s and was left out, to keep the replay and the full bench short. It is
+the next candidate.)
+
+**Did any verdict change?** Each step vs. the previous kept step, geometric mean over B4+:
+
+| Step | Old machine | Hephaestus |
+|---|---:|---:|
+| parallel (all cores) | 12.3× | 11.3× (16 physical cores vs 22 threads) |
+| by-value node kernel | 1.37× | 1.22× |
+| last-row search (failed) | 0.96× | 1.02× (within noise: still not worth it) |
+| branch-free forward check (failed) | 0.92× | 1.00× |
+| iterative DFS (failed) | 0.91× | 0.99× |
+| unchecked trie steps | 1.056× | 1.055× |
+
+All the other steps agree within a few percent. No kept step turns into a loss and no failed experiment
+becomes a clear win.
+
+**Headline (current code vs. each suite's baseline, geometric mean):** 6,723× faster than naive
+(B1–B3), 35.6× faster than trie + masks (B4–B9), 2.86× faster than the first parallel version
+(B10–B16). The new `results/charts/progress.svg` shows the whole history on one line.
