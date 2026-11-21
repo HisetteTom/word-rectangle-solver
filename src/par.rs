@@ -148,8 +148,7 @@ impl<'a> Worker<'a> {
             nodes: self.nodes,
             limit: self.limit,
         };
-        let ps: &[Node] = if c == 0 && r + 1 < s.rows { std::slice::from_ref(&k.root) } else { &[] };
-        let done = k.search(r, c, s.row_trie.node(self.row_state[r]), &mut st, on, stop, !0, ps, SELF);
+        let done = k.search(r, c, s.row_trie.node(self.row_state[r]), &mut st, on, stop, !0);
         self.grid = st.grid;
         self.nodes = st.nodes;
         done
@@ -300,9 +299,9 @@ struct SearchState<const W: usize> {
 
 impl<const W: usize> Kernel<'_, W> {
     /// Same order as `count`, writes letters to the grid; false = stop.
-    /// `f`, `ps`, `pm`: forward mask and lazy exact next-row set, as in `count`.
+    /// `f`: forward mask of the next row, as in `count`.
     #[allow(clippy::too_many_arguments)]
-    fn search<F: FnMut(&[u8]) -> bool, S: Fn() -> bool>(&self, r: usize, c: usize, row: Node, st: &mut SearchState<W>, on: &mut F, stop: &S, f: u32, ps: &[Node], pm: u32) -> bool {
+    fn search<F: FnMut(&[u8]) -> bool, S: Fn() -> bool>(&self, r: usize, c: usize, row: Node, st: &mut SearchState<W>, on: &mut F, stop: &S, f: u32) -> bool {
         st.nodes += 1;
         if st.nodes & 255 == 0 && (st.nodes > st.limit || stop()) {
             return false;
@@ -314,13 +313,9 @@ impl<const W: usize> Kernel<'_, W> {
             let m = |k: usize| if k < W { st.colv[k].mask } else { !0 };
             allowed = self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3));
         }
-        if allowed == 0 {
-            return true;
-        }
         let last_row = r == self.last_r;
         // letters row r + 1 could have at position c (no next row in the last row)
-        let mut buf = [Node::default(); S_CAP];
-        let (s, base) = if last_row { (&[][..], !0) } else { self.next_set(c, f, ps, pm, &mut buf) };
+        let base = if last_row { !0 } else if c == 0 { self.root.mask } else { self.uni(c - 1, f) };
         let cell = r * W + c;
         let mut keep_going = true;
         while allowed != 0 {
@@ -338,11 +333,10 @@ impl<const W: usize> Kernel<'_, W> {
                 }
                 st.colv[c] = cn;
                 if c == W - 1 {
-                    let ps: &[Node] = if r + 1 == self.last_r { &[] } else { std::slice::from_ref(&self.root) };
-                    self.search(r + 1, 0, self.root, st, on, stop, !0, ps, SELF)
+                    self.search(r + 1, 0, self.root, st, on, stop, !0)
                 } else {
                     // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
-                    self.search(r, c + 1, unsafe { self.rstep(row, l) }, st, on, stop, fc, s, cn.mask)
+                    self.search(r, c + 1, unsafe { self.rstep(row, l) }, st, on, stop, fc)
                 }
             };
             if !ok {
@@ -352,37 +346,6 @@ impl<const W: usize> Kernel<'_, W> {
         }
         st.colv[c] = col;
         keep_going
-    }
-
-    /// Materialize the exact next-row set S at cell c from (`ps`, `pm`) (see `count`) into `buf`,
-    /// and return it with `base` = the letters row r + 1 can have at c. Empty set = unknown
-    /// (too big, or not tracked): `base` falls back to the bigram bound from `f`.
-    #[inline(always)]
-    fn next_set<'b>(&self, c: usize, f: u32, ps: &'b [Node], pm: u32, buf: &'b mut [Node; S_CAP]) -> (&'b [Node], u32) {
-        if ps.is_empty() {
-            return (&[], if c == 0 { self.root.mask } else { self.uni(c - 1, f) });
-        }
-        if pm == SELF {
-            return (ps, ps.iter().fold(0, |a, n| a | n.mask));
-        }
-        let mut n = 0;
-        let mut base = 0;
-        for sn in ps {
-            let mut m = sn.mask & pm;
-            while m != 0 {
-                let x = m.trailing_zeros();
-                m &= m - 1;
-                if n == S_CAP {
-                    return (&[], self.uni(c - 1, f));
-                }
-                // SAFETY: `x` is a bit of `sn.mask`, `sn` a row-trie node.
-                let ch = unsafe { self.rstep(*sn, x) };
-                base |= ch.mask;
-                buf[n] = ch;
-                n += 1;
-            }
-        }
-        (&buf[..n], base)
     }
 
     /// `f` = forward mask of the *next* row (r + 1) at position c - 1: the letters a row word can
@@ -416,7 +379,31 @@ impl<const W: usize> Kernel<'_, W> {
         }
         // materialize S (or give up on it if it is too big)
         let mut buf = [Node::default(); S_CAP];
-        let (s, base) = self.next_set(c, f, ps, pm, &mut buf);
+        let (s, base): (&[Node], u32) = if ps.is_empty() {
+            (&[], if c == 0 { self.root.mask } else { self.uni(c - 1, f) })
+        } else if pm == SELF {
+            (ps, ps.iter().fold(0, |a, n| a | n.mask))
+        } else {
+            let mut n = 0;
+            let mut base = 0;
+            'fill: for sn in ps {
+                let mut m = sn.mask & pm;
+                while m != 0 {
+                    let x = m.trailing_zeros();
+                    m &= m - 1;
+                    if n == S_CAP {
+                        n = 0;
+                        break 'fill;
+                    }
+                    // SAFETY: `x` is a bit of `sn.mask`, `sn` a row-trie node.
+                    let ch = unsafe { self.rstep(*sn, x) };
+                    base |= ch.mask;
+                    buf[n] = ch;
+                    n += 1;
+                }
+            }
+            if n == 0 { (&[], self.uni(c - 1, f)) } else { (&buf[..n], base) }
+        };
         let mut total = 0;
         if c == (W - 1) {
             // the letter completes this row: next cell is (r + 1, 0) with a fresh row
