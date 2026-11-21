@@ -47,6 +47,8 @@ const FIND_JOBS_PER_THREAD: usize = 4096;
 const FIND_SEQ_BUDGET: u64 = 2_000_000;
 /// Largest exact next-row set the count kernel tracks (see `Kernel::count`).
 const S_CAP: usize = 16;
+/// Same, in the second-to-last row (`Kernel::count_pen`), where overflowing is costlier.
+const S_CAP_PEN: usize = 32;
 /// `pm` value meaning "`ps` is the set itself" (bit 31 is never a letter).
 const SELF: u32 = 1 << 31;
 
@@ -381,6 +383,9 @@ impl<const W: usize> Kernel<'_, W> {
             }
             return self.count_last(c, row, &masks, nodes);
         }
+        if Self::TRACK && r + 1 == self.last_r && !ps.is_empty() {
+            return self.count_pen::<ANY>(c, row, colv, nodes, f, ps, pm);
+        }
         *nodes += 1;
         crate::probe::hit(r, c);
         if ANY {
@@ -406,7 +411,7 @@ impl<const W: usize> Kernel<'_, W> {
             return 0;
         }
         // materialize S (or give up on it if it is too big)
-        let mut buf = [Node::default(); S_CAP];
+        let mut buf = SetBuf::<S_CAP>::new();
         let (s, base): (&[Node], u32) = if !Self::TRACK || ps.is_empty() {
             (&[], if c == 0 { self.root.mask } else { self.uni(c - 1, f) })
         } else if pm == SELF {
@@ -426,11 +431,11 @@ impl<const W: usize> Kernel<'_, W> {
                     // SAFETY: `x` is a bit of `sn.mask`, `sn` a row-trie node.
                     let ch = unsafe { self.rstep(*sn, x) };
                     base |= ch.mask;
-                    buf[n] = ch;
+                    buf.set(n, ch);
                     n += 1;
                 }
             }
-            if n == 0 { (&[], self.uni(c - 1, f)) } else { (&buf[..n], base) }
+            if n == 0 { (&[], self.uni(c - 1, f)) } else { (buf.first(n), base) }
         };
         let mut total = 0;
         if c == (W - 1) {
@@ -478,6 +483,137 @@ impl<const W: usize> Kernel<'_, W> {
         total
     }
 
+    /// `count` specialized for the second-to-last row with a known next-row set S (here: the
+    /// possible last rows). No bigram bound, no row change: the last cell sums the completions of
+    /// S directly, and the last two cells are fused (no call, no set buffer for the last cell).
+    /// Falls back to the generic `count` if S overflows `S_CAP`.
+    #[allow(clippy::too_many_arguments)]
+    #[inline(never)]
+    fn count_pen<const ANY: bool>(&self, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[Node], pm: u32) -> u64 {
+        *nodes += 1;
+        crate::probe::hit(self.last_r - 1, c);
+        if ANY {
+            if *nodes & 1023 == 0
+                && let Some((best, j)) = self.cut
+                && best.load(Relaxed) < j
+            {
+                self.cancelled.set(true);
+            }
+            if self.cancelled.get() {
+                return 0;
+            }
+        }
+        let col = colv[c];
+        let allowed = row.mask & col.mask;
+        let mut good = if c == (W - 1) {
+            allowed
+        } else {
+            let m = |k: usize| if k < W { colv[k].mask } else { !0 };
+            self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3))
+        };
+        if good == 0 {
+            return 0;
+        }
+        // materialize S
+        let mut buf = SetBuf::<S_CAP_PEN>::new();
+        let (s, base): (&[Node], u32) = if pm == SELF {
+            (ps, ps.iter().fold(0, |a, n| a | n.mask))
+        } else {
+            let mut n = 0;
+            let mut base = 0;
+            for sn in ps {
+                let mut m = sn.mask & pm;
+                while m != 0 {
+                    let x = m.trailing_zeros();
+                    m &= m - 1;
+                    if n == S_CAP_PEN {
+                        return self.count::<ANY>(self.last_r - 1, c, row, colv, nodes, f, &[], SELF);
+                    }
+                    // SAFETY: `x` is a bit of `sn.mask`, `sn` a row-trie node.
+                    let ch = unsafe { self.rstep(*sn, x) };
+                    base |= ch.mask;
+                    buf.set(n, ch);
+                    n += 1;
+                }
+            }
+            (buf.first(n), base)
+        };
+        let mut total = 0;
+        if c == (W - 1) {
+            while good != 0 {
+                let l = good.trailing_zeros();
+                good &= good - 1;
+                // SAFETY: `l` comes from `allowed`, a subset of this node's mask.
+                let m = unsafe { self.cstep(col, l) }.mask;
+                total += s.iter().map(|n| (n.mask & m).count_ones() as u64).sum::<u64>();
+            }
+            return total;
+        }
+        if c + 2 == W {
+            // fused last two cells: for letter l here and x in the last cell, the last rows are the
+            // children y (allowed by column c after l) of S whose masks meet column W-1 after x
+            let col2 = colv[W - 1];
+            while good != 0 {
+                let l = good.trailing_zeros();
+                good &= good - 1;
+                // SAFETY: `l` comes from `good`, a subset of this node's mask.
+                let m = unsafe { self.cstep(col, l) }.mask;
+                if base & m == 0 {
+                    continue;
+                }
+                // SAFETY: as above.
+                let child = unsafe { self.rstep(row, l) };
+                let mut a2 = child.mask & col2.mask;
+                if a2 == 0 {
+                    continue;
+                }
+                *nodes += 1;
+                // last-row letters at W-1 the column allows, given each letter x of this row
+                let mut ends = [0u32; 26];
+                let mut ne = 0;
+                while a2 != 0 {
+                    let x = a2.trailing_zeros();
+                    a2 &= a2 - 1;
+                    // SAFETY: `x` is a bit of `col2.mask`.
+                    ends[ne] = unsafe { self.cstep(col2, x) }.mask;
+                    ne += 1;
+                }
+                for sn in s {
+                    let mut ym = sn.mask & m;
+                    while ym != 0 {
+                        let y = ym.trailing_zeros();
+                        ym &= ym - 1;
+                        // SAFETY: `y` is a bit of `sn.mask`.
+                        let last = unsafe { self.rstep(*sn, y) }.mask;
+                        total += ends[..ne].iter().map(|&e| (last & e).count_ones() as u64).sum::<u64>();
+                    }
+                }
+                if ANY && total > 0 {
+                    break;
+                }
+            }
+            return total;
+        }
+        while good != 0 {
+            let l = good.trailing_zeros();
+            good &= good - 1;
+            // SAFETY: `l` comes from `good`, a subset of this node's mask.
+            let cn = unsafe { self.cstep(col, l) };
+            let fc = base & cn.mask;
+            if fc == 0 {
+                continue; // no last row fits the columns
+            }
+            colv[c] = cn;
+            // SAFETY: as above.
+            total += self.count_pen::<ANY>(c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc, s, cn.mask);
+            if ANY && total > 0 {
+                break;
+            }
+        }
+        colv[c] = col;
+        total
+    }
+
     /// Letters a row word can have at position k + 1, given its letter at k is in `f`.
     #[inline(always)]
     fn uni(&self, k: usize, f: u32) -> u32 {
@@ -502,6 +638,34 @@ impl<const W: usize> Kernel<'_, W> {
             good |= (ok as u32) << l;
         }
         good
+    }
+}
+
+/// Stack buffer for a next-row set, left uninitialized: zero-filling it cost a 256–512 byte memset
+/// at every node.
+struct SetBuf<const N: usize> {
+    n: [std::mem::MaybeUninit<Node>; N],
+}
+
+impl<const N: usize> SetBuf<N> {
+    #[inline(always)]
+    fn new() -> Self {
+        SetBuf { n: [std::mem::MaybeUninit::uninit(); N] }
+    }
+
+    /// Write slot `i` (`i < N`, checked by the callers' `n == CAP` tests).
+    #[inline(always)]
+    fn set(&mut self, i: usize, v: Node) {
+        self.n[i].write(v);
+    }
+
+    /// The first `len` slots, all written by `set`.
+    #[inline(always)]
+    fn first(&self, len: usize) -> &[Node] {
+        debug_assert!(len <= N);
+        // SAFETY: callers wrote slots 0..len with `set` before (fill loops write 0, 1, 2, …),
+        // and MaybeUninit<Node> has Node's layout.
+        unsafe { std::slice::from_raw_parts(self.n.as_ptr().cast::<Node>(), len) }
     }
 }
 
