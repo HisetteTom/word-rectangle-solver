@@ -16,10 +16,10 @@
 //!    skip / abort any job after it, so the answer is the lexicographically first grid,
 //!    exactly what the sequential solver returns.
 
-use crate::trie::{CNode, CTrie, Node, Trie};
+use crate::trie::{CNode, CTrie, LETTERS, Node, Trie};
 
 // Layout guard (rust-skills `mem-assert-type-size`): the kernels are tuned for these sizes.
-const _: () = assert!(size_of::<Node>() == 16 && size_of::<CNode>() == 8);
+const _: () = assert!(size_of::<Node>() == 12 && size_of::<CNode>() == 8);
 use crate::{Grid, Solver, Stats};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
@@ -228,7 +228,7 @@ impl<const W: usize> Kernel<'_, W> {
             }
             return total;
         }
-        let m = |k: usize| if k < W { masks[k] } else { !0 };
+        let m = |k: usize| if k < W { masks[k] } else { LETTERS };
         let mut good = self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3));
         while good != 0 {
             let l = good.trailing_zeros();
@@ -317,7 +317,7 @@ impl<const W: usize> Kernel<'_, W> {
         let mut allowed = row.mask & col.mask;
         if c < W - 1 {
             // look-ahead: drop letters whose row can't fit the columns further right
-            let m = |k: usize| if k < W { st.colv[k].mask } else { !0 };
+            let m = |k: usize| if k < W { st.colv[k].mask } else { LETTERS };
             allowed = self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3));
         }
         let last_row = r == self.last_r;
@@ -379,7 +379,7 @@ impl<const W: usize> Kernel<'_, W> {
         let mut good = if c == (W - 1) {
             allowed
         } else {
-            let m = |k: usize| if k < W { colv[k].mask } else { !0 };
+            let m = |k: usize| if k < W { colv[k].mask } else { LETTERS };
             self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3))
         };
         if good == 0 {
@@ -460,7 +460,7 @@ impl<const W: usize> Kernel<'_, W> {
     }
 
     /// Branch-free look-ahead filter: the letters of `allowed` whose row child can still match
-    /// the columns at c+1, c+2, c+3 (masks `m1..m3`, `!0` past the end). Doing it in a separate
+    /// the columns at c+1, c+2, c+3 (masks `m1..m3`, `LETTERS` past the end: row masks carry index bits above bit 26). Doing it in a separate
     /// pass turns one unpredictable branch per letter into straight-line code.
     #[inline(always)]
     fn good(&self, row: Node, allowed: u32, c: usize, m1: u32, m2: u32, m3: u32) -> u32 {
