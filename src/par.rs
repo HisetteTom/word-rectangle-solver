@@ -104,18 +104,21 @@ impl<'a> Worker<'a> {
     }
 
     /// Count all completions of the loaded job prefix (`cell` = first empty cell).
-    fn count_job(&mut self, cell: usize) -> u64 {
-        by_width!(self.s.cols, |W| self.count_job_w::<W>(cell))
+    /// `plain` = Some((best, job)) for `find`: no square symmetry (prefixes leave row 0), stop at the
+    /// first solution (the result is then only "0" or "some"), and give up (0) once `best` < job.
+    fn count_job(&mut self, cell: usize, plain: Option<(&AtomicUsize, usize)>) -> u64 {
+        by_width!(self.s.cols, |W| self.count_job_w::<W>(cell, plain))
     }
 
-    fn count_job_w<const W: usize>(&mut self, cell: usize) -> u64 {
+    fn count_job_w<const W: usize>(&mut self, cell: usize, plain: Option<(&AtomicUsize, usize)>) -> u64 {
         let s = self.s;
         let (r, c) = (cell / W, cell % W);
         let mut colv: [CNode; W] = std::array::from_fn(|i| s.col_trie.node(self.col_state[i]));
-        let k = Kernel::<W>::new(s);
+        let mut k = Kernel::<W>::new(s);
+        k.cut = plain;
         let mut nodes = 0;
         let row = s.row_trie.node(self.row_state[r]);
-        let total = if s.sym {
+        let total = if s.sym && plain.is_none() {
             // job prefixes stay inside row 0 when `sym` (see `count`), so they are all "tied"
             let mut row0 = [0u8; W];
             for (d, &g) in row0.iter_mut().zip(&self.grid[..cell]) {
@@ -123,7 +126,8 @@ impl<'a> Worker<'a> {
             }
             k.count_sym(r, c, row, &mut colv, &mut nodes, &mut row0)
         } else {
-            k.count(r, c, row, &mut colv, &mut nodes, !0, if c == 0 { std::slice::from_ref(&k.root) } else { &[] }, SELF)
+            let ps: &[Node] = if c == 0 { std::slice::from_ref(&k.root) } else { &[] };
+            if plain.is_some() { k.count::<true>(r, c, row, &mut colv, &mut nodes, !0, ps, SELF) } else { k.count::<false>(r, c, row, &mut colv, &mut nodes, !0, ps, SELF) }
         };
         self.nodes += nodes;
         total
@@ -168,12 +172,16 @@ struct Kernel<'t, const W: usize> {
     /// Row trie root, cached (no load + bounds check at every row start).
     root: Node,
     last_r: usize,
+    /// `count::<ANY>` only: (best job so far, this job). The job is cancelled once an earlier job
+    /// has a solution; `cancelled` then makes every frame return at once.
+    cut: Option<(&'t AtomicUsize, usize)>,
+    cancelled: std::cell::Cell<bool>,
 }
 
 impl<'t, const W: usize> Kernel<'t, W> {
     fn new(s: &'t ParSearch) -> Self {
         let bi = s.bigrams.as_slice().try_into().expect("one bigram table per column");
-        Kernel { rt: s.row_trie.nodes(), bi, ct: s.col_trie.nodes(), root: s.row_trie.node(0), last_r: s.rows - 1 }
+        Kernel { rt: s.row_trie.nodes(), bi, ct: s.col_trie.nodes(), root: s.row_trie.node(0), last_r: s.rows - 1, cut: None, cancelled: std::cell::Cell::new(false) }
     }
 
     /// Row child of `n` for letter `l`, without a bounds check (rust-skills `opt-bounds-check`).
@@ -285,7 +293,7 @@ impl<const W: usize> Kernel<'_, W> {
             // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
             let (nr, nc, nrow) = if c == (W - 1) { (r + 1, 0, self.root) } else { (r, c + 1, unsafe { self.rstep(row, l) }) };
             total += if tie_cell && l > w {
-                2 * self.count(nr, nc, nrow, colv, nodes, !0, if nc == 0 { std::slice::from_ref(&self.root) } else { &[] }, SELF)
+                2 * self.count::<false>(nr, nc, nrow, colv, nodes, !0, if nc == 0 { std::slice::from_ref(&self.root) } else { &[] }, SELF)
             } else {
                 self.count_sym(nr, nc, nrow, colv, nodes, row0)
             };
@@ -358,12 +366,13 @@ impl<const W: usize> Kernel<'_, W> {
     /// `f` = forward mask of the *next* row (r + 1) at position c - 1: the letters a row word can
     /// have there, given what the columns already force on positions 0..c-1 of row r + 1
     /// (any superset is valid, e.g. `!0`). Unused at c == 0.
+    /// `ANY`: return as soon as the total is non-zero (an existence test, for `find`).
     /// `ps`, `pm` = the exact set S of row-trie nodes (depth c) that row r + 1 can still be in, given
     /// the column letters already forced on its positions 0..c-1: S = children of the nodes `ps` by
     /// letters in `pm`, or `ps` itself when `pm == SELF`. Built lazily, only if this cell has a live
     /// letter. `ps` empty = unknown (S had more than `S_CAP` nodes): the bigram bound `f` is used.
     #[allow(clippy::too_many_arguments)]
-    fn count(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[Node], pm: u32) -> u64 {
+    fn count<const ANY: bool>(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[Node], pm: u32) -> u64 {
         if r == self.last_r {
             // Last row: columns only need their masks (their children are never used).
             let mut masks = [0u32; W];
@@ -374,6 +383,17 @@ impl<const W: usize> Kernel<'_, W> {
         }
         *nodes += 1;
         crate::probe::hit(r, c);
+        if ANY {
+            if *nodes & 1023 == 0
+                && let Some((best, j)) = self.cut
+                && best.load(Relaxed) < j
+            {
+                self.cancelled.set(true);
+            }
+            if self.cancelled.get() {
+                return 0;
+            }
+        }
         let col = colv[c];
         let allowed = row.mask & col.mask;
         let mut good = if c == (W - 1) {
@@ -430,7 +450,10 @@ impl<const W: usize> Kernel<'_, W> {
                     continue;
                 }
                 colv[c] = cn;
-                total += self.count(r + 1, 0, self.root, colv, nodes, !0, std::slice::from_ref(&self.root), SELF);
+                total += self.count::<ANY>(r + 1, 0, self.root, colv, nodes, !0, std::slice::from_ref(&self.root), SELF);
+                if ANY && total > 0 {
+                    break;
+                }
             }
             colv[c] = col;
             return total;
@@ -446,7 +469,10 @@ impl<const W: usize> Kernel<'_, W> {
             }
             colv[c] = cn;
             // SAFETY: `l` comes from `good`, a subset of this node's mask.
-            total += self.count(r, c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc, s, cn.mask);
+            total += self.count::<ANY>(r, c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc, s, cn.mask);
+            if ANY && total > 0 {
+                break;
+            }
         }
         colv[c] = col;
         total
@@ -632,6 +658,11 @@ impl Solver for ParSearch {
             if best.load(Relaxed) < j {
                 return None; // an earlier job already has a solution
             }
+            // the count kernel is faster than `search` and proves most jobs empty; only a job
+            // with solutions is searched (from its start, so it still yields its first grid)
+            if w.count_job(depth, Some((&best, j))) == 0 || best.load(Relaxed) < j {
+                return None;
+            }
             let mut sol = None;
             w.search(depth, &mut |g: &[u8]| {
                 sol = Some(g.to_vec());
@@ -656,7 +687,7 @@ impl Solver for ParSearch {
         // with symmetry, job prefixes must stay in row 0 (they are expanded without the tie rule)
         let max_depth = if self.sym { self.cols } else { usize::MAX };
         let (depth, jobs) = self.jobs(COUNT_JOBS_PER_THREAD, max_depth);
-        let total: u64 = self.run(depth, &jobs, |w, _, _| Some(w.count_job(depth))).iter().map(|(_, c)| c).sum();
+        let total: u64 = self.run(depth, &jobs, |w, _, _| Some(w.count_job(depth, None))).iter().map(|(_, c)| c).sum();
         self.stats.solutions = total;
         total
     }
