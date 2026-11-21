@@ -42,9 +42,9 @@ macro_rules! by_width {
 /// small jobs, because the job that holds the first solution must not be one huge subtree.
 const COUNT_JOBS_PER_THREAD: usize = 256;
 const FIND_JOBS_PER_THREAD: usize = 4096;
-/// `find` first searches sequentially for this many nodes (~10 ms); small instances finish
+/// `find` first searches sequentially for this many nodes (~0.5 ms); small instances finish
 /// there without paying for threads and job expansion.
-const FIND_SEQ_BUDGET: u64 = 2_000_000;
+const FIND_SEQ_BUDGET: u64 = 30_000;
 /// Largest exact next-row set the count kernel tracks (see `Kernel::count`). 32 since the buffer is
 /// uninitialized (5×6: 12.44 s at 16, 11.99 s at 32; 5×5 unchanged).
 const S_CAP: usize = 32;
