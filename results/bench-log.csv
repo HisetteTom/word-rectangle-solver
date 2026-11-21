@@ -374,3 +374,19 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-07,b1b1b4e,fast,par,B14,count --rows 6 --cols 4,2.2740,3243793909,solutions=37812638,2.181930,unchecked trie steps,hephaestus
 2026-11-07,b1b1b4e,fast,par,B15,count --rows 5 --cols 6,13.5542,16304002974,solutions=7424362,13.473977,unchecked trie steps,hephaestus
 2026-11-07,b1b1b4e,fast,par,B16,find --rows 6 --cols 9,10.0237,10489967076,no solution: 6x9 exhausted,9.927913,unchecked trie steps,hephaestus
+2026-11-21,a651f45,fast,par,B1,count --rows 3 --cols 3,0.0768,994996,solutions=1909732,0.001929,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B2,find --rows 5 --cols 6,0.0850,7220,found,0.000153,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B3,find --rows 6 --cols 6,0.0888,12839,found,0.000233,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B4,count --rows 4 --cols 4,0.2165,192987066,solutions=136245247,0.131924,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B5,count --rows 4 --cols 5,0.9475,614200383,solutions=114846713,0.864331,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B6,count --rows 3 --cols 7,0.1749,107976321,solutions=4453472,0.088051,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B7,find --rows 7 --cols 7,0.2187,38535200,found,0.129260,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B8,find --rows 6 --cols 7,0.2028,32211585,found,0.115245,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B9,find --rows 5 --cols 9,0.2895,157908801,found,0.193794,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B10,count --rows 5 --cols 5,4.0455,3269576133,solutions=80364530,3.952436,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B11,count --rows 4 --cols 6,1.6748,1046986844,solutions=37812638,1.587102,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B12,find --rows 6 --cols 8,1.1237,1009835868,found,1.025181,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B13,find --rows 5 --cols 10,1.0688,976239922,no solution: 5x10 exhausted,0.976039,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B14,count --rows 6 --cols 4,1.6756,1046986844,solutions=37812638,1.592336,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B15,count --rows 5 --cols 6,12.5108,8497208081,solutions=7424362,12.428508,exact next-row set,hephaestus
+2026-11-21,a651f45,fast,par,B16,find --rows 6 --cols 9,10.0033,10489967076,no solution: 6x9 exhausted,9.906024,exact next-row set,hephaestus

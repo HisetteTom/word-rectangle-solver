@@ -687,3 +687,40 @@ becomes a clear win.
 **Headline (current code vs. each suite's baseline, geometric mean):** 6,723× faster than naive
 (B1–B3), 35.6× faster than trie + masks (B4–B9), 2.86× faster than the first parallel version
 (B10–B16). The new `results/charts/progress.svg` shows the whole history on one line.
+
+### 2026-11-21: exact next-row set in the count kernel (`a651f45`) ✅ kept
+
+**Idea (PLAN idea 1):** the bigram check only approximates the next row by "which letters can
+follow these letters". While filling row r, the kernel now tracks the **exact set S of row-trie
+nodes that row r + 1 can still be in**, given the column letters already forced on it (each placed
+letter fixes the mask of what its column allows one row down). That is up to `S_CAP` = 16 nodes,
+kept in a stack array. When S grows past 16, the kernel falls back to bigrams for the rest of the row.
+- prune: a letter dies when no node of S has a child the column allows (the OR of S's masks);
+- in the **second-to-last row**, the last cell sums `popcount(s.mask & column mask)` over S: the
+  number of last rows, with no last-row walk at all;
+- **lazy:** a call gets (parent set, column mask) and builds S only if its cell has a live letter.
+  Building it eagerly for every letter made 5×5 and 5×6 *slower* (4.30 s, 14.3 s), even though
+  they visit 40–48% fewer nodes.
+
+Cap sweep (lazy version, fast profile):
+
+| S_CAP | 4×5 | 5×5 | 4×6 | 5×6 |
+|---|---:|---:|---:|---:|
+| 8 | 0.91 s | 3.87 s | 1.70 s | 13.0 s |
+| **16** | 0.86 s | 3.93 s | 1.59 s | 12.4 s |
+| 32 | 0.84 s | 4.08 s | 1.58 s | 12.3 s |
+| 64 | 0.99 s | 4.89 s | 1.84 s | 14.1 s |
+
+| Benchmark | Before (unchecked trie steps) | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 0.157 s · 397 M nodes | 0.132 s · 193 M | 1.19× faster |
+| B5 count 4×5 | 1.20 s · 2.14 G | 0.864 s · 0.61 G | 1.39× faster |
+| B10 count 5×5 | 3.91 s · 5.39 G | 3.95 s · 3.27 G | ≈ |
+| B11 count 4×6 | 2.19 s · 3.24 G | 1.59 s · 1.05 G | 1.38× faster |
+| B14 count 6×4 | 2.18 s | 1.59 s | 1.37× faster |
+| B15 count 5×6 | 13.47 s · 16.3 G | 12.43 s · 8.50 G | 1.08× faster |
+
+**Verdict:** kept. This is the first attack on the dead second-to-last row that paid off (after
+three failed ones). Nodes drop 2–3.5×, and each node costs more. 4-row grids gain about 1.4×,
+because there the tracked row is the last one. On 5-row grids the earlier rows pay the overhead
+and get only part of the benefit.

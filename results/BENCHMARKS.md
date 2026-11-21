@@ -46,7 +46,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 1.81 ms | 3,232× | 1.01× | 994,996 | solutions=1909732 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 1.74 ms | 3,373× | 1.04× | 994,996 | solutions=1909732 |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 1.96 ms | 2,993× | 0.93× | 994,995 | solutions=1909732 |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 1.67 ms | 3,507× | 1.08× | 994,996 | solutions=1909732 |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 1.67 ms | 3,507× | 1.08× | 994,996 | solutions=1909732 |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 1.93 ms | 3,041× | 0.87× | 994,996 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -79,7 +80,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 157 µs | 7,350× | 0.96× | 7,220 | found |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 155 µs | 7,445× | 1.01× | 7,220 | found |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 157 µs | 7,350× | 1.00× | 7,220 | found |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 153 µs | 7,542× | 1.03× | 7,220 | found |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 153 µs | 7,542× | 1.03× | 7,220 | found |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 153 µs | 7,542× | 1.00× | 7,220 | found |
 
 ## B3 · find first 6×6
 
@@ -112,7 +114,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 247 µs | 10,979× | 0.97× | 12,839 | found |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 245 µs | 11,069× | 1.01× | 12,839 | found |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 247 µs | 10,979× | 1.00× | 12,839 | found |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 236 µs | 11,491× | 1.05× | 12,839 | found |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 236 µs | 11,491× | 1.05× | 12,839 | found |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 233 µs | 11,639× | 1.01× | 12,839 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -144,7 +147,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 171 ms | 83.8× | 1.00× | 397,315,658 | solutions=136245247 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 156 ms | 92.0× | 1.10× | 221,286,896 | solutions=136245247 |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 170 ms | 84.4× | 1.01× | 396,848,007 | solutions=136245247 |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 157 ms | 91.4× | 1.09× | 397,315,658 | solutions=136245247 |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 157 ms | 91.4× | 1.09× | 397,315,658 | solutions=136245247 |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 132 ms | 109× | 1.19× | 192,987,066 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -176,7 +180,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 1.27 s | 45.4× | 1.00× | 2,142,627,416 | solutions=114846713 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 1.31 s | 44.0× | 0.97× | 946,918,563 | solutions=114846713 |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 1.29 s | 44.7× | 0.99× | 2,139,564,798 | solutions=114846713 |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 1.20 s | 47.9× | 1.06× | 2,142,627,416 | solutions=114846713 |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 1.20 s | 47.9× | 1.06× | 2,142,627,416 | solutions=114846713 |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 864 ms | 66.8× | 1.39× | 614,200,383 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -208,7 +213,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 97.9 ms | 59.9× | 0.99× | 132,592,160 | solutions=4453472 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 279 ms | 21.1× | 0.35× | 238,449,733 | solutions=4453472 |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 96.2 ms | 61.0× | 1.02× | 132,590,961 | solutions=4453472 |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 92.3 ms | 63.6× | 1.06× | 132,592,160 | solutions=4453472 |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 92.3 ms | 63.6× | 1.06× | 132,592,160 | solutions=4453472 |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 88.1 ms | 66.6× | 1.05× | 107,976,321 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -240,7 +246,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 139 ms | 13.0× | 0.98× | 39,053,049 | found |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 137 ms | 13.2× | 1.02× | 39,117,785 | found |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 137 ms | 13.2× | 1.02× | 39,056,627 | found |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 134 ms | 13.5× | 1.04× | 38,756,145 | found |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 134 ms | 13.5× | 1.04× | 38,756,145 | found |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 129 ms | 14.0× | 1.03× | 38,535,200 | found |
 
 ## B8 · find first 6×7
 
@@ -272,7 +279,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 122 ms | 12.1× | 1.01× | 32,231,282 | found |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 121 ms | 12.1× | 1.00× | 31,532,495 | found |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 123 ms | 11.9× | 0.99× | 32,175,764 | found |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 117 ms | 12.6× | 1.04× | 32,157,298 | found |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 117 ms | 12.6× | 1.04× | 32,157,298 | found |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 115 ms | 12.7× | 1.01× | 32,211,585 | found |
 
 ## B9 · find first 5×9
 
@@ -304,7 +312,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 209 ms | 40.1× | 0.99× | 157,855,935 | found |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 205 ms | 40.8× | 1.02× | 157,902,963 | found |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 209 ms | 40.0× | 1.00× | 157,879,747 | found |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 195 ms | 42.8× | 1.07× | 157,768,319 | found |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 195 ms | 42.8× | 1.07× | 157,768,319 | found |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 194 ms | 43.1× | 1.01× | 157,908,801 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -332,7 +341,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 4.17 s | 3.82× | 1.00× | 5,393,001,298 | solutions=80364530 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 4.87 s | 3.27× | 0.86× | 4,069,141,452 | solutions=80364530 |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 4.73 s | 3.37× | 0.88× | 5,039,898,387 | solutions=80364530 |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 3.91 s | 4.07× | 1.07× | 5,393,001,298 | solutions=80364530 |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 3.91 s | 4.07× | 1.07× | 5,393,001,298 | solutions=80364530 |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 3.95 s | 4.03× | 0.99× | 3,269,576,133 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -360,7 +370,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 2.28 s | 2.20× | 1.00× | 3,243,793,909 | solutions=37812638 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 2.57 s | 1.95× | 0.89× | 1,629,669,482 | solutions=37812638 |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 2.35 s | 2.13× | 0.97× | 3,239,551,826 | solutions=37812638 |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 2.19 s | 2.29× | 1.04× | 3,243,793,909 | solutions=37812638 |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 2.19 s | 2.29× | 1.04× | 3,243,793,909 | solutions=37812638 |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 1.59 s | 3.16× | 1.38× | 1,046,986,844 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -388,7 +399,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 1.06 s | 2.49× | 1.00× | 1,009,781,520 | found |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 1.06 s | 2.50× | 1.00× | 1,009,799,824 | found |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 1.06 s | 2.50× | 1.00× | 1,009,844,166 | found |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 1.01 s | 2.61× | 1.05× | 1,009,792,440 | found |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 1.01 s | 2.61× | 1.05× | 1,009,792,440 | found |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 1.03 s | 2.58× | 0.99× | 1,009,835,868 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -416,7 +428,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 1.03 s | 2.39× | 1.00× | 976,239,922 | no solution: 5x10 exhausted |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 1.03 s | 2.38× | 1.00× | 976,239,922 | no solution: 5x10 exhausted |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 1.02 s | 2.40× | 1.00× | 976,239,922 | no solution: 5x10 exhausted |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 985 ms | 2.49× | 1.04× | 976,239,922 | no solution: 5x10 exhausted |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 985 ms | 2.49× | 1.04× | 976,239,922 | no solution: 5x10 exhausted |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 976 ms | 2.52× | 1.01× | 976,239,922 | no solution: 5x10 exhausted |
 
 ## B14 · count all 6×4 (exhaustive)
 
@@ -444,7 +457,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 2.28 s | 4.23× | 2.58× | 3,243,793,909 | solutions=37812638 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 2.57 s | 3.75× | 0.89× | 1,629,669,482 | solutions=37812638 |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 2.35 s | 4.10× | 0.97× | 3,239,551,826 | solutions=37812638 |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 2.18 s | 4.42× | 1.04× | 3,243,793,909 | solutions=37812638 |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 2.18 s | 4.42× | 1.04× | 3,243,793,909 | solutions=37812638 |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 1.59 s | 6.05× | 1.37× | 1,046,986,844 | solutions=37812638 |
 
 ## B15 · count all 5×6 (exhaustive)
 
@@ -472,7 +486,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 14.2 s | 2.11× | 1.00× | 16,304,002,974 | solutions=7424362 |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 18.3 s | 1.63× | 0.77× | 13,808,705,091 | solutions=7424362 |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 16.6 s | 1.81× | 0.86× | 15,090,382,636 | solutions=7424362 |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 13.5 s | 2.22× | 1.05× | 16,304,002,974 | solutions=7424362 |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 13.5 s | 2.22× | 1.05× | 16,304,002,974 | solutions=7424362 |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 12.4 s | 2.41× | 1.08× | 8,497,208,081 | solutions=7424362 |
 
 ## B16 · prove no 6×9 exists (exhaustive)
 
@@ -500,4 +515,5 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 10.5 s | 2.47× | 1.00× | 10,489,967,076 | no solution: 6x9 exhausted |
 | ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 10.5 s | 2.48× | 1.01× | 10,489,967,076 | no solution: 6x9 exhausted |
 | ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 10.5 s | 2.47× | 1.00× | 10,489,967,076 | no solution: 6x9 exhausted |
-| ⭐ | **unchecked trie steps** | `b1b1b4e` | 2026-11-07 | fast | 9.93 s | 2.62× | 1.06× | 10,489,967,076 | no solution: 6x9 exhausted |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 9.93 s | 2.62× | 1.06× | 10,489,967,076 | no solution: 6x9 exhausted |
+| ⭐ | **exact next-row set** | `a651f45` | 2026-11-21 | fast | 9.91 s | 2.62× | 1.00× | 10,489,967,076 | no solution: 6x9 exhausted |
