@@ -566,3 +566,19 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,631c1c3,fast,par,B14,count --rows 6 --cols 4,1.9706,858502757,solutions=37812638,1.876131,DAWG next-row set (failed),hephaestus
 2026-11-22,631c1c3,fast,par,B15,count --rows 5 --cols 6,15.7632,6960472956,solutions=7424362,15.672506,DAWG next-row set (failed),hephaestus
 2026-11-22,631c1c3,fast,par,B16,find --rows 6 --cols 9,9.3540,10487997156,no solution: 6x9 exhausted,9.229442,DAWG next-row set (failed),hephaestus
+2026-11-22,ad20594,fast,par,B1,count --rows 3 --cols 3,0.0788,994996,solutions=1909732,0.001689,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B2,find --rows 5 --cols 6,0.0858,7220,found,0.000149,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B3,find --rows 6 --cols 6,0.0849,12839,found,0.000225,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B4,count --rows 4 --cols 4,0.1911,170637018,solutions=136245247,0.116209,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B5,count --rows 4 --cols 5,0.8079,414768985,solutions=114846713,0.728065,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B6,count --rows 3 --cols 7,0.1830,73695021,solutions=4453472,0.088905,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B7,find --rows 7 --cols 7,0.2046,28045408,found,0.104963,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B8,find --rows 6 --cols 7,0.1781,15384791,found,0.086461,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B9,find --rows 5 --cols 9,0.2555,157297922,found,0.154295,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B10,count --rows 5 --cols 5,4.0765,3129472451,solutions=80364530,3.990191,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B11,count --rows 4 --cols 6,1.4928,774415735,solutions=37812638,1.407912,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B12,find --rows 6 --cols 8,1.0115,540151032,found,0.907029,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B13,find --rows 5 --cols 10,0.9875,974270002,no solution: 5x10 exhausted,0.885501,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B14,count --rows 6 --cols 4,1.4962,774415735,solutions=37812638,1.417047,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B15,count --rows 5 --cols 6,10.2300,5947012110,solutions=7424362,10.144381,mirrored rows for counts,hephaestus
+2026-11-22,ad20594,fast,par,B16,find --rows 6 --cols 9,9.4881,10487997156,no solution: 6x9 exhausted,9.388163,mirrored rows for counts,hephaestus

@@ -976,3 +976,41 @@ upper rows (tracking only the second-to-last row gives nothing), and that's wher
 
 Still slower everywhere: each child now costs an edge load, a node load and a stamp read and write.
 The idea stays parked. It would need a set structure that costs about what one trie step costs.
+
+### 2026-11-22: mirrored rows for counts (`ad20594`) ✅ kept
+
+**Idea:** a count doesn't change if the grid is flipped. A horizontal mirror image has every row word
+reversed (and the columns in reverse order, from the same list). A vertical one has the column words
+reversed. So a count can run in any of 4 orientations. I measured them with dictionaries whose words of the
+row length and/or column length are reversed (same counts every time, as they must be):
+
+| Shape | as asked | rows reversed (mirror) | columns reversed | both (180°) |
+|---|---:|---:|---:|---:|
+| count 4×5 | 0.77 s | **0.72 s** | 0.94 s | 1.19 s |
+| count 4×6 | 1.58 s | **1.40 s** | 2.26 s | 2.95 s |
+| count 4×7 | 2.13 s | **1.71 s** | 3.34 s | 4.50 s |
+| count 5×6 | 11.97 s | **9.99 s** | 20.5 s | 29.7 s |
+| count 5×7 | 14.10 s | **9.88 s** | 26.0 s | 41.6 s |
+| prove no 5×10 (count) | 0.96 s | **0.59 s** | 3.84 s | 8.81 s |
+| prove no 6×9 (count) | 9.50 s | **6.88 s** | 12.05 s | 26.1 s |
+
+Filling each row **from its last letter** wins every time, by 1.07–1.63×. Reversing the columns
+loses every time. My guess: word endings (-s, -ed, -er, -ing) are more predictable than beginnings,
+so starting a row from its end narrows the row trie faster, while the columns are better used
+top-down, where their first letters are spread out.
+
+So `count` now runs non-square grids on the mirrored search (built lazily, like the transposed one
+for tall grids). Squares with one word list keep the transpose symmetry instead: mirrored without it, 5×5
+takes 7.2 s against 4.0 s.
+
+| Benchmark | Before (short sequential find budget) | After | Change |
+|---|---|---|---|
+| B5 count 4×5 | 0.771 s | 0.728 s | 1.06× faster |
+| B11 count 4×6 | 1.581 s | 1.408 s | 1.12× faster |
+| B14 count 6×4 | 1.586 s | 1.417 s | 1.12× faster |
+| B15 count 5×6 | 11.99 s | 10.14 s | 1.18× faster |
+| B6 count 3×7 | 85 ms | 89 ms | ≈ (73.7 M nodes vs 108 M; building the second search costs ~3 ms) |
+
+**Verdict:** kept. `find` can't use it: its answer must be the first grid in the asked orientation.
+"Prove none" runs (B13, B16) would gain 1.4–1.6× if they were counts. That's a reason to add a
+dedicated "exists?" mode later.
