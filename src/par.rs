@@ -16,7 +16,6 @@
 //!    skip / abort any job after it, so the answer is the lexicographically first grid,
 //!    exactly what the sequential solver returns.
 
-use crate::dawg::Dawg;
 use crate::trie::{CNode, CTrie, Node, Trie};
 
 // Layout guard (rust-skills `mem-assert-type-size`): the kernels are tuned for these sizes.
@@ -59,8 +58,6 @@ pub struct ParSearch {
     cols: usize,
     row_trie: Trie,
     col_trie: CTrie,
-    /// Minimized row trie, for the next-row sets of the count kernel.
-    row_dawg: Dawg,
     threads: usize,
     seq_budget: u64,
     /// Square with the same words for rows and columns: transposes of solutions are solutions.
@@ -135,7 +132,7 @@ impl<'a> Worker<'a> {
             }
             if pen { k.count_sym::<true>(r, c, row, &mut colv, &mut nodes, &mut row0) } else { k.count_sym::<false>(r, c, row, &mut colv, &mut nodes, &mut row0) }
         } else {
-            let ps: &[SEnt] = if c == 0 { std::slice::from_ref(&k.droot) } else { &[] };
+            let ps: &[Node] = if c == 0 { std::slice::from_ref(&k.root) } else { &[] };
             match (plain.is_some(), pen) {
                 (true, true) => k.count::<true, true>(r, c, row, &mut colv, &mut nodes, !0, ps, SELF),
                 (true, false) => k.count::<true, false>(r, c, row, &mut colv, &mut nodes, !0, ps, SELF),
@@ -185,10 +182,6 @@ struct Kernel<'t, const W: usize> {
     ct: &'t [CNode],
     /// Row trie root, cached (no load + bounds check at every row start).
     root: Node,
-    /// Row-word DAWG (nodes, edges) for next-row sets, and the set {root} for a fresh row.
-    dn: &'t [CNode],
-    de: &'t [u32],
-    droot: SEnt,
     last_r: usize,
     /// `count::<ANY>` only: (best job so far, this job). The job is cancelled once an earlier job
     /// has a solution; `cancelled` then makes every frame return at once.
@@ -199,18 +192,7 @@ struct Kernel<'t, const W: usize> {
 impl<'t, const W: usize> Kernel<'t, W> {
     fn new(s: &'t ParSearch) -> Self {
         let bi = s.bigrams.as_slice().try_into().expect("one bigram table per column");
-        Kernel {
-            rt: s.row_trie.nodes(),
-            bi,
-            ct: s.col_trie.nodes(),
-            root: s.row_trie.node(0),
-            dn: s.row_dawg.nodes(),
-            de: s.row_dawg.edges(),
-            droot: SEnt { n: s.row_dawg.nodes()[0], id: 0, mult: 1 },
-            last_r: s.rows - 1,
-            cut: None,
-            cancelled: std::cell::Cell::new(false),
-        }
+        Kernel { rt: s.row_trie.nodes(), bi, ct: s.col_trie.nodes(), root: s.row_trie.node(0), last_r: s.rows - 1, cut: None, cancelled: std::cell::Cell::new(false) }
     }
 
     /// Row child of `n` for letter `l`, without a bounds check (rust-skills `opt-bounds-check`).
@@ -224,22 +206,6 @@ impl<'t, const W: usize> Kernel<'t, W> {
         debug_assert!(n.mask >> l & 1 == 1 && i < self.rt.len());
         // SAFETY: see the function contract above.
         unsafe { *self.rt.get_unchecked(i) }
-    }
-
-    /// DAWG child (id, node) of `n` for letter `l`, without bounds checks.
-    ///
-    /// # Safety
-    /// `n` is a node of the row DAWG and bit `l` of `n.mask` is set (then the edge and the
-    /// child exist, by construction of `Dawg::new`).
-    #[inline(always)]
-    unsafe fn dstep(&self, n: CNode, l: u32) -> (u32, CNode) {
-        let e = (n.first + (n.mask & ((1u32 << l) - 1)).count_ones()) as usize;
-        debug_assert!(n.mask >> l & 1 == 1 && e < self.de.len());
-        // SAFETY: see the function contract above.
-        unsafe {
-            let id = *self.de.get_unchecked(e);
-            (id, *self.dn.get_unchecked(id as usize))
-        }
     }
 
     /// Column child of `n` for letter `l`, without a bounds check.
@@ -342,7 +308,7 @@ impl<const W: usize> Kernel<'_, W> {
             // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
             let (nr, nc, nrow) = if c == (W - 1) { (r + 1, 0, self.root) } else { (r, c + 1, unsafe { self.rstep(row, l) }) };
             total += if tie_cell && l > w {
-                2 * self.count::<false, P>(nr, nc, nrow, colv, nodes, !0, if nc == 0 { std::slice::from_ref(&self.droot) } else { &[] }, SELF)
+                2 * self.count::<false, P>(nr, nc, nrow, colv, nodes, !0, if nc == 0 { std::slice::from_ref(&self.root) } else { &[] }, SELF)
             } else {
                 self.count_sym::<P>(nr, nc, nrow, colv, nodes, row0)
             };
@@ -422,7 +388,7 @@ impl<const W: usize> Kernel<'_, W> {
     /// letters in `pm`, or `ps` itself when `pm == SELF`. Built lazily, only if this cell has a live
     /// letter. `ps` empty = unknown (S had more than `S_CAP` nodes): the bigram bound `f` is used.
     #[allow(clippy::too_many_arguments)]
-    fn count<const ANY: bool, const P: bool>(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[SEnt], pm: u32) -> u64 {
+    fn count<const ANY: bool, const P: bool>(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[Node], pm: u32) -> u64 {
         if r == self.last_r {
             // Last row: columns only need their masks (their children are never used).
             let mut masks = [0u32; W];
@@ -460,29 +426,26 @@ impl<const W: usize> Kernel<'_, W> {
         }
         // materialize S (or give up on it if it is too big)
         let mut buf = SetBuf::<S_CAP>::new();
-        let (s, base): (&[SEnt], u32) = if !Self::TRACK || ps.is_empty() {
+        let (s, base): (&[Node], u32) = if !Self::TRACK || ps.is_empty() {
             (&[], if c == 0 { self.root.mask } else { self.uni(c - 1, f) })
         } else if pm == SELF {
-            (ps, ps.iter().fold(0, |a, e| a | e.n.mask))
+            (ps, ps.iter().fold(0, |a, n| a | n.mask))
         } else {
             let mut n = 0;
             let mut base = 0;
-            'fill: for e in ps {
-                let mut m = e.n.mask & pm;
+            'fill: for sn in ps {
+                let mut m = sn.mask & pm;
                 while m != 0 {
                     let x = m.trailing_zeros();
                     m &= m - 1;
-                    // SAFETY: `x` is a bit of `e.n.mask`, `e.n` a row-DAWG node.
-                    let (id, ch) = unsafe { self.dstep(e.n, x) };
-                    if buf.merge(n, id, e.mult) {
-                        continue; // another prefix already reached this state
-                    }
                     if n == S_CAP {
                         n = 0;
                         break 'fill;
                     }
+                    // SAFETY: `x` is a bit of `sn.mask`, `sn` a row-trie node.
+                    let ch = unsafe { self.rstep(*sn, x) };
                     base |= ch.mask;
-                    buf.set(n, SEnt { n: ch, id, mult: e.mult });
+                    buf.set(n, ch);
                     n += 1;
                 }
             }
@@ -502,11 +465,11 @@ impl<const W: usize> Kernel<'_, W> {
                 }
                 if pen {
                     // exact: the last rows are the completions of S by the letters column c allows
-                    total += s.iter().map(|e| e.mult as u64 * (e.n.mask & cn.mask).count_ones() as u64).sum::<u64>();
+                    total += s.iter().map(|n| (n.mask & cn.mask).count_ones() as u64).sum::<u64>();
                     continue;
                 }
                 colv[c] = cn;
-                total += self.count::<ANY, P>(r + 1, 0, self.root, colv, nodes, !0, std::slice::from_ref(&self.droot), SELF);
+                total += self.count::<ANY, P>(r + 1, 0, self.root, colv, nodes, !0, std::slice::from_ref(&self.root), SELF);
                 if ANY && total > 0 {
                     break;
                 }
@@ -540,7 +503,7 @@ impl<const W: usize> Kernel<'_, W> {
     /// Falls back to the generic `count` if S overflows `S_CAP`.
     #[allow(clippy::too_many_arguments)]
     #[inline(never)]
-    fn count_pen<const ANY: bool, const P: bool>(&self, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[SEnt], pm: u32) -> u64 {
+    fn count_pen<const ANY: bool, const P: bool>(&self, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[Node], pm: u32) -> u64 {
         *nodes += 1;
         crate::probe::hit(self.last_r - 1, c);
         if ANY {
@@ -567,26 +530,23 @@ impl<const W: usize> Kernel<'_, W> {
         }
         // materialize S
         let mut buf = SetBuf::<S_CAP_PEN>::new();
-        let (s, base): (&[SEnt], u32) = if pm == SELF {
-            (ps, ps.iter().fold(0, |a, e| a | e.n.mask))
+        let (s, base): (&[Node], u32) = if pm == SELF {
+            (ps, ps.iter().fold(0, |a, n| a | n.mask))
         } else {
             let mut n = 0;
             let mut base = 0;
-            for e in ps {
-                let mut m = e.n.mask & pm;
+            for sn in ps {
+                let mut m = sn.mask & pm;
                 while m != 0 {
                     let x = m.trailing_zeros();
                     m &= m - 1;
-                    // SAFETY: `x` is a bit of `e.n.mask`, `e.n` a row-DAWG node.
-                    let (id, ch) = unsafe { self.dstep(e.n, x) };
-                    if buf.merge(n, id, e.mult) {
-                        continue;
-                    }
                     if n == S_CAP_PEN {
                         return self.count::<ANY, P>(self.last_r - 1, c, row, colv, nodes, f, &[], SELF);
                     }
+                    // SAFETY: `x` is a bit of `sn.mask`, `sn` a row-trie node.
+                    let ch = unsafe { self.rstep(*sn, x) };
                     base |= ch.mask;
-                    buf.set(n, SEnt { n: ch, id, mult: e.mult });
+                    buf.set(n, ch);
                     n += 1;
                 }
             }
@@ -599,7 +559,7 @@ impl<const W: usize> Kernel<'_, W> {
                 good &= good - 1;
                 // SAFETY: `l` comes from `allowed`, a subset of this node's mask.
                 let m = unsafe { self.cstep(col, l) }.mask;
-                total += s.iter().map(|e| e.mult as u64 * (e.n.mask & m).count_ones() as u64).sum::<u64>();
+                total += s.iter().map(|n| (n.mask & m).count_ones() as u64).sum::<u64>();
             }
             return total;
         }
@@ -632,17 +592,15 @@ impl<const W: usize> Kernel<'_, W> {
                     ends[ne] = unsafe { self.cstep(col2, x) }.mask;
                     ne += 1;
                 }
-                for e in s {
-                    let mut ym = e.n.mask & m;
-                    let mut t = 0u64;
+                for sn in s {
+                    let mut ym = sn.mask & m;
                     while ym != 0 {
                         let y = ym.trailing_zeros();
                         ym &= ym - 1;
-                        // SAFETY: `y` is a bit of `e.n.mask`.
-                        let last = unsafe { self.dstep(e.n, y) }.1.mask;
-                        t += ends[..ne].iter().map(|&x| (last & x).count_ones() as u64).sum::<u64>();
+                        // SAFETY: `y` is a bit of `sn.mask`.
+                        let last = unsafe { self.rstep(*sn, y) }.mask;
+                        total += ends[..ne].iter().map(|&e| (last & e).count_ones() as u64).sum::<u64>();
                     }
-                    total += e.mult as u64 * t;
                 }
                 if ANY && total > 0 {
                     break;
@@ -697,19 +655,10 @@ impl<const W: usize> Kernel<'_, W> {
     }
 }
 
-/// One entry of a next-row set: a DAWG state of the row words (by value, plus its id for merging)
-/// and how many distinct next-row prefixes are in that state.
-#[derive(Clone, Copy)]
-struct SEnt {
-    n: CNode,
-    id: u32,
-    mult: u32,
-}
-
 /// Stack buffer for a next-row set, left uninitialized: zero-filling it cost a 256–512 byte memset
 /// at every node.
 struct SetBuf<const N: usize> {
-    n: [std::mem::MaybeUninit<SEnt>; N],
+    n: [std::mem::MaybeUninit<Node>; N],
 }
 
 impl<const N: usize> SetBuf<N> {
@@ -720,31 +669,17 @@ impl<const N: usize> SetBuf<N> {
 
     /// Write slot `i` (`i < N`, checked by the callers' `n == CAP` tests).
     #[inline(always)]
-    fn set(&mut self, i: usize, v: SEnt) {
+    fn set(&mut self, i: usize, v: Node) {
         self.n[i].write(v);
-    }
-
-    /// Add `mult` to the entry of state `id` among the first `len` slots; false if absent.
-    #[inline(always)]
-    fn merge(&mut self, len: usize, id: u32, mult: u32) -> bool {
-        for e in &mut self.n[..len] {
-            // SAFETY: slots 0..len were written by `set`.
-            let e = unsafe { e.assume_init_mut() };
-            if e.id == id {
-                e.mult += mult;
-                return true;
-            }
-        }
-        false
     }
 
     /// The first `len` slots, all written by `set`.
     #[inline(always)]
-    fn first(&self, len: usize) -> &[SEnt] {
+    fn first(&self, len: usize) -> &[Node] {
         debug_assert!(len <= N);
         // SAFETY: callers wrote slots 0..len with `set` before (fill loops write 0, 1, 2, …),
-        // and MaybeUninit<SEnt> has SEnt's layout.
-        unsafe { std::slice::from_raw_parts(self.n.as_ptr().cast::<SEnt>(), len) }
+        // and MaybeUninit<Node> has Node's layout.
+        unsafe { std::slice::from_raw_parts(self.n.as_ptr().cast::<Node>(), len) }
     }
 }
 
@@ -784,7 +719,6 @@ impl ParSearch {
             cols,
             flip,
             row_trie: Trie::new(row_words),
-            row_dawg: Dawg::new(row_words),
             col_trie: CTrie::new(&Trie::new(col_words)),
             threads,
             seq_budget: FIND_SEQ_BUDGET,
