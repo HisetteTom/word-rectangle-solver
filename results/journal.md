@@ -963,4 +963,16 @@ I expected smaller sets, fewer overflows, and a way to finally track 9–10 lett
 never managed. But each node costs about 2.7× more: two dependent loads per child step (edge, then node),
 plus a linear merge scan over up to 32 entries on every insert. The node halving comes from the
 upper rows (tracking only the second-to-last row gives nothing), and that's where the sets are biggest.
-If set upkeep ever gets much cheaper (e.g. an O(1) merge with a per-thread stamp table), it's worth retrying.
+**Follow-up, same night: O(1) merge.** A per-thread stamp table (one \`u64\` per DAWG state:
+\`epoch << 8 | slot\`) replaced the linear scan. Not committed: it's a variant of the same experiment.
+
+| Shape | trie set | DAWG + scan | DAWG + stamp table |
+|---|---:|---:|---:|
+| count 4×5 | 0.77 s | 0.94 s | 0.84 s |
+| count 5×5 | 3.93 s | 4.46 s | 4.24 s |
+| count 5×6 | 12.0 s | 15.6 s | 13.2 s |
+| count 6×9 (tracked) | 9.4 s (untracked) | 13.5 s | 11.4 s · 5.64 G nodes |
+| count 5×10 (tracked) | 0.96 s (untracked) | — | 1.26 s · 0.54 G nodes |
+
+Still slower everywhere: each child now costs an edge load, a node load and a stamp read and write.
+The idea stays parked. It would need a set structure that costs about what one trie step costs.
