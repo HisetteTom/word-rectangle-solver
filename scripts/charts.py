@@ -335,7 +335,13 @@ def atlas() -> str | None:
     if not cells:
         return None
     rs = sorted({r for r, _ in cells})
-    cs = list(range(min(c for _, c in cells), max(c for _, c in cells) + 1))
+    # show columns up to 2 past the widest size with a solution; the rest are summarized below
+    widest = max(c for (r, c), x in cells.items() if x["status"] in ("counted", "exists") and x["solutions"] != "0")
+    max_c = max(c for _, c in cells)
+    shown = min(max_c, widest + 2)
+    hidden = [x for (r, c), x in cells.items() if c > shown]
+    cells = {k: v for k, v in cells.items() if k[1] <= shown}
+    cs = list(range(min(c for _, c in cells), shown + 1))
     cw, ch = 62, 50
     left, top = 92, 132
     width = left + cw * len(cs) + 24
@@ -399,13 +405,17 @@ def atlas() -> str | None:
         out.append(f'<rect class="d{d}" x="{lx}" y="{ly}" width="38" height="14" rx="2"/>')
         out.append(f'<text class="m" x="{lx}" y="{ly + 28}" font-size="10">{["1", "10", "100", "1k", "10k", "100k", "1M", "10M", "100M", "1G"][d]}</text>')
     sx = left + 10 * 40 + 30
-    items = [("none", "∅", "m", "proven impossible"), ("ex", "✓", "exi", "exists (too many to count)"), ("unk", "?", "unki", "open (search too long)")]
-    for k, (cls, sym, ic, label) in enumerate(items):
+    present = {x["status"] for x in cells.values()}
+    items = [it for it in [("none", "∅", "m", "proven impossible", "none"), ("ex", "✓", "exi", "exists (too many to count)", "exists"),
+                           ("unk", "?", "unki", "open (search too long)", "unknown")] if it[4] in present]
+    for k, (cls, sym, ic, label, _) in enumerate(items):
         yy = ly + k * 22 - 4
         out.append(f'<rect class="{cls}" x="{sx}" y="{yy}" width="20" height="18" rx="4" stroke-width="1.5"/>')
         out.append(f'<text class="{ic}" x="{sx + 10}" y="{yy + 14}" font-size="12" font-weight="700" text-anchor="middle">{sym}</text>')
         out.append(f'<text class="m" x="{sx + 28}" y="{yy + 13}" font-size="11">{label}</text>')
     out.append(f'<text class="star" x="{left}" y="{ly + 58}" font-size="12">★</text><text class="m" x="{left + 16}" y="{ly + 58}" font-size="11">largest area with a solution ({biggest[1]}×{biggest[2]})</text>')
+    if hidden and all(x["status"] == "none" for x in hidden):
+        out.append(f'<text class="m" x="{left}" y="{ly + 78}" font-size="11">not shown: {shown + 1}–{max_c} columns, {rs[0]}–{rs[-1]} rows: all proven impossible ({len(hidden)} sizes)</text>')
     out.append("</svg>")
     return "\n".join(out) + "\n"
 
@@ -592,6 +602,52 @@ def heatmap() -> str | None:
     return "\n".join(out) + "\n"
 
 
+def gallery() -> str | None:
+    """The rarest rectangles: sizes with at most 5 solutions in the whole dictionary, first grid of each."""
+    if not ATLAS.exists():
+        return None
+    with ATLAS.open(newline="") as f:
+        rare = [x for x in csv.DictReader(f) if x["status"] == "counted" and x["grid"] and int(x["solutions"]) <= 5]
+    if not rare:
+        return None
+    rare.sort(key=lambda x: -int(x["rows"]) * int(x["cols"]))
+    cell, pad, gap = 22, 24, 28
+    tiles = []
+    for x in rare:
+        grids = x["grid"].split()
+        words = grids[0].split("/")
+        sym = all(g.split("/") == ["".join(w[i] for w in g.split("/")) for i in range(len(g.split("/")[0]))] for g in grids)
+        n = int(x["solutions"])
+        note = "the only one" if n == 1 else f"1 of {n}" + (" · all symmetric" if sym and n > 1 else "")
+        tiles.append((int(x["rows"]), int(x["cols"]), words, note))
+    # flow layout
+    width = 900
+    xs, ys, rowh = pad, 96, 0
+    placed = []
+    for r, c, words, note in tiles:
+        w, h = c * cell, r * cell + 34
+        if xs + w > width - pad:
+            xs, ys, rowh = pad, ys + rowh + gap, 0
+        placed.append((xs, ys, r, c, words, note))
+        xs += w + gap + 10
+        rowh = max(rowh, h)
+    height = ys + rowh + 30
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" font-family="{FONT}">',
+           STYLE, f'<rect class="bg" width="{width}" height="{height}" rx="10"/>',
+           '<text class="t" x="24" y="36" font-size="20" font-weight="800">The rarest rectangles</text>',
+           '<text class="m" x="24" y="57" font-size="12.5">sizes with at most 5 solutions in the entire ENABLE dictionary (found by exhaustive count, so the list is complete)</text>',
+           '<text class="m" x="24" y="74" font-size="11">every row and every column is a word · shown: the first grid of each size</text>']
+    for x0, y0, r, c, words, note in placed:
+        out.append(f'<text class="t" x="{x0}" y="{y0 + 12}" font-size="13" font-weight="700">{r}×{c}<tspan class="m" font-weight="400" dx="8">{escape(note)}</tspan></text>')
+        for i, wd in enumerate(words):
+            for j, ch in enumerate(wd):
+                cx, cy = x0 + j * cell, y0 + 22 + i * cell
+                out.append(f'<rect class="tile" x="{cx}" y="{cy}" width="{cell - 2}" height="{cell - 2}" rx="3"/>')
+                out.append(f'<text class="t" x="{cx + (cell - 2) / 2}" y="{cy + 15}" font-size="12" font-weight="700" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace">{ch.upper()}</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
 def report(data: dict[str, list[dict]]) -> str:
     lines = [
         "# Benchmark progress",
@@ -647,6 +703,8 @@ def main():
         (CHARTS / "heatmap.svg").write_text(hv)
     if (sv := scaling()) is not None:
         (CHARTS / "scaling.svg").write_text(sv)
+    if (gv := gallery()) is not None:
+        (CHARTS / "gallery.svg").write_text(gv)
     if (a := atlas()) is not None:
         (CHARTS / "atlas.svg").write_text(a)
     REPORT.write_text(report(data))

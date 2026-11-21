@@ -9,6 +9,7 @@ what does the ENABLE dictionary allow?
 Results go to results/atlas.csv (one row per size, resumable: sizes already there are skipped
 unless --redo). `scripts/charts.py` draws results/charts/atlas.svg from it.
 
+Sizes with at most RARE solutions also get every grid saved (`--print`), for the gallery chart.
 Usage: python3 scripts/atlas.py [--max-rows 8] [--max-cols 15] [--count-s 120] [--find-s 600] [--redo]
 """
 
@@ -42,6 +43,15 @@ def run(cmd: str, r: int, c: int, budget: int):
     return out, time.perf_counter() - s
 
 
+RARE = 9  # sizes with at most this many solutions get all their grids saved (the gallery)
+
+
+def rare_grids(r: int, c: int) -> str:
+    out = subprocess.run([str(BIN), "count", "--rows", str(r), "--cols", str(c), "--print"], cwd=ROOT,
+                         capture_output=True, text=True, check=True).stdout
+    return " ".join(l for l in out.splitlines() if re.fullmatch(r"[a-z]+(/[a-z]+)+", l))
+
+
 def main():
     max_r, max_c = arg("--max-rows", 8), arg("--max-cols", 15)
     count_s, find_s = arg("--count-s", 120), arg("--find-s", 600)
@@ -54,6 +64,14 @@ def main():
     for r in range(2, max_r + 1):
         for c in range(r, max_c + 1):
             if (r, c) in rows and rows[(r, c)]["status"] != "unknown":
+                x = rows[(r, c)]
+                if x["status"] == "counted" and 0 < int(x["solutions"]) <= RARE and not x["grid"]:
+                    x["grid"] = rare_grids(r, c)
+                    print(f"{r}x{c}: grids {x['grid']}", flush=True)
+                    with OUT.open("w", newline="") as f:
+                        w = csv.DictWriter(f, FIELDS)
+                        w.writeheader()
+                        w.writerows(rows[k] for k in sorted(rows))
                 continue
             rec = {"rows": r, "cols": c, "commit": commit, "date": date.today().isoformat(), "machine": socket.gethostname(),
                    "solutions": "", "grid": "", "nodes": ""}
@@ -72,6 +90,8 @@ def main():
                     grid = [l.replace(" ", "").lower() for l in out.splitlines() if re.fullmatch(r"\s+[A-Z]( [A-Z])*", l)]
                     rec.update(status="exists", method="find", time_s=f"{t:.3f}", grid="/".join(grid),
                                nodes=re.search(r"nodes=(\d+)", out)[1])
+            if rec["status"] == "counted" and int(rec["solutions"]) <= RARE:
+                rec["grid"] = rare_grids(r, c)
             rows[(r, c)] = rec
             print(f"{r}x{c}: {rec['status']:8} {rec['solutions']!s:>12} {rec['time_s']:>9}s {rec['grid']}", flush=True)
             with OUT.open("w", newline="") as f:  # rewrite every time: resumable

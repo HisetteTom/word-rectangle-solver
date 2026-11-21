@@ -12,9 +12,39 @@ Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal
 
 ---
 
+## 🗺️ What the dictionary allows
+
+![atlas](results/charts/atlas.svg)
+
+Every size from 2×2 to 10×22 is settled by this solver ([`scripts/atlas.py`](scripts/atlas.py)): an
+exact count, or a proof that none exists. **The largest word rectangle in the dictionary is 8×8:
+there are exactly five, and all five are symmetric word squares.** 7×8 is impossible even though 8×8
+isn't, and nothing at 9×9 or beyond exists. 3×13 has exactly one solution in the whole dictionary:
+
+![gallery](results/charts/gallery.svg)
+
+---
+
 ## 📈 Progress
 
 ![progress](results/charts/progress.svg)
+
+**Where the speed came from**: every step either visits fewer nodes or makes each node cheaper:
+
+![anatomy](results/charts/anatomy-B5.svg)
+
+**Where the search spends its time**: nodes per grid cell, for the current kernel:
+
+![heatmap](results/charts/heatmap.svg)
+
+**How it uses the machine**: speedup vs number of threads:
+
+![scaling](results/charts/scaling.svg)
+
+Regenerate with `python3 scripts/heatmap.py` and `python3 scripts/scaling.py` (both describe the
+current code), and `python3 scripts/atlas.py` for the atlas.
+
+Per-benchmark history (one bar per step):
 
 Every optimization step ever tried — including the failed ones — was rebuilt from its commit and
 re-run on **one machine** (hephaestus · Ryzen 9 3950X · 32 threads), so every bar below is directly

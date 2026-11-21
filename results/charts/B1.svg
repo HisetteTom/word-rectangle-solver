@@ -7,7 +7,9 @@
   .ln{stroke:#1f6feb;fill:none} .lnf{fill:#1f6feb} .ctx{stroke:#afb8c1;fill:none} .ring{stroke:#ffffff}
   .fx{stroke:#8c959f;fill:none} .area{fill:#1f6feb;fill-opacity:.08} .tile{fill:#f6f8fa;stroke:#d1d9e0}
   .big{fill:#1f6feb;font-weight:800}
+  .s2{stroke:#eb6834;fill:none} .s2f{fill:#eb6834} .s3{stroke:#1baf7a;fill:none} .s3f{fill:#1baf7a}
   @media (prefers-color-scheme: dark){
+    .s2{stroke:#d95926} .s2f{fill:#d95926} .s3{stroke:#199e70} .s3f{fill:#199e70}
     .bg{fill:#0d1117} .t{fill:#e6edf3} .m{fill:#9198a1} .g{stroke:#30363d}
     .bar{fill:#2f5f8f} .best{fill:#4493f8} .x{fill:#3fb950}
     .hs{stroke:#484f58} .hb{fill:#21262d} .f{fill:#f85149} .ft{fill:#6e7681} .cur{fill:#4493f8}
