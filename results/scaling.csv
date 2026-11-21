@@ -1,0 +1,25 @@
+bench,args,threads,search_s,commit,machine,cores
+B5,count --rows 4 --cols 5,1,17.672636,648e411,hephaestus,32
+B5,count --rows 4 --cols 5,2,8.941171,648e411,hephaestus,32
+B5,count --rows 4 --cols 5,4,4.624120,648e411,hephaestus,32
+B5,count --rows 4 --cols 5,8,2.326106,648e411,hephaestus,32
+B5,count --rows 4 --cols 5,12,1.580414,648e411,hephaestus,32
+B5,count --rows 4 --cols 5,16,1.205171,648e411,hephaestus,32
+B5,count --rows 4 --cols 5,24,0.996458,648e411,hephaestus,32
+B5,count --rows 4 --cols 5,32,0.862438,648e411,hephaestus,32
+B11,count --rows 4 --cols 6,1,32.464804,648e411,hephaestus,32
+B11,count --rows 4 --cols 6,2,16.413227,648e411,hephaestus,32
+B11,count --rows 4 --cols 6,4,8.471633,648e411,hephaestus,32
+B11,count --rows 4 --cols 6,8,4.266279,648e411,hephaestus,32
+B11,count --rows 4 --cols 6,12,2.889613,648e411,hephaestus,32
+B11,count --rows 4 --cols 6,16,2.201930,648e411,hephaestus,32
+B11,count --rows 4 --cols 6,24,1.834807,648e411,hephaestus,32
+B11,count --rows 4 --cols 6,32,1.591368,648e411,hephaestus,32
+B13,find --rows 5 --cols 10,1,18.045563,648e411,hephaestus,32
+B13,find --rows 5 --cols 10,2,9.158981,648e411,hephaestus,32
+B13,find --rows 5 --cols 10,4,4.722616,648e411,hephaestus,32
+B13,find --rows 5 --cols 10,8,2.392127,648e411,hephaestus,32
+B13,find --rows 5 --cols 10,12,1.644196,648e411,hephaestus,32
+B13,find --rows 5 --cols 10,16,1.271566,648e411,hephaestus,32
+B13,find --rows 5 --cols 10,24,1.099092,648e411,hephaestus,32
+B13,find --rows 5 --cols 10,32,0.973642,648e411,hephaestus,32

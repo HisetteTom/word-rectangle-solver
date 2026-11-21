@@ -520,10 +520,11 @@ def scaling() -> str | None:
         v.sort()
         base = dict(v)[1]
         pts = [(X(t), Y(base / sec)) for t, sec in v]
-        out.append(f'<polyline class="{cls}" points="{" ".join(f"{x:.1f},{y:.1f}" for x, y in pts)}" stroke-width="2.5" stroke-linejoin="round"/>')
+        dash = ' stroke-dasharray="7 4"' if cls == "s2" else ""  # B5 and B11 nearly coincide: keep both visible
+        out.append(f'<polyline class="{cls}" points="{" ".join(f"{x:.1f},{y:.1f}" for x, y in pts)}" stroke-width="2.5" stroke-linejoin="round"{dash}/>')
         for x, y in pts:
             out.append(f'<circle class="{fcls} ring" cx="{x:.1f}" cy="{y:.1f}" r="4" stroke-width="1.5"/>')
-        ends.append([pts[-1][1] + 4, f"{b} · {describe(args[b])}", fcls, base / v[-1][1]])
+        ends.append([pts[-1][1] + 4, f"{b} · {describe(args[b], 'no solution')}", fcls, base / v[-1][1]])
     ends.sort()
     for j in range(1, len(ends)):
         ends[j][0] = max(ends[j][0], ends[j - 1][0] + 32)
@@ -575,7 +576,7 @@ def heatmap() -> str | None:
         for j, (task, cells, R, C) in enumerate(panels[i:i + per_row]):
             x0 = pad + j * pw
             total = sum(cells.values())
-            out.append(f'<text class="t" x="{x0}" y="{y0 + 14}" font-size="13.5" font-weight="700">{escape(describe(task))}</text>')
+            out.append(f'<text class="t" x="{x0}" y="{y0 + 14}" font-size="13.5" font-weight="700">{escape(describe(task, "no solution" if task.startswith("find") else ""))}</text>')
             out.append(f'<text class="m" x="{x0}" y="{y0 + 30}" font-size="11">{total / 1e6:,.0f} M nodes</text>')
             for r in range(R):
                 for c in range(C):
@@ -596,7 +597,7 @@ def heatmap() -> str | None:
     labels = ["<0.1%", "0.1%", "0.3%", "1%", "2%", "4%", "7%", "10%", "15%", "25%+"]
     for d in range(10):
         out.append(f'<rect class="d{d}" x="{lx + d * 46}" y="{ly}" width="44" height="12" rx="2"/>')
-        out.append(f'<text class="m" x="{lx + d * 46}" y="{ly + 26}" font-size="10">{labels[d]}</text>')
+        out.append(f'<text class="m" x="{lx + d * 46}" y="{ly + 26}" font-size="10">{escape(labels[d])}</text>')
     out.append(f'<rect class="hb" x="{lx + 10 * 46 + 20}" y="{ly}" width="14" height="12" rx="2"/><text class="m" x="{lx + 10 * 46 + 40}" y="{ly + 10}" font-size="10">not searched cell by cell</text>')
     out.append("</svg>")
     return "\n".join(out) + "\n"

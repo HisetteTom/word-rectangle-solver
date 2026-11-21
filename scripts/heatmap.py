@@ -16,6 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "results" / "heatmap.csv"
 TARGET = Path("/tmp/wordrect-probe-target")
+# find tasks must be exhaustive ("prove none"): a find that stops early would show a partial picture
 TASKS = ["count --rows 4 --cols 5", "count --rows 5 --cols 5", "count --rows 5 --cols 6", "find --rows 6 --cols 9"]
 
 
