@@ -64,10 +64,11 @@ pub struct ParSearch {
     sym: bool,
     /// Per position k of a row word: which letters can follow at k + 1 (see `Bigram`).
     bigrams: Vec<Bigram>,
-    /// Tall grids (rows > cols): the transposed search, used by `count`. Long rows are much
-    /// cheaper to count (6×4 explores 2.4× the nodes of 4×6). `find` keeps the original
-    /// orientation, because its answer must be the row-major lexicographically first grid.
-    flip: Option<Box<ParSearch>>,
+    /// The word lists, to build the re-oriented searches `count` uses (see `count`).
+    row_words: Vec<String>,
+    col_words: Vec<String>,
+    /// This search counts the horizontal mirror image of the asked grid (row words reversed).
+    mirrored: bool,
     stats: Stats,
 }
 
@@ -713,11 +714,12 @@ impl ParSearch {
         } else {
             threads
         };
-        let flip = (rows > cols && rows <= 32).then(|| Box::new(ParSearch::new(cols, rows, col_words, row_words, threads)));
         ParSearch {
             rows,
             cols,
-            flip,
+            row_words: row_words.to_vec(),
+            col_words: col_words.to_vec(),
+            mirrored: false,
             row_trie: Trie::new(row_words),
             col_trie: CTrie::new(&Trie::new(col_words)),
             threads,
@@ -731,7 +733,6 @@ impl ParSearch {
     /// Node budget of `find`'s sequential first attempt (0 = always go parallel; for tests).
     pub fn with_seq_budget(mut self, budget: u64) -> Self {
         self.seq_budget = budget;
-        self.flip = self.flip.map(|t| Box::new(t.with_seq_budget(budget)));
         self
     }
 
@@ -857,7 +858,22 @@ impl Solver for ParSearch {
     }
 
     fn count(&mut self) -> u64 {
-        if let Some(t) = &mut self.flip {
+        // Counts don't depend on orientation, so count the cheapest one:
+        // 1. tall grids transposed: long rows are much cheaper (6×4 explores 2.4× the nodes of 4×6);
+        // 2. rows mirrored (each row word reversed, so rows fill from their last letter): 1.07–1.6×
+        //    faster on every shape measured. Not for squares with one word list: mirroring only the
+        //    rows would lose transpose symmetry (count_sym).
+        let other = if self.rows > self.cols && self.rows <= 32 {
+            Some(ParSearch::new(self.cols, self.rows, &self.col_words, &self.row_words, self.threads))
+        } else if !self.sym && !self.mirrored {
+            let rev: Vec<String> = self.row_words.iter().map(|w| w.chars().rev().collect()).collect();
+            let mut m = ParSearch::new(self.rows, self.cols, &rev, &self.col_words, self.threads);
+            m.mirrored = true;
+            Some(m)
+        } else {
+            None
+        };
+        if let Some(mut t) = other {
             let total = t.count();
             self.stats = t.stats;
             return total;
