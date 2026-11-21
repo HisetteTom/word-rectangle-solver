@@ -45,8 +45,9 @@ const FIND_JOBS_PER_THREAD: usize = 4096;
 /// `find` first searches sequentially for this many nodes (~10 ms); small instances finish
 /// there without paying for threads and job expansion.
 const FIND_SEQ_BUDGET: u64 = 2_000_000;
-/// Largest exact next-row set the count kernel tracks (see `Kernel::count`).
-const S_CAP: usize = 16;
+/// Largest exact next-row set the count kernel tracks (see `Kernel::count`). 32 since the buffer is
+/// uninitialized (5×6: 12.44 s at 16, 11.99 s at 32; 5×5 unchanged).
+const S_CAP: usize = 32;
 /// Same, in the second-to-last row (`Kernel::count_pen`), where overflowing is costlier.
 const S_CAP_PEN: usize = 32;
 /// `pm` value meaning "`ps` is the set itself" (bit 31 is never a letter).
