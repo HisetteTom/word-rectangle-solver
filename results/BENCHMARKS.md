@@ -55,7 +55,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 1.76 ms | 3,333× | 1.10× | 994,996 | solutions=1909732 |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 1.75 ms | 3,354× | 1.01× | 994,996 | solutions=1909732 |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 1.74 ms | 3,364× | 1.01× | 994,996 | solutions=1909732 |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 1.61 ms | 3,651× | 1.10× | 994,996 | solutions=1909732 |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 1.61 ms | 3,651× | 1.10× | 994,996 | solutions=1909732 |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 1.78 ms | 3,298× | 0.90× | 994,996 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -97,7 +98,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 149 µs | 7,745× | 1.03× | 7,220 | found |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 148 µs | 7,797× | 1.01× | 7,220 | found |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 146 µs | 7,904× | 1.02× | 7,220 | found |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 147 µs | 7,850× | 1.01× | 7,220 | found |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 147 µs | 7,850× | 1.01× | 7,220 | found |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 149 µs | 7,745× | 0.99× | 7,220 | found |
 
 ## B3 · find first 6×6
 
@@ -139,7 +141,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 228 µs | 11,894× | 1.02× | 12,839 | found |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 226 µs | 11,999× | 1.01× | 12,839 | found |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 232 µs | 11,689× | 0.98× | 12,839 | found |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 233 µs | 11,639× | 0.98× | 12,839 | found |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 233 µs | 11,639× | 0.98× | 12,839 | found |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 233 µs | 11,639× | 1.00× | 12,839 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -180,7 +183,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 132 ms | 109× | 1.00× | 192,987,066 | solutions=136245247 |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 130 ms | 110× | 1.02× | 192,987,066 | solutions=136245247 |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 115 ms | 124× | 1.14× | 170,637,018 | solutions=136245247 |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 117 ms | 123× | 1.13× | 170,637,018 | solutions=136245247 |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 117 ms | 123× | 1.13× | 170,637,018 | solutions=136245247 |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 119 ms | 120× | 0.98× | 170,637,018 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -221,7 +225,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 872 ms | 66.2× | 0.99× | 614,200,383 | solutions=114846713 |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 857 ms | 67.3× | 1.02× | 614,200,383 | solutions=114846713 |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 778 ms | 74.2× | 1.12× | 450,671,969 | solutions=114846713 |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 761 ms | 75.8× | 1.15× | 450,671,969 | solutions=114846713 |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 761 ms | 75.8× | 1.15× | 450,671,969 | solutions=114846713 |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 773 ms | 74.7× | 0.98× | 450,034,077 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -262,7 +267,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 87.4 ms | 67.1× | 1.01× | 107,976,321 | solutions=4453472 |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 88.4 ms | 66.3× | 0.99× | 107,976,321 | solutions=4453472 |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 86.2 ms | 68.0× | 1.01× | 90,978,847 | solutions=4453472 |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 87.9 ms | 66.8× | 0.99× | 107,976,321 | solutions=4453472 |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 87.9 ms | 66.8× | 0.99× | 107,976,321 | solutions=4453472 |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 84.8 ms | 69.2× | 1.04× | 90,270,853 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -303,7 +309,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 144 ms | 12.6× | 0.90× | 35,197,216 | found |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 142 ms | 12.7× | 1.01× | 34,381,484 | found |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 144 ms | 12.6× | 1.00× | 34,425,540 | found |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 142 ms | 12.8× | 1.02× | 34,650,439 | found |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 142 ms | 12.8× | 1.02× | 34,650,439 | found |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 139 ms | 13.0× | 1.02× | 29,602,651 | found |
 
 ## B8 · find first 6×7
 
@@ -344,7 +351,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 120 ms | 12.2× | 0.96× | 22,695,216 | found |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 121 ms | 12.2× | 1.00× | 22,785,951 | found |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 128 ms | 11.5× | 0.94× | 22,854,961 | found |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 121 ms | 12.2× | 1.00× | 22,893,258 | found |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 121 ms | 12.2× | 1.00× | 22,893,258 | found |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 120 ms | 12.2× | 1.00× | 17,256,128 | found |
 
 ## B9 · find first 5×9
 
@@ -385,7 +393,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 188 ms | 44.5× | 1.03× | 159,376,757 | found |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 218 ms | 38.3× | 0.86× | 154,217,609 | found |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 188 ms | 44.5× | 1.00× | 159,215,937 | found |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 189 ms | 44.1× | 0.99× | 159,424,334 | found |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 189 ms | 44.1× | 0.99× | 159,424,334 | found |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 186 ms | 44.9× | 1.02× | 159,415,184 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -422,7 +431,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 3.99 s | 3.99× | 0.99× | 3,269,576,133 | solutions=80364530 |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 3.90 s | 4.09× | 1.02× | 3,269,576,133 | solutions=80364530 |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 4.05 s | 3.93× | 0.99× | 3,266,964,258 | solutions=80364530 |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 3.93 s | 4.06× | 1.02× | 3,269,576,133 | solutions=80364530 |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 3.93 s | 4.06× | 1.02× | 3,269,576,133 | solutions=80364530 |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 3.93 s | 4.05× | 1.00× | 3,129,472,451 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -459,7 +469,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 1.58 s | 3.17× | 1.00× | 1,046,986,844 | solutions=37812638 |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 1.60 s | 3.13× | 0.99× | 1,046,986,844 | solutions=37812638 |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 1.56 s | 3.22× | 1.02× | 865,977,876 | solutions=37812638 |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 1.58 s | 3.17× | 1.00× | 865,977,876 | solutions=37812638 |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 1.58 s | 3.17× | 1.00× | 865,977,876 | solutions=37812638 |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 1.59 s | 3.15× | 0.99× | 862,998,712 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -496,7 +507,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 1.03 s | 2.56× | 0.99× | 690,106,117 | found |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 1.04 s | 2.54× | 0.99× | 690,157,479 | found |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 1.03 s | 2.56× | 1.00× | 690,195,394 | found |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 1.02 s | 2.59× | 1.01× | 690,437,719 | found |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 1.02 s | 2.59× | 1.01× | 690,437,719 | found |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 947 ms | 2.79× | 1.08× | 542,429,647 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -533,7 +545,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 941 ms | 2.61× | 1.04× | 976,239,922 | no solution: 5x10 exhausted |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 1.09 s | 2.25× | 0.86× | 962,271,526 | no solution: 5x10 exhausted |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 954 ms | 2.58× | 0.99× | 976,239,922 | no solution: 5x10 exhausted |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 936 ms | 2.63× | 1.01× | 976,239,922 | no solution: 5x10 exhausted |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 936 ms | 2.63× | 1.01× | 976,239,922 | no solution: 5x10 exhausted |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 936 ms | 2.62× | 1.00× | 976,239,922 | no solution: 5x10 exhausted |
 
 ## B14 · count all 6×4 (exhaustive)
 
@@ -570,7 +583,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 1.58 s | 6.08× | 1.01× | 1,046,986,844 | solutions=37812638 |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 1.60 s | 6.02× | 0.99× | 1,046,986,844 | solutions=37812638 |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 1.56 s | 6.16× | 1.01× | 865,977,876 | solutions=37812638 |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 1.57 s | 6.12× | 1.01× | 865,977,876 | solutions=37812638 |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 1.57 s | 6.12× | 1.01× | 865,977,876 | solutions=37812638 |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 1.59 s | 6.05× | 0.99× | 862,998,712 | solutions=37812638 |
 
 ## B15 · count all 5×6 (exhaustive)
 
@@ -607,7 +621,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 12.4 s | 2.41× | 1.00× | 8,497,208,081 | solutions=7424362 |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 12.5 s | 2.40× | 0.99× | 8,497,208,081 | solutions=7424362 |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 12.8 s | 2.34× | 0.97× | 8,494,075,096 | solutions=7424362 |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 12.5 s | 2.40× | 1.00× | 8,497,208,081 | solutions=7424362 |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 12.5 s | 2.40× | 1.00× | 8,497,208,081 | solutions=7424362 |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 12.0 s | 2.50× | 1.04× | 7,001,446,794 | solutions=7424362 |
 
 ## B16 · prove no 6×9 exists (exhaustive)
 
@@ -644,4 +659,5 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 9.26 s | 2.81× | 1.07× | 10,489,967,076 | no solution: 6x9 exhausted |
 | ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 10.9 s | 2.39× | 0.85× | 10,489,584,264 | no solution: 6x9 exhausted |
 | ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 9.26 s | 2.81× | 1.00× | 10,489,967,076 | no solution: 6x9 exhausted |
-| ⭐ | **second-to-last-row kernel + uninit buffers** | `38ed419` | 2026-11-22 | fast | 9.26 s | 2.80× | 1.00× | 10,489,967,076 | no solution: 6x9 exhausted |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 9.26 s | 2.80× | 1.00× | 10,489,967,076 | no solution: 6x9 exhausted |
+| ⭐ | **next-row set cap 32** | `a182ecf` | 2026-11-22 | fast | 9.26 s | 2.80× | 1.00× | 10,489,967,076 | no solution: 6x9 exhausted |

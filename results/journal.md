@@ -894,3 +894,24 @@ instance. Everything else runs code identical to the generic kernel.
 | B15 count 5×6 | 12.41 s | 12.47 s | ≈ |
 
 **Verdict:** kept: 13–15% on the 4-row counts, neutral elsewhere.
+
+### 2026-11-22: next-row set cap 32 (`a182ecf`) ✅ kept (small)
+
+With the set buffer no longer zero-filled, a bigger cap costs nothing until it is used. Sweep (median of 3):
+
+| S_CAP | 5×5 | 5×6 | 4×7 | 4×5 |
+|---|---:|---:|---:|---:|
+| 16 | 3.93 s | 12.44 s | 2.19 s | 0.769 s |
+| 24 | 3.93 s | 12.10 s | 2.15 s | 0.767 s |
+| **32** | 3.95 s | 11.99 s | 2.16 s | 0.770 s |
+
+Re-checked the width cutoff with cap 32: tracking 9–10 letter rows is still slower (count 6×9 9.65 →
+10.37 s, 5×10 0.96 → 1.12 s), so it stays at ≤ 8 letters.
+
+| Benchmark | Before | After | Change |
+|---|---|---|---|
+| B12 find 6×8 | 1.020 s | 0.947 s | 1.08× faster |
+| B15 count 5×6 | 12.47 s | 12.00 s | 1.04× faster |
+| others | | | within noise |
+
+**Verdict:** kept.

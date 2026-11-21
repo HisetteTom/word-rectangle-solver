@@ -518,3 +518,19 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,38ed419,fast,par,B14,count --rows 6 --cols 4,1.6643,865977876,solutions=37812638,1.572995,second-to-last-row kernel + uninit buffers,hephaestus
 2026-11-22,38ed419,fast,par,B15,count --rows 5 --cols 6,12.5612,8497208081,solutions=7424362,12.465036,second-to-last-row kernel + uninit buffers,hephaestus
 2026-11-22,38ed419,fast,par,B16,find --rows 6 --cols 9,9.3644,10489967076,no solution: 6x9 exhausted,9.257647,second-to-last-row kernel + uninit buffers,hephaestus
+2026-11-22,a182ecf,fast,par,B1,count --rows 3 --cols 3,0.0770,994996,solutions=1909732,0.001779,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B2,find --rows 5 --cols 6,0.0860,7220,found,0.000149,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B3,find --rows 6 --cols 6,0.0871,12839,found,0.000233,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B4,count --rows 4 --cols 4,0.1921,170637018,solutions=136245247,0.118906,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B5,count --rows 4 --cols 5,0.8520,450034077,solutions=114846713,0.773063,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B6,count --rows 3 --cols 7,0.1739,90270853,solutions=4453472,0.084756,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B7,find --rows 7 --cols 7,0.2410,29602651,found,0.139143,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B8,find --rows 6 --cols 7,0.2111,17256128,found,0.120321,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B9,find --rows 5 --cols 9,0.2888,159415184,found,0.186170,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B10,count --rows 5 --cols 5,4.0075,3129472451,solutions=80364530,3.931241,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B11,count --rows 4 --cols 6,1.6766,862998712,solutions=37812638,1.591029,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B12,find --rows 6 --cols 8,1.0445,542429647,found,0.947131,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B13,find --rows 5 --cols 10,1.0341,976239922,no solution: 5x10 exhausted,0.936331,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B14,count --rows 6 --cols 4,1.6828,862998712,solutions=37812638,1.592602,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B15,count --rows 5 --cols 6,12.0813,7001446794,solutions=7424362,11.995557,next-row set cap 32,hephaestus
+2026-11-22,a182ecf,fast,par,B16,find --rows 6 --cols 9,9.3604,10489967076,no solution: 6x9 exhausted,9.261024,next-row set cap 32,hephaestus
