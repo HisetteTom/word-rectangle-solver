@@ -3,6 +3,9 @@
 //! Square counts use transpose symmetry (`Kernel::count_sym`): about half the nodes.
 //! Row look-ahead: a letter is skipped when the row node it leads to (`next`, `next2` masks)
 //! can't fit the columns two and three cells further right (forward checking).
+//! Next-row set: while filling row r, the count kernel tracks the exact set of row-trie nodes row
+//! r + 1 can still be in (up to `S_CAP`), which prunes harder than bigrams and, in the second-to-last
+//! row, counts the last rows directly (no last-row walk).
 //!
 //! 0. `find` first tries a short sequential search (`FIND_SEQ_BUDGET` nodes): small cases stay cheap.
 //! 1. Split: expand the first cells breadth-first (lexicographic order) until there are
@@ -42,6 +45,10 @@ const FIND_JOBS_PER_THREAD: usize = 4096;
 /// `find` first searches sequentially for this many nodes (~10 ms); small instances finish
 /// there without paying for threads and job expansion.
 const FIND_SEQ_BUDGET: u64 = 2_000_000;
+/// Largest exact next-row set the count kernel tracks (see `Kernel::count`).
+const S_CAP: usize = 16;
+/// `pm` value meaning "`ps` is the set itself" (bit 31 is never a letter).
+const SELF: u32 = 1 << 31;
 
 pub struct ParSearch {
     rows: usize,
@@ -116,7 +123,7 @@ impl<'a> Worker<'a> {
             }
             k.count_sym(r, c, row, &mut colv, &mut nodes, &mut row0)
         } else {
-            k.count(r, c, row, &mut colv, &mut nodes, !0)
+            k.count(r, c, row, &mut colv, &mut nodes, !0, if c == 0 { std::slice::from_ref(&k.root) } else { &[] }, SELF)
         };
         self.nodes += nodes;
         total
@@ -272,7 +279,7 @@ impl<const W: usize> Kernel<'_, W> {
             // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
             let (nr, nc, nrow) = if c == (W - 1) { (r + 1, 0, self.root) } else { (r, c + 1, unsafe { self.rstep(row, l) }) };
             total += if tie_cell && l > w {
-                2 * self.count(nr, nc, nrow, colv, nodes, !0)
+                2 * self.count(nr, nc, nrow, colv, nodes, !0, if nc == 0 { std::slice::from_ref(&self.root) } else { &[] }, SELF)
             } else {
                 self.count_sym(nr, nc, nrow, colv, nodes, row0)
             };
@@ -344,7 +351,12 @@ impl<const W: usize> Kernel<'_, W> {
     /// `f` = forward mask of the *next* row (r + 1) at position c - 1: the letters a row word can
     /// have there, given what the columns already force on positions 0..c-1 of row r + 1
     /// (any superset is valid, e.g. `!0`). Unused at c == 0.
-    fn count(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32) -> u64 {
+    /// `ps`, `pm` = the exact set S of row-trie nodes (depth c) that row r + 1 can still be in, given
+    /// the column letters already forced on its positions 0..c-1: S = children of the nodes `ps` by
+    /// letters in `pm`, or `ps` itself when `pm == SELF`. Built lazily, only if this cell has a live
+    /// letter. `ps` empty = unknown (S had more than `S_CAP` nodes): the bigram bound `f` is used.
+    #[allow(clippy::too_many_arguments)]
+    fn count(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[Node], pm: u32) -> u64 {
         if r == self.last_r {
             // Last row: columns only need their masks (their children are never used).
             let mut masks = [0u32; W];
@@ -355,42 +367,78 @@ impl<const W: usize> Kernel<'_, W> {
         }
         *nodes += 1;
         let col = colv[c];
-        let mut allowed = row.mask & col.mask;
-        // letters row r + 1 could have at position c, before this cell's column constraint
-        let base = if c == 0 { self.root.mask } else { self.uni(c - 1, f) };
+        let allowed = row.mask & col.mask;
+        let mut good = if c == (W - 1) {
+            allowed
+        } else {
+            let m = |k: usize| if k < W { colv[k].mask } else { !0 };
+            self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3))
+        };
+        if good == 0 {
+            return 0;
+        }
+        // materialize S (or give up on it if it is too big)
+        let mut buf = [Node::default(); S_CAP];
+        let (s, base): (&[Node], u32) = if ps.is_empty() {
+            (&[], if c == 0 { self.root.mask } else { self.uni(c - 1, f) })
+        } else if pm == SELF {
+            (ps, ps.iter().fold(0, |a, n| a | n.mask))
+        } else {
+            let mut n = 0;
+            let mut base = 0;
+            'fill: for sn in ps {
+                let mut m = sn.mask & pm;
+                while m != 0 {
+                    let x = m.trailing_zeros();
+                    m &= m - 1;
+                    if n == S_CAP {
+                        n = 0;
+                        break 'fill;
+                    }
+                    // SAFETY: `x` is a bit of `sn.mask`, `sn` a row-trie node.
+                    let ch = unsafe { self.rstep(*sn, x) };
+                    base |= ch.mask;
+                    buf[n] = ch;
+                    n += 1;
+                }
+            }
+            if n == 0 { (&[], self.uni(c - 1, f)) } else { (&buf[..n], base) }
+        };
+        let mut total = 0;
         if c == (W - 1) {
             // the letter completes this row: next cell is (r + 1, 0) with a fresh row
-            let root = self.root;
-            let mut total = 0;
-            while allowed != 0 {
-                let l = allowed.trailing_zeros();
-                allowed &= allowed - 1;
-                // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
+            let pen = r + 1 == self.last_r && !s.is_empty();
+            while good != 0 {
+                let l = good.trailing_zeros();
+                good &= good - 1;
+                // SAFETY: `l` comes from `allowed`, a subset of this node's mask.
                 let cn = unsafe { self.cstep(col, l) };
                 if base & cn.mask == 0 {
                     continue; // next row can't fit the columns
                 }
+                if pen {
+                    // exact: the last rows are the completions of S by the letters column c allows
+                    total += s.iter().map(|n| (n.mask & cn.mask).count_ones() as u64).sum::<u64>();
+                    continue;
+                }
                 colv[c] = cn;
-                total += self.count(r + 1, 0, root, colv, nodes, !0);
+                total += self.count(r + 1, 0, self.root, colv, nodes, !0, std::slice::from_ref(&self.root), SELF);
             }
             colv[c] = col;
             return total;
         }
-        let mut total = 0;
-        let m = |k: usize| if k < W { colv[k].mask } else { !0 };
-        let mut good = self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3));
         while good != 0 {
             let l = good.trailing_zeros();
             good &= good - 1;
-            // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
+            // SAFETY: `l` comes from `good`, a subset of this node's mask.
             let cn = unsafe { self.cstep(col, l) };
             let fc = base & cn.mask;
             if fc == 0 {
                 continue; // next row can't fit the columns
             }
             colv[c] = cn;
-            // SAFETY: `l` comes from `allowed`/`good`, subsets of this node's mask.
-            total += self.count(r, c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc);
+            // SAFETY: `l` comes from `good`, a subset of this node's mask.
+            total += self.count(r, c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc, s, cn.mask);
         }
         colv[c] = col;
         total
