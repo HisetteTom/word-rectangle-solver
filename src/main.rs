@@ -147,6 +147,14 @@ fn run(a: Args) -> Result<(), String> {
             s.nodes as f64 / secs.max(1e-9),
             load_time.as_secs_f64()
         );
+        if wordrect::probe::ENABLED {
+            // per-cell node counts for the heatmap; row "L" = the last-row kernel
+            let n = wordrect::probe::N;
+            for (i, v) in wordrect::probe::take().iter().enumerate().filter(|(_, v)| **v > 0) {
+                let r = if i / n == n - 1 { "L".to_string() } else { (i / n).to_string() };
+                println!("# cell {r} {} {v}", i % n);
+            }
+        }
     }
     Ok(())
 }

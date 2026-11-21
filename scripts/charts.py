@@ -464,6 +464,134 @@ def anatomy(data: dict[str, list[dict]], bench: str) -> str:
     return "\n".join(out) + "\n"
 
 
+SCALING = ROOT / "results" / "scaling.csv"
+
+
+def scaling() -> str | None:
+    """Speedup vs threads (current code), one line per task, with the ideal line and the core count."""
+    if not SCALING.exists():
+        return None
+    with SCALING.open(newline="") as f:
+        rows = list(csv.DictReader(f))
+    tasks: dict[str, list[tuple[int, float]]] = {}
+    args = {}
+    for r in rows:
+        tasks.setdefault(r["bench"], []).append((int(r["threads"]), float(r["search_s"])))
+        args[r["bench"]] = r["args"]
+    tmax = max(t for v in tasks.values() for t, _ in v)
+    left, right, top, plot_w, plot_h = 70, 190, 96, 560, 330
+    width, height = left + plot_w + right, top + plot_h + 70
+    smax = max(tmax, 1)
+
+    def X(t):
+        return left + t / tmax * plot_w
+
+    def Y(v):
+        return top + plot_h - v / smax * plot_h
+
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" font-family="{FONT}">',
+           STYLE, f'<rect class="bg" width="{width}" height="{height}" rx="10"/>',
+           '<text class="t" x="24" y="36" font-size="20" font-weight="800">Thread scaling · speedup over 1 thread</text>',
+           f'<text class="m" x="24" y="57" font-size="12.5">current code (commit {escape(rows[0]["commit"])}) · {escape(MACHINE)}</text>',
+           '<text class="m" x="24" y="74" font-size="11">dashed = perfect scaling · past 16 threads the extra threads share cores (SMT)</text>']
+    for v in range(0, int(smax) + 1, 4):
+        out.append(f'<line class="g" x1="{left}" x2="{left + plot_w}" y1="{Y(v):.1f}" y2="{Y(v):.1f}" stroke-dasharray="2 3"/>')
+        out.append(f'<text class="m" x="{left - 10}" y="{Y(v) + 4:.1f}" font-size="11" text-anchor="end">{v}×</text>')
+    for t in sorted({t for v in tasks.values() for t, _ in v}):
+        out.append(f'<text class="m" x="{X(t):.1f}" y="{top + plot_h + 18}" font-size="11" text-anchor="middle">{t}</text>')
+    out.append(f'<text class="m" x="{left + plot_w / 2:.0f}" y="{top + plot_h + 40}" font-size="12" text-anchor="middle">threads</text>')
+    # SMT boundary + ideal
+    cores = 16
+    out.append(f'<rect class="hb" x="{X(cores):.1f}" y="{top}" width="{X(tmax) - X(cores):.1f}" height="{plot_h}" opacity=".5"/>')
+    out.append(f'<text class="m" x="{X(cores) + 8:.1f}" y="{top + 14}" font-size="11">2 threads per core</text>')
+    out.append(f'<line class="fx" x1="{X(0):.1f}" y1="{Y(0):.1f}" x2="{X(tmax):.1f}" y2="{Y(tmax):.1f}" stroke-dasharray="5 4" stroke-width="1.5"/>')
+    ends = []
+    for (b, v), (cls, fcls) in zip(tasks.items(), [("ln", "lnf"), ("s2", "s2f"), ("s3", "s3f")]):
+        v.sort()
+        base = dict(v)[1]
+        pts = [(X(t), Y(base / sec)) for t, sec in v]
+        out.append(f'<polyline class="{cls}" points="{" ".join(f"{x:.1f},{y:.1f}" for x, y in pts)}" stroke-width="2.5" stroke-linejoin="round"/>')
+        for x, y in pts:
+            out.append(f'<circle class="{fcls} ring" cx="{x:.1f}" cy="{y:.1f}" r="4" stroke-width="1.5"/>')
+        ends.append([pts[-1][1] + 4, f"{b} · {describe(args[b])}", fcls, base / v[-1][1]])
+    ends.sort()
+    for j in range(1, len(ends)):
+        ends[j][0] = max(ends[j][0], ends[j - 1][0] + 32)
+    for y, name, fcls, sp in ends:
+        out.append(f'<text class="{fcls}" x="{X(tmax) + 12:.1f}" y="{y:.1f}" font-size="16" font-weight="800">{sp:.1f}×</text>')
+        out.append(f'<text class="m" x="{X(tmax) + 12:.1f}" y="{y + 14:.1f}" font-size="10.5">{escape(name)}</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
+HEATMAP = ROOT / "results" / "heatmap.csv"
+
+
+def heatmap() -> str | None:
+    """Small multiples: share of search nodes spent at each grid cell, one panel per task."""
+    if not HEATMAP.exists():
+        return None
+    with HEATMAP.open(newline="") as f:
+        rows = list(csv.DictReader(f))
+    tasks: dict[str, dict[tuple[int, int], int]] = {}
+    for r in rows:
+        t = tasks.setdefault(r["task"], {})
+        k = (int(r["row"]), int(r["col"]))
+        t[k] = t.get(k, 0) + int(r["nodes"])
+    cell, gap, pad = 44, 36, 24
+    panels = []
+    for task, cells in tasks.items():
+        R = int(re.search(r"--rows (\d+)", task)[1])
+        C = int(re.search(r"--cols (\d+)", task)[1])
+        panels.append((task, cells, R, C))
+    col_w = max(C for *_, C in panels) * cell
+    per_row = 2
+    pw = col_w + gap
+    width = pad * 2 + per_row * pw - gap
+    row_heights = []
+    for i in range(0, len(panels), per_row):
+        row_heights.append(max(R for _, _, R, _ in panels[i:i + per_row]) * cell + 56)
+    top = 96
+    height = top + sum(row_heights) + 70
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" font-family="{FONT}">',
+           STYLE.replace("</style>", "".join(f" .d{i}{{fill:{c}}}" for i, c in enumerate(DECADES_LIGHT)) + " .ink{fill:#1f2328} .inv{fill:#ffffff}\n@media (prefers-color-scheme: dark){" + "".join(f" .d{i}{{fill:{c}}}" for i, c in enumerate(DECADES_DARK)) + " .ink{fill:#e6edf3} .inv{fill:#0d1117}}\n</style>"),
+           f'<rect class="bg" width="{width}" height="{height}" rx="10"/>',
+           '<text class="t" x="24" y="36" font-size="20" font-weight="800">Where the search spends its time</text>',
+           f'<text class="m" x="24" y="57" font-size="12.5">share of search nodes at each grid cell, current kernel (commit {escape(rows[0]["commit"])})</text>',
+           '<text class="m" x="24" y="74" font-size="11">cells are filled row by row, left to right · the first cells are split into parallel jobs (not counted) · count kernels finish the last row in bulk</text>']
+    bins = [0.001, 0.003, 0.01, 0.02, 0.04, 0.07, 0.1, 0.15, 0.25]
+    y0 = top
+    for i in range(0, len(panels), per_row):
+        for j, (task, cells, R, C) in enumerate(panels[i:i + per_row]):
+            x0 = pad + j * pw
+            total = sum(cells.values())
+            out.append(f'<text class="t" x="{x0}" y="{y0 + 14}" font-size="13.5" font-weight="700">{escape(describe(task))}</text>')
+            out.append(f'<text class="m" x="{x0}" y="{y0 + 30}" font-size="11">{total / 1e6:,.0f} M nodes</text>')
+            for r in range(R):
+                for c in range(C):
+                    v = cells.get((r, c), 0)
+                    share = v / total
+                    d = sum(share >= b for b in bins)
+                    cx, cy = x0 + c * cell, y0 + 40 + r * cell
+                    if v == 0:
+                        out.append(f'<rect class="hb" x="{cx + 1}" y="{cy + 1}" width="{cell - 2}" height="{cell - 2}" rx="4"/>')
+                        continue
+                    out.append(f'<rect class="d{d}" x="{cx + 1}" y="{cy + 1}" width="{cell - 2}" height="{cell - 2}" rx="4"/>')
+                    if share >= 0.001:
+                        txt = f"{share * 100:.0f}%" if share >= 0.095 else f"{share * 100:.1f}%"
+                        out.append(f'<text class="{"inv" if d >= 5 else "ink"}" x="{cx + cell / 2}" y="{cy + cell / 2 + 4}" font-size="11" font-weight="600" text-anchor="middle">{txt}</text>')
+        y0 += row_heights[i // per_row]
+    # legend
+    lx, ly = pad, y0 + 8
+    labels = ["<0.1%", "0.1%", "0.3%", "1%", "2%", "4%", "7%", "10%", "15%", "25%+"]
+    for d in range(10):
+        out.append(f'<rect class="d{d}" x="{lx + d * 46}" y="{ly}" width="44" height="12" rx="2"/>')
+        out.append(f'<text class="m" x="{lx + d * 46}" y="{ly + 26}" font-size="10">{labels[d]}</text>')
+    out.append(f'<rect class="hb" x="{lx + 10 * 46 + 20}" y="{ly}" width="14" height="12" rx="2"/><text class="m" x="{lx + 10 * 46 + 40}" y="{ly + 10}" font-size="10">not searched cell by cell</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
 def report(data: dict[str, list[dict]]) -> str:
     lines = [
         "# Benchmark progress",
@@ -515,6 +643,10 @@ def main():
     (CHARTS / "progress.svg").write_text(progress(data))
     if "B5" in data:
         (CHARTS / "anatomy-B5.svg").write_text(anatomy(data, "B5"))
+    if (hv := heatmap()) is not None:
+        (CHARTS / "heatmap.svg").write_text(hv)
+    if (sv := scaling()) is not None:
+        (CHARTS / "scaling.svg").write_text(sv)
     if (a := atlas()) is not None:
         (CHARTS / "atlas.svg").write_text(a)
     REPORT.write_text(report(data))

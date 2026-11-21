@@ -7,6 +7,10 @@ publish = false
 
 # Zero dependencies on purpose: keeps `cargo build` near-instant.
 
+[features]
+# Per-cell node counters for the search heatmap (scripts/heatmap.py). Off for benchmarks.
+probe = []
+
 [[bin]]
 name = "wordrect"
 path = "src/main.rs"

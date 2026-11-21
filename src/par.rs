@@ -210,6 +210,7 @@ impl<const W: usize> Kernel<'_, W> {
     /// Last row, cell `c`: completions of `row` with letter `c'` in `masks[c']` for every c' >= c.
     fn count_last(&self, c: usize, row: Node, masks: &[u32; W], nodes: &mut u64) -> u64 {
         *nodes += 1;
+        crate::probe::hit(crate::probe::N - 1, c);
         let mut allowed = row.mask & masks[c];
         if c == (W - 1) {
             return allowed.count_ones() as u64;
@@ -264,6 +265,7 @@ impl<const W: usize> Kernel<'_, W> {
             return self.count_last(c, row, &masks, nodes);
         }
         *nodes += 1;
+        crate::probe::hit(r, c);
         let col = colv[c];
         let mut allowed = row.mask & col.mask;
         let tie_cell = c == 0 && r >= 1;
@@ -307,6 +309,7 @@ impl<const W: usize> Kernel<'_, W> {
     #[allow(clippy::too_many_arguments)]
     fn search<F: FnMut(&[u8]) -> bool, S: Fn() -> bool>(&self, r: usize, c: usize, row: Node, st: &mut SearchState<W>, on: &mut F, stop: &S, f: u32) -> bool {
         st.nodes += 1;
+        crate::probe::hit(r, c);
         if st.nodes & 255 == 0 && (st.nodes > st.limit || stop()) {
             return false;
         }
@@ -370,6 +373,7 @@ impl<const W: usize> Kernel<'_, W> {
             return self.count_last(c, row, &masks, nodes);
         }
         *nodes += 1;
+        crate::probe::hit(r, c);
         let col = colv[c];
         let allowed = row.mask & col.mask;
         let mut good = if c == (W - 1) {
@@ -588,6 +592,7 @@ impl ParSearch {
                         }
                     }
                     nodes.fetch_add(w.nodes, Relaxed);
+                    crate::probe::flush();
                     results.lock().unwrap().extend(mine);
                 });
             }

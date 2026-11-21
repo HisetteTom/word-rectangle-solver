@@ -1,6 +1,7 @@
 pub mod dict;
 pub mod naive;
 pub mod par;
+pub mod probe;
 pub mod search;
 pub mod trie;
 pub mod validate;
