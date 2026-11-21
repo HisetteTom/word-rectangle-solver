@@ -724,3 +724,23 @@ Cap sweep (lazy version, fast profile):
 three failed ones). Nodes drop 2–3.5×, and each node costs more. 4-row grids gain about 1.4×,
 because there the tracked row is the last one. On 5-row grids the earlier rows pay the overhead
 and get only part of the benefit.
+
+### 2026-11-21: exact next-row set in the find kernel (`be5eb79`) ❌ reverted
+
+**Idea:** give `search` (find, and the "prove none" runs B13/B16) the same lazy next-row set
+as the count kernel, for pruning only (find must still walk the last row to write the grid).
+
+| Benchmark | Before (exact next-row set) | After | Change |
+|---|---|---|---|
+| B7 find 7×7 | 0.129 s | 0.166 s | 0.78× |
+| B9 find 5×9 | 0.194 s | 0.233 s | 0.83× |
+| B12 find 6×8 | 1.03 s · 1.01 G nodes | 1.09 s · 0.69 G | 0.94× |
+| B13 prove no 5×10 | 0.98 s · 0.98 G | 1.13 s · 0.60 G | 0.87× |
+| B16 prove no 6×9 | 9.91 s · 10.5 G | 10.84 s · 6.99 G | 0.91× |
+
+Tracking the set only for the last row (from the second-to-last row) is worse still: 6×9 took 12.0 s
+with almost no fewer nodes, because on 8–10 letter rows the set overflows its 16 slots at once.
+
+**Verdict:** reverted. The count kernel won because the set also *replaced* the last-row walk.
+Here it only prunes, and 33–38% fewer nodes don't pay for building the set plus a 256-byte
+buffer in every frame.
