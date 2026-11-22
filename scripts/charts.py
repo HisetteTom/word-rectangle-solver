@@ -576,7 +576,7 @@ def heatmap() -> str | None:
            f'<rect class="bg" width="{width}" height="{height}" rx="10"/>',
            '<text class="t" x="24" y="36" font-size="20" font-weight="800">Where the search spends its time</text>',
            f'<text class="m" x="24" y="57" font-size="12.5">share of search nodes at each grid cell, current kernel (commit {escape(rows[0]["commit"])})</text>',
-           '<text class="m" x="24" y="74" font-size="11">cells in search order: row by row, left to right · non-square counts run on the mirror image (each row from its last letter)</text>',
+           '<text class="m" x="24" y="74" font-size="11">cells in search order: row by row, left to right · counts and big finds run on the mirror image (each row from its last letter)</text>',
            '<text class="m" x="24" y="89" font-size="11">grey: cells split into parallel jobs, or finished in bulk by the count kernels (last row, last cells)</text>']
     bins = [0.001, 0.003, 0.01, 0.02, 0.04, 0.07, 0.1, 0.15, 0.25]
     y0 = top
