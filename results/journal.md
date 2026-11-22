@@ -1156,3 +1156,30 @@ The share falls, then rises to 100%: in small squares asymmetric fillings are ab
 big ones that exist at all are almost always symmetric. Symmetric squares are also a much smaller
 search than rectangles (8×8 in 0.14 s against 18 s), because each row's first letters are forced.
 Chart: `charts/squares.svg`.
+
+### 2026-11-22: dead ends measured, and a pair look-ahead (`bbfcd10`) ❌ reverted
+
+**Probe first** (throwaway `probe`-feature counter, not committed): the share of nodes per cell whose subtree
+holds **no** solution, current kernel:
+
+| Shape | hot row | its nodes | dead there |
+|---|---|---:|---:|
+| count 5×6 (mirrored) | second-to-last, columns 1–3 | 57% of all nodes | **99–100%** |
+| count 5×5 | second-to-last, columns 1–2 | 50% | 90–95% |
+| count 6×6 (mirrored, anti-diagonal) | third-to-last, columns 0–2 | 46% | 86–91% |
+
+Even with the exact next-row set, the last two rows stay compatible column by column, then die further right.
+
+**Idea:** a pair look-ahead in the second-to-last row. A letter x at c+1 is only useful if the column,
+after x, still allows some letter the last-row set can reach at c+1 (`cstep(col, x).mask & OR(s.next)`).
+That set replaces the plain column mask in `good()`'s first look-ahead slot.
+
+| Benchmark | Before (mirror-image job test) | After | Change |
+|---|---|---|---|
+| B10 count 5×5 | 3.91 s · 3.12 G nodes | 4.90 s · 3.05 G | 0.80× |
+| B15 count 5×6 | 9.99 s · 5.95 G | 12.3 s · 5.79 G | 0.81× |
+| B18 count 6×6 | 17.8 s | 18.5 s | 0.96× |
+
+**Verdict:** reverted. It prunes only 2–3% of nodes: the dead ends aren't visible one column ahead. They
+come from whole words further right. The probe numbers stay as a guide: there's a lot of room in the last two
+rows, but it takes a check that sees whole words (PLAN.md).

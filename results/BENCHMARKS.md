@@ -63,6 +63,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 1.64 ms | 3,571× | 1.03× | 994,996 | solutions=1909732 |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 1.91 ms | 3,070× | 0.86× | 994,996 | solutions=1909732 |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 1.76 ms | 3,337× | 0.93× | 994,996 | solutions=1909732 |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 1.74 ms | 3,370× | 1.01× | 994,996 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -112,6 +113,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 146 µs | 7,904× | 1.02× | 7,220 | found |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 152 µs | 7,592× | 0.96× | 7,220 | found |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 145 µs | 7,958× | 1.01× | 7,220 | found |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 146 µs | 7,904× | 0.99× | 7,220 | found |
 
 ## B3 · find first 6×6
 
@@ -161,6 +163,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 235 µs | 11,540× | 0.96× | 12,839 | found |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 230 µs | 11,791× | 1.02× | 12,839 | found |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 229 µs | 11,842× | 1.03× | 12,839 | found |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 224 µs | 12,107× | 1.02× | 12,839 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -209,6 +212,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 113 ms | 126× | 1.02× | 170,637,018 | solutions=136245247 |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 117 ms | 122× | 0.97× | 170,189,420 | solutions=136245247 |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 114 ms | 125× | 0.99× | 170,637,018 | solutions=136245247 |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 114 ms | 126× | 1.00× | 170,637,018 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -257,6 +261,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 742 ms | 77.8× | 0.98× | 414,768,985 | solutions=114846713 |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 737 ms | 78.3× | 1.01× | 414,752,936 | solutions=114846713 |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 728 ms | 79.3× | 1.02× | 414,768,985 | solutions=114846713 |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 732 ms | 78.9× | 1.00× | 414,768,985 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -305,6 +310,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 86.8 ms | 67.6× | 1.02× | 73,695,021 | solutions=4453472 |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 96.3 ms | 61.0× | 0.90× | 73,521,957 | solutions=4453472 |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 88 ms | 66.7× | 0.99× | 73,695,021 | solutions=4453472 |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 101 ms | 58.0× | 0.87× | 72,681,529 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -353,6 +359,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 112 ms | 16.1× | 0.93× | 27,640,929 | found |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 105 ms | 17.2× | 1.07× | 28,230,703 | found |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 103 ms | 17.5× | 1.09× | 27,624,575 | found |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 107 ms | 16.8× | 0.96× | 27,596,191 | found |
 
 ## B8 · find first 6×7
 
@@ -401,6 +408,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 79.7 ms | 18.4× | 1.08× | 15,456,330 | found |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 80.1 ms | 18.3× | 1.00× | 15,360,358 | found |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 80.4 ms | 18.2× | 0.99× | 15,251,571 | found |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 84.3 ms | 17.4× | 0.95× | 15,390,430 | found |
 
 ## B9 · find first 5×9
 
@@ -449,6 +457,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 152 ms | 54.9× | 1.01× | 157,342,384 | found |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 161 ms | 52.0× | 0.95× | 155,786,745 | found |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 149 ms | 56.3× | 1.02× | 157,462,185 | found |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 150 ms | 55.8× | 0.99× | 157,340,478 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -493,6 +502,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 3.97 s | 4.02× | 1.01× | 3,129,472,451 | solutions=80364530 |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 3.94 s | 4.04× | 1.01× | 3,120,029,647 | solutions=80364530 |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 3.91 s | 4.07× | 1.01× | 3,129,472,451 | solutions=80364530 |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 4.92 s | 3.24× | 0.79× | 3,052,737,334 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -537,6 +547,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 1.42 s | 3.54× | 0.99× | 774,415,735 | solutions=37812638 |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 1.43 s | 3.51× | 0.99× | 774,281,531 | solutions=37812638 |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 1.42 s | 3.54× | 1.00× | 774,415,735 | solutions=37812638 |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 1.41 s | 3.55× | 1.00× | 774,415,735 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -581,6 +592,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 916 ms | 2.89× | 0.99× | 540,252,048 | found |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 905 ms | 2.92× | 1.01× | 538,103,046 | found |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 802 ms | 3.29× | 1.14× | 428,275,453 | found |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 815 ms | 3.24× | 0.99× | 430,039,369 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -625,6 +637,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 913 ms | 2.69× | 0.97× | 974,270,002 | no solution: 5x10 exhausted |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 955 ms | 2.57× | 0.96× | 963,815,861 | no solution: 5x10 exhausted |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 546 ms | 4.50× | 1.67× | 620,920,008 | no solution: 5x10 exhausted |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 532 ms | 4.62× | 1.03× | 605,920,560 | no solution: 5x10 exhausted |
 
 ## B14 · count all 6×4 (exhaustive)
 
@@ -669,6 +682,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 1.42 s | 6.78× | 1.00× | 774,415,735 | solutions=37812638 |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 1.44 s | 6.71× | 0.99× | 774,281,531 | solutions=37812638 |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 1.42 s | 6.77× | 1.00× | 774,415,735 | solutions=37812638 |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 1.42 s | 6.79× | 1.00× | 774,415,735 | solutions=37812638 |
 
 ## B15 · count all 5×6 (exhaustive)
 
@@ -713,6 +727,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 10.2 s | 2.94× | 1.00× | 5,947,012,110 | solutions=7424362 |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 10.1 s | 2.96× | 1.01× | 5,945,622,442 | solutions=7424362 |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 9.99 s | 3.00× | 1.02× | 5,947,012,110 | solutions=7424362 |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 12.3 s | 2.43× | 0.81× | 5,794,155,604 | solutions=7424362 |
 
 ## B16 · prove no 6×9 exists (exhaustive)
 
@@ -757,6 +772,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 9.23 s | 2.81× | 1.02× | 10,487,997,156 | no solution: 6x9 exhausted |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 9.95 s | 2.61× | 0.93× | 10,394,973,114 | no solution: 6x9 exhausted |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 6.01 s | 4.32× | 1.54× | 7,253,401,853 | no solution: 6x9 exhausted |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 6.02 s | 4.32× | 1.00× | 7,234,642,959 | no solution: 6x9 exhausted |
 
 ## B17 · count all 4×7 (exhaustive)
 
@@ -801,6 +817,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 1.75 s | 3.97× | 1.01× | 996,185,895 | solutions=7139499 |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 1.76 s | 3.93× | 0.99× | 996,039,979 | solutions=7139499 |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 1.72 s | 4.03× | 1.02× | 996,185,895 | solutions=7139499 |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 2.53 s | 2.74× | 0.68× | 913,558,942 | solutions=7139499 |
 
 ## B18 · count all 6×6 (exhaustive)
 
@@ -845,3 +862,4 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | anti-diagonal symmetry (mirrored squares) | `66757e1` | 2026-11-22 | fast | 18.0 s | 4.94× | 1.12× | 15,605,237,112 | solutions=1584465 |
 | ❌ | ~~skip-gram forward bound (failed)~~ | `f23ce1d` | 2026-11-22 | fast | 17.9 s | 4.99× | 1.01× | 15,602,166,452 | solutions=1584465 |
 | ⭐ | **mirror-image job test in find** | `096a1a9` | 2026-11-22 | fast | 17.8 s | 5.00× | 1.01× | 15,605,237,112 | solutions=1584465 |
+| ❌ | ~~pair look-ahead (failed)~~ | `bbfcd10` | 2026-11-22 | fast | 18.6 s | 4.79× | 0.96× | 15,599,545,843 | solutions=1584465 |
