@@ -10,13 +10,18 @@ T E N
 
 Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal of this project is to push as far as a single CPU can go.
 
-> **🆕 Latest (night of 2026-11-21):** the whole history was re-run on one machine, and
-> **every grid size up to 10×22 is now settled**: the largest word rectangle in the dictionary is
-> **8×8 (exactly five, all symmetric squares)**. New tricks: exact next-row sets, counting the
-> **mirror image** of the grid (rows filled from their last letter: up to 1.7× faster), an
-> **anti-diagonal symmetry** for mirrored squares, and mirror-image tests for `find` (proofs that no
-> grid exists: 1.5–1.7× faster). 21 benchmarked steps that night (9 kept, 12 failed), all documented:
+> **🆕 Latest (2026-11-22, day):** `find` no longer waits on one long job. A job that runs too
+> long while a thread is idle is **split into pieces that all threads share**, and the pieces resume
+> where the aborted run stopped. Finds with solutions are **1.2–2.5× faster** (7×7: 104 → 47 ms, 6×7: 82 → 33 ms),
+> and there's a new chart of what the 32 threads do. Re-tuning old limits for the mirror image made proofs
+> that no grid exists **1.2–1.3× faster** (no 6×9: 6.0 → 4.6 s). 7 more benchmarked steps today (6 kept, 1 failed), all in
 > [`results/journal.md`](results/journal.md).
+>
+> **Night of 2026-11-21:** the whole history was re-run on one machine, and **every grid size up to
+> 10×22 is now settled**: the largest word rectangle in the dictionary is **8×8 (exactly five, all
+> symmetric squares)**. New tricks that night: exact next-row sets, counting the **mirror image** of the grid
+> (rows filled from their last letter: up to 1.7× faster), an **anti-diagonal symmetry** for mirrored
+> squares, and mirror-image tests for `find`.
 
 ---
 
@@ -67,8 +72,14 @@ symmetric squares**. Most of ENABLE's big rectangles rely on rare words (`serrie
 
 ![scaling](results/charts/scaling.svg)
 
-Regenerate with `python3 scripts/heatmap.py` and `python3 scripts/scaling.py` (both describe the
-current code), and `python3 scripts/atlas.py` for the atlas.
+**What 32 threads actually do during a `find`**: every job, test and abort on a timeline. With
+splitting off, one thread walks a huge early job alone while the rest wait. With splitting on,
+long jobs are cut into pieces as soon as a thread goes idle (2.5× faster here):
+
+![timeline](results/charts/timeline.svg)
+
+Regenerate with `python3 scripts/heatmap.py`, `python3 scripts/scaling.py` and
+`python3 scripts/timeline.py` (all describe the current code), and `python3 scripts/atlas.py` for the atlas.
 
 ### Per-benchmark history
 

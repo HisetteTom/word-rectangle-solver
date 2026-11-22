@@ -1546,3 +1546,10 @@ partially explored sub-job and recovering the wrong letter, are both caught (the
 bigger ENABLE sizes).
 
 From the chart, the next leak: threads still idle ~5 ms before the long jobs notice the abort.
+
+### 2026-11-22: more frequent abort checks (no commit, no bar)
+
+The timeline shows threads idle ~5 ms before long jobs abort. Hypothesis: the count kernel's check
+`nodes & 1023 == 0` rarely hits, because the last rows add nodes in bulk. Replaced by a "next check at"
+threshold (every 1024 nodes for sure): 7×7 47 → 48 ms, 6×7 33 → 37 ms, 6×9 4.64 → 4.73 s. More checks
+(each an `Instant::now()` plus atomic loads) cost more than the shorter gap saves. Not committed.

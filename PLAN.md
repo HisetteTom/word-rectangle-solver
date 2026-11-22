@@ -4,67 +4,61 @@ Working notes for the next optimization sessions. Every item that gets tried bec
 benchmarked step (see CLAUDE.md). Failures too, labelled `(failed)`. Details of past steps:
 [`results/journal.md`](results/journal.md). Main machine: **hephaestus** (Ryzen 9 3950X, 32 threads).
 
-## Where we are (2026-11-22, after "mirror-image job test in find")
+## Where we are (2026-11-22 day, after "resume aborted jobs")
 
-| | B5 count 4×5 | B10 count 5×5 | B15 count 5×6 | B18 count 6×6 | B7 find 7×7 | B13 prove no 5×10 | B16 prove no 6×9 |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| start of the night ("unchecked trie steps") | 1.20 s | 3.91 s | 13.47 s | 20.9 s | 0.134 s | 0.99 s | 9.93 s |
-| now | **0.728 s** | 3.91 s | **9.99 s** | **17.8 s** | **0.103 s** | **0.546 s** | **6.01 s** |
+| | B5 count 4×5 | B10 count 5×5 | B15 count 5×6 | B18 count 6×6 | B7 find 7×7 | B8 find 6×7 | B12 find 6×8 | B13 prove no 5×10 | B16 prove no 6×9 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| start of the night 11-21 | 1.20 s | 3.91 s | 13.47 s | 20.9 s | 134 ms | 117 ms | 1.01 s | 0.99 s | 9.93 s |
+| morning 11-22 | 0.718 s | 3.96 s | 10.1 s | 18.0 s | 103 ms | 82 ms | 803 ms | 0.538 s | 6.04 s |
+| now | **0.684 s** | 3.93 s | **9.86 s** | 17.8 s | **47 ms** | **33 ms** | **647 ms** | **0.445 s** | **4.64 s** |
 
-Where the time goes now (`results/charts/heatmap.svg`, `scripts/heatmap.py`):
-- **counts:** the second-to-last row, its first 3 cells: 50–75% of nodes;
-- **prove none, wide rows (6×9):** two rows above the last, columns 1–3. No next-row set there
-  (9-letter rows overflow it).
+Where the time goes now:
+- **counts:** throughput-bound (31× CPU use on 32 threads), the second-to-last row's first cells
+  (heatmap). Node counts mislead there: last-row nodes are counted in bulk and nearly free.
+- **finds with a solution:** throughput of the job tests before the answer's job (timeline chart:
+  6×8's first 192 jobs are ~550 ms of real work). The ~5 ms between "a thread is idle" and the long
+  jobs aborting is the budget check: checking more often cost more than it saved.
+- **prove none:** mirror-image job tests, exhaustive.
 
-## Learned tonight (details in the journal)
+## Learned today (details in the journal)
 
-- **Exact next-row set** (up to 32 trie nodes, built lazily) is the big pruning win for counts,
-  but only on rows ≤ 8 letters. On 9–10 letter rows it overflows and costs more than it prunes.
-  A DAWG multiset version halves 6×9's nodes but costs about 2.7× per node (2.3× with an O(1) stamp merge).
-- **Orientation matters a lot:** rows filled from their last letter (mirror image) are faster on
-  every shape (1.07–1.7×); columns reversed are always slower. Counts use the mirror; squares ≥ 6×6
-  too, with the **anti-diagonal symmetry** of the mirror image; big finds test their jobs on the
-  mirror (job prefix forced at the end of row 0 via **virtual column nodes**).
-- **Memory layout:** a 12-byte row node *without* `next2` was ~6% cheaper per node; packing the
-  index into spare bits to keep `next2` cost more (decode on the critical path).
-- **Code layout effects are real:** a merely *reachable* call to the specialized row kernel slowed
-  the generic kernel 2–3% on 5-row grids. Specialize with const generics (compile-time instances).
-- **Constants age:** the 2 M-node sequential find budget (from the slow days) cost 36 ms per find.
-  Re-sweep old tuning constants after big speedups (done: S_CAP, jobs per thread, find budget).
+- **Scheduling was a real lever for satisfiable finds:** time budgets per job, splitting only while a
+  thread is idle, cutting later jobs as soon as a *test* says yes, splitting mirror tests in the mirror's
+  order, and resuming aborted jobs where they stopped. Together: 7×7 2.2×, 6×7 2.5×, 6×8 1.24×.
+- **Re-sweep thresholds after big changes:** the next-row set limit (8 → 10 letters) dated from
+  before the mirror; proofs got 1.2–1.3× faster.
+- **Register pressure is real:** keeping one extra value alive across the recursive call cost the
+  kernel 3.5–4%, though the code using it never ran. Recover what you need on the cold path instead.
+- **Measured and dead:** PGO (20–27% slower), memo on column tuples (all distinct), other letter
+  orders (the mirror is within 1–2% of the best of all 120 for 4×5), cheap last-row end check (prunes
+  65% of nodes on wide rows, saves no time), mirror job tests on small grids (mixed).
 
 ## Ideas, roughly by expected value
 
-0. **The last two rows are where the waste is, and whole-word checks are the lever.** Probe (journal,
-   "dead ends measured"): 99–100% of the second-to-last row's nodes in columns 1–3 of 5×6 have *no*
-   solution under them (90–95% on 5×5; 86–91% of the third-to-last row on 6×6). A check that one of
-   the last-row prefixes completes to a whole word inside the columns' union masks cuts **39% of
-   nodes** on 5×6, but walking the trie to prove a node dead costs more than it saves. Needed: a much
-   cheaper existence test for "a word whose letter at each position k is in U_k". A memo on U-tuples was
-   tried (no gain: tuples rarely repeat). A bigram-path pre-check was tried too (prunes only
-   2–4%: the dead ends are whole-word effects). Open: something between bigrams and full words,
-   e.g. per-position letter bitsets over last-row *word ids* (AND of ORs), or a much smaller
-   last-row trie restricted per second-to-last-row start.
-
-1. **Mirror job tests for small grids too.** Today only big grids (area ≥ 48) use them, because their
-   jobs must stay in row 0 and coarse jobs hurt finds with early solutions (5×8, 5×9). A dynamic
-   scheme could start with fine jobs and switch to row-0 mirror jobs once the mirror is built and
-   no solution has shown up, skipping the row-0 jobs already fully covered (both job lists are
-   in lexicographic order). Determinism needs care: every fine job below a found solution must finish.
-2. **A cheaper next-row set for wide rows.** The DAWG multiset prunes 2× on 6×9; it needs a
-   representation where a child step costs about one trie step (e.g. a DAWG laid out so children are
-   contiguous where possible, or sets as sorted id ranges).
-3. **12-byte row node, `next2` dropped only where it doesn't prune** (it helped 4×6/5×6, not
+1. **Faster job tests = faster everything now.** Finds are throughput-bound on the count kernel's
+   `ANY` mode. Any per-node gain in `count` shows up in every benchmark.
+2. **A cheaper next-row set for wide rows** (still open): the DAWG multiset prunes 2× on 6×9 but costs
+   2.7× per node; needs a layout where a child step costs about one trie step.
+3. **Abort latency** (see the timeline): the cancel check runs when `nodes & 1023 == 0`, which the bulk
+   node adds of the last rows skip over. A cheaper trigger (e.g. a per-thread flag set by the idle
+   thread, checked only in shallow frames) might close the 5 ms gap.
+4. **12-byte row node, `next2` dropped only where it doesn't prune** (it helped 4×6/5×6, not
    4×5/5×5). A per-width const choice, like `TRACK`.
-4. **The second-to-last row on 5-row grids** (`count_pen` lost 3% there, reason unknown). Try
-   again with a profiler if one ever becomes available (no perf on hephaestus: perf_event_paranoid=3, no root).
-5. **Satisfiable find:** the job holding the first solution is walked twice (count test, then
-   search); 7×7 pays ~10%. Have the `ANY` count record the grid of its first solution.
-   Also: the specialized second-to-last-row kernel still loses on 5-row grids after the mirror (5×5 3.91 → 4.06 s).
-6. **Bigger benchmarks:** B5/B6/B7/B8 are now under 0.2 s. Candidates (measured tonight):
-   count 4×7 (1.7 s), count 5×7 (9.9 s mirrored), count 6×6 (20 s), count 7×7 (42 s, 11,669 solutions),
-   prove no 7×8 (60 s), count 8×8 (28 s, 5 solutions, all symmetric squares).
+5. **The second-to-last row on 5-row grids** (`count_pen` lost 3% there; maybe register pressure too,
+   see "learned today").
+6. **Bigger benchmarks:** B5–B8 are now under 0.7 s. Candidates: count 5×7 (9.9 s), count 7×7
+   (30 s), prove no 7×8 (36 s), count 8×8 (18 s).
+7. **The last two rows' dead ends** (was #0): strong pruning is easy, but every check measured so far
+   costs more than the nearly free nodes it removes. Low expected value now.
 
-## Done tonight
+## Done 2026-11-22 (day)
+
+Split long find jobs ✅ · split mirror tests + early cut ✅ · next-row set up to 10 letters ✅ ·
+last-row end check ❌ · first two rows swapped ✅ · count jobs 512 ✅ · resume aborted jobs ✅.
+Measured, no bar: PGO, column-tuple memo, letter orders, mirror on small grids, constants re-swept,
+more frequent abort checks. New chart: find timeline (`scripts/timeline.py`).
+
+## Done the night of 2026-11-21
 
 Exact next-row set ✅ · find kernel set ❌ · column look-ahead on the set ❌ · reuse look-ahead
 children ❌ · 12-byte packed nodes ❌ · count-kernel job test in find ✅ · wide-row set ❌ ·
@@ -81,4 +75,4 @@ Also: `wordrect squares` (symmetric word squares) and a second dictionary atlas.
 | `opt-inline-never-cold` | mark job setup / prefix replay / symmetry path `#[cold]`; re-measure `inline(always)` |
 | `lint-*` | `cargo clippy -- -W clippy::perf -W clippy::pedantic` once, fix what's cheap |
 | `unsafe-miri-ci` | run `cargo +nightly miri test` on a tiny dict once (there is `unsafe` in the kernel) |
-| `opt-pgo-profile` | retry PGO: the kernel changed a lot since the first try |
+| `opt-pgo-profile` | retried 2026-11-22: 20–27% slower. Dropped. |
