@@ -40,8 +40,10 @@ Where the time goes now (`results/charts/heatmap.svg`, `scripts/heatmap.py`):
    the last-row prefixes completes to a whole word inside the columns' union masks cuts **39% of
    nodes** on 5×6, but walking the trie to prove a node dead costs more than it saves. Needed: a much
    cheaper existence test for "a word whose letter at each position k is in U_k". A memo on U-tuples was
-   tried (no gain: tuples rarely repeat). Candidate left: two-level tables (letter pairs at position
-   pairs) that reject most dead U's in O(1) before the walk.
+   tried (no gain: tuples rarely repeat). A bigram-path pre-check was tried too (prunes only
+   2–4%: the dead ends are whole-word effects). Open: something between bigrams and full words,
+   e.g. per-position letter bitsets over last-row *word ids* (AND of ORs), or a much smaller
+   last-row trie restricted per second-to-last-row start.
 
 1. **Mirror job tests for small grids too.** Today only big grids (area ≥ 48) use them, because their
    jobs must stay in row 0 and coarse jobs hurt finds with early solutions (5×8, 5×9). A dynamic
@@ -68,7 +70,7 @@ Exact next-row set ✅ · find kernel set ❌ · column look-ahead on the set �
 children ❌ · 12-byte packed nodes ❌ · count-kernel job test in find ✅ · wide-row set ❌ ·
 second-to-last-row kernel + uninit buffers ✅ · set cap 32 ✅ · short find budget ✅ · DAWG set ❌ ·
 mirrored rows for counts ✅ · anti-diagonal symmetry ✅ · skip-gram bound ❌ · mirror-image job
-test in find ✅ · pair look-ahead ❌ · whole-word last-row check ❌ (strong pruning, too costly).
+test in find ✅ · pair look-ahead ❌ · whole-word last-row check ❌ (strong pruning, too costly) · bigram path check ❌.
 Also: `wordrect squares` (symmetric word squares) and a second dictionary atlas. Plus: B17–B18 (replayed for every step), whole history replayed on hephaestus, B15–B16, the atlas
 (every size to 10×22 settled; largest = 8×8), gallery, anatomy, heatmap and scaling charts.
 

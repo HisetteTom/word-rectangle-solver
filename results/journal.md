@@ -1219,9 +1219,9 @@ allows at c: A_{k+1} = U_{k+1} ∩ (letters that can follow A_k). That's W table
 
 | Benchmark | Before (mirror-image job test) | After | Change |
 |---|---|---|---|
-| B10 count 5×5 | 3.91 s · 3.12 G nodes | 4.456472 s · 3.05 G | slower |
-| B15 count 5×6 | 9.99 s · 5.95 G | 11.284881 s · 5.71 G | slower |
-| B17 count 4×7 | 1.72 s | 2.060289 s | slower |
+| B10 count 5×5 | 3.91 s · 3.12 G nodes | 4.46 s · 3.05 G | 0.88× |
+| B15 count 5×6 | 9.99 s · 5.95 G | 11.28 s · 5.71 G | 0.89× |
+| B17 count 4×7 | 1.72 s | 2.06 s | 0.83× |
 
 **Verdict:** reverted. It prunes 2–4%, against the whole-word check's 26–39%: the last two rows die on
 whole-word constraints that letter pairs can't see. Plus the 12-byte column node.
