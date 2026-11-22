@@ -284,9 +284,11 @@ impl<'t, const W: usize> Kernel<'t, W> {
 }
 
 impl<const W: usize> Kernel<'_, W> {
-    /// Track the exact next-row set only on rows of up to 8 letters: on longer rows it overflows
-    /// `S_CAP` almost at once and only costs time (6×9 count: 10.5 s with it, 9.4 s without).
-    const TRACK: bool = W <= 8;
+    /// Track the exact next-row set only on rows of up to 10 letters. Set at 8 before the mirror
+    /// image (rows filled from their last letter), when it overflowed `S_CAP` almost at once on
+    /// longer rows (6×9 count: 10.5 s with it, 9.4 s without). On the mirror it pays up to 10
+    /// (6×9 count 6.9 -> 5.4 s, prove no 6×9 6.1 -> 4.6 s, 5×10 0.55 -> 0.45 s); above that it is even.
+    const TRACK: bool = W <= 10;
     /// Use `count_pen` for the second-to-last row only where it measured faster: grids of at most
     /// 4 rows and 6 columns (`P` = true instances of the kernels). On 4×7, 5×5, 5×6, 5×7 and 6×6 it
     /// was 1.5–4% slower than the generic kernel, for no reason I could isolate without a profiler.
