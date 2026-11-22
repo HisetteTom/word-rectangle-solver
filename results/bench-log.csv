@@ -902,3 +902,21 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,e2679f4,fast,par,B16,find --rows 6 --cols 9,4.8085,2509817046,no solution: 6x9 exhausted,4.701936,count jobs 512,hephaestus
 2026-11-22,e2679f4,fast,par,B17,count --rows 4 --cols 7,1.7853,993187402,solutions=7139499,1.687807,count jobs 512,hephaestus
 2026-11-22,e2679f4,fast,par,B18,count --rows 6 --cols 6,18.1264,15605237112,solutions=1584465,18.047391,count jobs 512,hephaestus
+2026-11-22,009297a,fast,par,B1,count --rows 3 --cols 3,0.0785,994996,solutions=1909732,0.001786,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B2,find --rows 5 --cols 6,0.0872,7220,found,0.000151,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B3,find --rows 6 --cols 6,0.0878,12839,found,0.000230,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B4,count --rows 4 --cols 4,0.1901,170485926,solutions=136245247,0.113873,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B5,count --rows 4 --cols 5,0.7634,376530299,solutions=114846713,0.683867,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B6,count --rows 3 --cols 7,0.1796,72352263,solutions=4453472,0.084323,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B7,find --rows 7 --cols 7,0.1473,22273602,found,0.047062,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B8,find --rows 6 --cols 7,0.1293,14955899,found,0.033234,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B9,find --rows 5 --cols 9,0.2581,74996350,found,0.153364,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B10,count --rows 5 --cols 5,4.0184,3129472451,solutions=80364530,3.933996,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B11,count --rows 4 --cols 6,1.4136,722346874,solutions=37812638,1.326508,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B12,find --rows 6 --cols 8,0.7508,374647483,found,0.647022,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B13,find --rows 5 --cols 10,0.5514,241564043,no solution: 5x10 exhausted,0.445293,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B14,count --rows 6 --cols 4,1.4189,722346874,solutions=37812638,1.336419,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B15,count --rows 5 --cols 6,9.9693,5948229468,solutions=7424362,9.861112,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B16,find --rows 6 --cols 9,4.7447,2508124867,no solution: 6x9 exhausted,4.637134,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B17,count --rows 4 --cols 7,1.7900,993187402,solutions=7139499,1.689611,resume aborted jobs,hephaestus
+2026-11-22,009297a,fast,par,B18,count --rows 6 --cols 6,17.9192,15605237112,solutions=1584465,17.828509,resume aborted jobs,hephaestus

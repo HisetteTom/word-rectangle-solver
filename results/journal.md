@@ -1513,3 +1513,36 @@ and 5×5).
 | B15 count 5×6 | 10.09 s | 9.99 s | 1.01× |
 
 **Verdict:** kept (small).
+
+### 2026-11-22: find timeline chart + resume aborted jobs (`009297a`) ✅ kept
+
+**New chart** (`scripts/timeline.py`, `results/charts/timeline.svg`): one parallel find (7×7), thread by
+thread, with splitting switched off and on. A probe build records every job's test, search and abort
+(`probe::event`, zero cost in normal builds), and `WR_NO_SPLIT=1` turns splitting off. It showed the
+waste immediately: when the first thread went idle, ~17 long jobs were aborted *at once*, each
+after ~20 ms of work, and their sub-jobs redid all of it.
+
+**Fix:** an aborted run reports the path it was exploring. Everything lexicographically before it
+was searched without a solution, so the sub-jobs before that path are dropped. For searches the
+path is in the grid. For the count kernel's tests, each cancelled frame adds its letter on the way out,
+behind the existing `total > 0` branch (a cancelled frame returns a sentinel `CANCEL = 1 << 63`).
+
+Implementation lesson: the first version kept the letter `l` alive across the recursive call to
+record it, and that cost the hot loop **3.5–4%** (5×9 find, 6×9 proof) through register pressure
+alone, though the recording code sat on a branch that almost never runs. The kept version
+recovers the letter on the cold path from the column node the frame stepped to (its position among
+its siblings), so the hot loop is unchanged.
+
+| Benchmark | Before (count jobs 512) | After | Change |
+|---|---|---|---|
+| B7 find 7×7 | 54 ms | **47 ms** | 1.14× |
+| B8 find 6×7 | 39 ms | **33 ms** | 1.18× |
+| B12 find 6×8 | 737 ms | **647 ms** | 1.14× |
+| B9, B13, B16 | | | ≈ |
+
+New test `par_aborted_jobs_resume_and_find_naive_first_grid`: every job aborted at the kernels'
+first check, ENABLE up to 5×6 plus dense random dictionaries on mirror sizes. Two deliberate bugs, dropping the
+partially explored sub-job and recovering the wrong letter, are both caught (the second only after adding the
+bigger ENABLE sizes).
+
+From the chart, the next leak: threads still idle ~5 ms before the long jobs notice the abort.
