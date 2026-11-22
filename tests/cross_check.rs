@@ -203,10 +203,11 @@ fn par_mirror_job_test_matches_naive_first_grid() {
             let want = find("naive", &d, r, c);
             if want.is_some() { some += 1 } else { none += 1 }
             for threads in [1, 3, 0] {
-                for sync in [false, true] {
+                for (sync, eager) in [(false, false), (true, false), (true, true)] {
                     let p = ParSearch::new(r, c, d.words(c), d.words(r), threads).with_seq_budget(0);
-                    let got = if sync { p.with_sync_mirror() } else { p }.find();
-                    assert_eq!(got, want, "size={r}x{c} threads={threads} sync_mirror={sync} dict={words:?}");
+                    let p = if sync { p.with_sync_mirror() } else { p };
+                    let got = if eager { p.with_eager_split() } else { p }.find();
+                    assert_eq!(got, want, "size={r}x{c} threads={threads} sync_mirror={sync} eager_split={eager} dict={words:?}");
                 }
             }
         }
