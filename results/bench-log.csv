@@ -650,3 +650,21 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,631c1c3,fast,par,B18,count --rows 6 --cols 6,24.0558,15243002746,solutions=1584465,23.964407,DAWG next-row set (failed),hephaestus
 2026-11-22,ad20594,fast,par,B17,count --rows 4 --cols 7,1.8521,996185895,solutions=7139499,1.761811,mirrored rows for counts,hephaestus
 2026-11-22,ad20594,fast,par,B18,count --rows 6 --cols 6,20.3350,15293452988,solutions=1584465,20.251372,mirrored rows for counts,hephaestus
+2026-11-22,66757e1,fast,par,B1,count --rows 3 --cols 3,0.0782,994996,solutions=1909732,0.001643,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B2,find --rows 5 --cols 6,0.0840,7220,found,0.000146,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B3,find --rows 6 --cols 6,0.0837,12839,found,0.000235,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B4,count --rows 4 --cols 4,0.1936,170637018,solutions=136245247,0.113386,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B5,count --rows 4 --cols 5,0.8144,414768985,solutions=114846713,0.742012,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B6,count --rows 3 --cols 7,0.1791,73695021,solutions=4453472,0.086849,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B7,find --rows 7 --cols 7,0.2092,27640929,found,0.112315,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B8,find --rows 6 --cols 7,0.1825,15456330,found,0.079711,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B9,find --rows 5 --cols 9,0.2544,157342384,found,0.152168,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B10,count --rows 5 --cols 5,4.0364,3129472451,solutions=80364530,3.966203,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B11,count --rows 4 --cols 6,1.5051,774415735,solutions=37812638,1.417636,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B12,find --rows 6 --cols 8,1.0172,540252048,found,0.915728,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B13,find --rows 5 --cols 10,1.0113,974270002,no solution: 5x10 exhausted,0.913018,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B14,count --rows 6 --cols 4,1.5000,774415735,solutions=37812638,1.420458,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B15,count --rows 5 --cols 6,10.2575,5947012110,solutions=7424362,10.174951,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B16,find --rows 6 --cols 9,9.3395,10487997156,no solution: 6x9 exhausted,9.234486,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B17,count --rows 4 --cols 7,1.8392,996185895,solutions=7139499,1.746727,anti-diagonal symmetry (mirrored squares),hephaestus
+2026-11-22,66757e1,fast,par,B18,count --rows 6 --cols 6,18.1290,15605237112,solutions=1584465,18.045324,anti-diagonal symmetry (mirrored squares),hephaestus

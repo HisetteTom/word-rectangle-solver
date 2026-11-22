@@ -1014,3 +1014,39 @@ takes 7.2 s against 4.0 s.
 **Verdict:** kept. `find` can't use it: its answer must be the first grid in the asked orientation.
 "Prove none" runs (B13, B16) would gain 1.4–1.6× if they were counts. That's a reason to add a
 dedicated "exists?" mode later.
+
+### 2026-11-22: anti-diagonal symmetry for mirrored squares (`66757e1`) ✅ kept
+
+**Why:** the new B18 chart (count 6×6, replayed over the whole history) showed squares stuck since
+"branch-free look-ahead". The mirror trick (rows from their last letter) didn't apply to them, because
+mirroring only the rows breaks the transpose symmetry that halves a square count (5×5 mirrored without
+it: 7.2 s vs 4.0 s).
+
+**Idea:** the mirror image of a square has a symmetry of its own. Reflect it across the
+**anti-diagonal**: row i becomes column W−1−i read bottom-up (a reversed word, as rows must be now),
+and column j becomes row W−1−j read right-to-left (a word). The reflection swaps A = row 0 read right-to-left
+with B = the last column read top-down, so as with transposition,
+count = 2·#{A < B} + #{A = B}. The comparison is progressive: B[r] is cell (r, W−1), the last cell
+of each row, so `count_anti` mirrors `count_sym`, with tie cells at the end of each row instead of the start.
+On the tied path, letters below A[r] are cut, the equal letter stays tied, and greater letters leave
+for the plain kernel with weight 2. In the last row the split is on the last cell's column mask.
+
+New test `match_naive_on_big_random_squares`: 24 dense random dictionaries (2-letter alphabet),
+6×6 and 7×7, with 6 to 10,272 solutions each, all equal to naive.
+
+| Square | transpose symmetry (as asked) | mirror + anti-diagonal | |
+|---|---:|---:|---|
+| 4×4 | 0.117 s | 0.129 s | 0.90× |
+| 5×5 | 3.99 s | 4.07 s | 0.98× |
+| 6×6 | 20.2 s | 18.0 s | 1.13× |
+| 7×7 (11,669 solutions) | 41.0 s | **30.6 s** | 1.34× |
+| 8×8 (5 solutions) | 28.0 s | **18.7 s** | 1.50× |
+
+So squares of 6 or more use it, smaller ones keep plain transpose symmetry.
+
+| Benchmark | Before (mirrored rows for counts) | After | Change |
+|---|---|---|---|
+| B18 count 6×6 | 20.25 s | 18.05 s | 1.12× faster |
+| others | | | unchanged (within noise) |
+
+**Verdict:** kept. The bigger the square, the bigger the gain, which matters for the atlas frontier (8×8, 9×9).

@@ -59,7 +59,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 1.78 ms | 3,298× | 0.90× | 994,996 | solutions=1909732 |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 1.72 ms | 3,405× | 1.03× | 994,996 | solutions=1909732 |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 1.63 ms | 3,590× | 1.05× | 994,996 | solutions=1909732 |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 1.69 ms | 3,473× | 1.02× | 994,996 | solutions=1909732 |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 1.69 ms | 3,473× | 1.02× | 994,996 | solutions=1909732 |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 1.64 ms | 3,571× | 1.03× | 994,996 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -105,7 +106,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 149 µs | 7,745× | 0.99× | 7,220 | found |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 149 µs | 7,745× | 1.00× | 7,220 | found |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 151 µs | 7,642× | 0.99× | 7,220 | found |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 149 µs | 7,745× | 1.00× | 7,220 | found |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 149 µs | 7,745× | 1.00× | 7,220 | found |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 146 µs | 7,904× | 1.02× | 7,220 | found |
 
 ## B3 · find first 6×6
 
@@ -151,7 +153,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 233 µs | 11,639× | 1.00× | 12,839 | found |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 229 µs | 11,842× | 1.02× | 12,839 | found |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 235 µs | 11,540× | 0.97× | 12,839 | found |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 225 µs | 12,053× | 1.02× | 12,839 | found |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 225 µs | 12,053× | 1.02× | 12,839 | found |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 235 µs | 11,540× | 0.96× | 12,839 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -196,7 +199,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 119 ms | 120× | 0.98× | 170,637,018 | solutions=136245247 |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 114 ms | 126× | 1.04× | 170,637,018 | solutions=136245247 |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 124 ms | 115× | 0.92× | 170,637,018 | solutions=136245247 |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 116 ms | 123× | 0.98× | 170,637,018 | solutions=136245247 |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 116 ms | 123× | 0.98× | 170,637,018 | solutions=136245247 |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 113 ms | 126× | 1.02× | 170,637,018 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -241,7 +245,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 773 ms | 74.7× | 0.98× | 450,034,077 | solutions=114846713 |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 771 ms | 74.9× | 1.00× | 450,034,077 | solutions=114846713 |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 938 ms | 61.5× | 0.82× | 448,100,724 | solutions=114846713 |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 728 ms | 79.3× | 1.06× | 414,768,985 | solutions=114846713 |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 728 ms | 79.3× | 1.06× | 414,768,985 | solutions=114846713 |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 742 ms | 77.8× | 0.98× | 414,768,985 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -286,7 +291,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 84.8 ms | 69.2× | 1.04× | 90,270,853 | solutions=4453472 |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 85.5 ms | 68.6× | 0.99× | 90,270,853 | solutions=4453472 |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 113 ms | 52.1× | 0.76× | 89,635,286 | solutions=4453472 |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 88.9 ms | 66.0× | 0.96× | 73,695,021 | solutions=4453472 |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 88.9 ms | 66.0× | 0.96× | 73,695,021 | solutions=4453472 |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 86.8 ms | 67.6× | 1.02× | 73,695,021 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -331,7 +337,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 139 ms | 13.0× | 1.02× | 29,602,651 | found |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 104 ms | 17.4× | 1.34× | 27,407,764 | found |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 136 ms | 13.3× | 0.77× | 26,804,994 | found |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 105 ms | 17.2× | 0.99× | 28,045,408 | found |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 105 ms | 17.2× | 0.99× | 28,045,408 | found |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 112 ms | 16.1× | 0.93× | 27,640,929 | found |
 
 ## B8 · find first 6×7
 
@@ -376,7 +383,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 120 ms | 12.2× | 1.00× | 17,256,128 | found |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 82.8 ms | 17.7× | 1.45× | 15,410,365 | found |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 108 ms | 13.6× | 0.77× | 14,983,421 | found |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 86.5 ms | 17.0× | 0.96× | 15,384,791 | found |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 86.5 ms | 17.0× | 0.96× | 15,384,791 | found |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 79.7 ms | 18.4× | 1.08× | 15,456,330 | found |
 
 ## B9 · find first 5×9
 
@@ -421,7 +429,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 186 ms | 44.9× | 1.02× | 159,415,184 | found |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 152 ms | 55.0× | 1.22× | 157,462,177 | found |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 152 ms | 55.0× | 1.00× | 157,444,263 | found |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 154 ms | 54.2× | 0.99× | 157,297,922 | found |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 154 ms | 54.2× | 0.99× | 157,297,922 | found |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 152 ms | 54.9× | 1.01× | 157,342,384 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -462,7 +471,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 3.93 s | 4.05× | 1.00× | 3,129,472,451 | solutions=80364530 |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 3.93 s | 4.05× | 1.00× | 3,129,472,451 | solutions=80364530 |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 4.48 s | 3.56× | 0.88× | 3,123,782,617 | solutions=80364530 |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 3.99 s | 3.99× | 0.99× | 3,129,472,451 | solutions=80364530 |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 3.99 s | 3.99× | 0.99× | 3,129,472,451 | solutions=80364530 |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 3.97 s | 4.02× | 1.01× | 3,129,472,451 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -503,7 +513,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 1.59 s | 3.15× | 0.99× | 862,998,712 | solutions=37812638 |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 1.58 s | 3.17× | 1.01× | 862,998,712 | solutions=37812638 |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 1.88 s | 2.67× | 0.84× | 858,502,757 | solutions=37812638 |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 1.41 s | 3.56× | 1.12× | 774,415,735 | solutions=37812638 |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 1.41 s | 3.56× | 1.12× | 774,415,735 | solutions=37812638 |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 1.42 s | 3.54× | 0.99× | 774,415,735 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -544,7 +555,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 947 ms | 2.79× | 1.08× | 542,429,647 | found |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 912 ms | 2.90× | 1.04× | 540,300,434 | found |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 1.14 s | 2.31× | 0.80× | 538,575,004 | found |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 907 ms | 2.91× | 1.01× | 540,151,032 | found |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 907 ms | 2.91× | 1.01× | 540,151,032 | found |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 916 ms | 2.89× | 0.99× | 540,252,048 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -585,7 +597,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 936 ms | 2.62× | 1.00× | 976,239,922 | no solution: 5x10 exhausted |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 901 ms | 2.73× | 1.04× | 974,270,002 | no solution: 5x10 exhausted |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 903 ms | 2.72× | 1.00× | 974,270,002 | no solution: 5x10 exhausted |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 886 ms | 2.77× | 1.02× | 974,270,002 | no solution: 5x10 exhausted |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 886 ms | 2.77× | 1.02× | 974,270,002 | no solution: 5x10 exhausted |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 913 ms | 2.69× | 0.97× | 974,270,002 | no solution: 5x10 exhausted |
 
 ## B14 · count all 6×4 (exhaustive)
 
@@ -626,7 +639,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 1.59 s | 6.05× | 0.99× | 862,998,712 | solutions=37812638 |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 1.59 s | 6.07× | 1.00× | 862,998,712 | solutions=37812638 |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 1.88 s | 5.14× | 0.85× | 858,502,757 | solutions=37812638 |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 1.42 s | 6.80× | 1.12× | 774,415,735 | solutions=37812638 |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 1.42 s | 6.80× | 1.12× | 774,415,735 | solutions=37812638 |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 1.42 s | 6.78× | 1.00× | 774,415,735 | solutions=37812638 |
 
 ## B15 · count all 5×6 (exhaustive)
 
@@ -667,7 +681,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 12.0 s | 2.50× | 1.04× | 7,001,446,794 | solutions=7424362 |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 12.0 s | 2.50× | 1.00× | 7,001,446,794 | solutions=7424362 |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 15.7 s | 1.91× | 0.76× | 6,960,472,956 | solutions=7424362 |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 10.1 s | 2.95× | 1.18× | 5,947,012,110 | solutions=7424362 |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 10.1 s | 2.95× | 1.18× | 5,947,012,110 | solutions=7424362 |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 10.2 s | 2.94× | 1.00× | 5,947,012,110 | solutions=7424362 |
 
 ## B16 · prove no 6×9 exists (exhaustive)
 
@@ -708,7 +723,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 9.26 s | 2.80× | 1.00× | 10,489,967,076 | no solution: 6x9 exhausted |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 9.23 s | 2.81× | 1.00× | 10,487,997,156 | no solution: 6x9 exhausted |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 9.23 s | 2.81× | 1.00× | 10,487,997,156 | no solution: 6x9 exhausted |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 9.39 s | 2.77× | 0.98× | 10,487,997,156 | no solution: 6x9 exhausted |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 9.39 s | 2.77× | 0.98× | 10,487,997,156 | no solution: 6x9 exhausted |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 9.23 s | 2.81× | 1.02× | 10,487,997,156 | no solution: 6x9 exhausted |
 
 ## B17 · count all 4×7 (exhaustive)
 
@@ -749,7 +765,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 2.15 s | 3.22× | 1.02× | 1,251,599,245 | solutions=7139499 |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 2.14 s | 3.23× | 1.00× | 1,251,599,245 | solutions=7139499 |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 2.57 s | 2.70× | 0.83× | 1,249,419,802 | solutions=7139499 |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 1.76 s | 3.93× | 1.22× | 996,185,895 | solutions=7139499 |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 1.76 s | 3.93× | 1.22× | 996,185,895 | solutions=7139499 |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 1.75 s | 3.97× | 1.01× | 996,185,895 | solutions=7139499 |
 
 ## B18 · count all 6×6 (exhaustive)
 
@@ -790,4 +807,5 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 20.1 s | 4.44× | 1.02× | 15,293,452,988 | solutions=1584465 |
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 20.1 s | 4.43× | 1.00× | 15,293,452,988 | solutions=1584465 |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 24.0 s | 3.72× | 0.84× | 15,243,002,746 | solutions=1584465 |
-| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 20.3 s | 4.40× | 0.99× | 15,293,452,988 | solutions=1584465 |
+| ✅ | mirrored rows for counts | `ad20594` | 2026-11-22 | fast | 20.3 s | 4.40× | 0.99× | 15,293,452,988 | solutions=1584465 |
+| ⭐ | **anti-diagonal symmetry (mirrored squares)** | `66757e1` | 2026-11-22 | fast | 18.0 s | 4.94× | 1.12× | 15,605,237,112 | solutions=1584465 |
