@@ -482,42 +482,49 @@ impl<const W: usize> Kernel<'_, W> {
         }
         let col = colv[c];
         let allowed = row.mask & col.mask;
-        let mut good = if c == (W - 1) {
-            allowed
-        } else {
-            let m = |k: usize| if k < W { colv[k].mask } else { !0 };
-            self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3))
-        };
-        if good == 0 {
-            return 0;
-        }
-        // materialize S (or give up on it if it is too big)
         let mut buf = SetBuf::<S_CAP>::new();
-        let (s, base): (&[Node], u32) = if !Self::TRACK || ps.is_empty() {
-            (&[], if c == 0 { self.root.mask } else { self.uni(c - 1, f) })
-        } else if pm == SELF {
-            (ps, ps.iter().fold(0, |a, n| a | n.mask))
-        } else {
-            let mut n = 0;
-            let mut base = 0;
-            'fill: for sn in ps {
-                let mut m = sn.mask & pm;
-                while m != 0 {
-                    let x = m.trailing_zeros();
-                    m &= m - 1;
-                    if n == S_CAP {
-                        n = 0;
-                        break 'fill;
-                    }
-                    // SAFETY: `x` is a bit of `sn.mask`, `sn` a row-trie node.
-                    let ch = unsafe { self.rstep(*sn, x) };
-                    base |= ch.mask;
-                    buf.set(n, ch);
-                    n += 1;
+        // second-to-last row with a known set: build S first, for the pair look-ahead below
+        let pair = Self::TRACK && r + 1 == self.last_r && c + 1 < W && !ps.is_empty();
+        let mut good;
+        let (s, base);
+        if pair {
+            if allowed == 0 {
+                return 0;
+            }
+            (s, base) = self.next_set(c, f, ps, pm, &mut buf);
+            // Pair look-ahead: this row's letter x at c+1 is only useful if the column, after x,
+            // still allows a letter that some last row in S can have at c+1.
+            let col1 = colv[c + 1];
+            let mut m1 = col1.mask;
+            if !s.is_empty() {
+                let reach = s.iter().fold(0, |a, n| a | n.next);
+                let mut xs = col1.mask;
+                m1 = 0;
+                while xs != 0 {
+                    let x = xs.trailing_zeros();
+                    xs &= xs - 1;
+                    // SAFETY: `x` is a bit of `col1.mask`.
+                    let ok = unsafe { self.cstep(col1, x) }.mask & reach != 0;
+                    m1 |= (ok as u32) << x;
                 }
             }
-            if n == 0 { (&[], self.uni(c - 1, f)) } else { (buf.first(n), base) }
-        };
+            let m = |k: usize| if k < W { colv[k].mask } else { !0 };
+            good = self.good(row, allowed, c, m1, m(c + 2), m(c + 3));
+            if good == 0 {
+                return 0;
+            }
+        } else {
+            good = if c == (W - 1) {
+                allowed
+            } else {
+                let m = |k: usize| if k < W { colv[k].mask } else { !0 };
+                self.good(row, allowed, c, m(c + 1), m(c + 2), m(c + 3))
+            };
+            if good == 0 {
+                return 0;
+            }
+            (s, base) = self.next_set(c, f, ps, pm, &mut buf);
+        }
         let mut total = 0;
         if c == (W - 1) {
             // the letter completes this row: next cell is (r + 1, 0) with a fresh row
@@ -693,6 +700,37 @@ impl<const W: usize> Kernel<'_, W> {
         }
         colv[c] = col;
         total
+    }
+
+    /// Materialize the next-row set S at cell c from (`ps`, `pm`) into `buf` (see `count`), with
+    /// `base` = the letters the next row can have at c. Empty set = unknown (not tracked, or more
+    /// than `S_CAP` nodes): `base` falls back to the bigram bound from `f`.
+    #[inline(always)]
+    fn next_set<'b>(&self, c: usize, f: u32, ps: &'b [Node], pm: u32, buf: &'b mut SetBuf<S_CAP>) -> (&'b [Node], u32) {
+        if !Self::TRACK || ps.is_empty() {
+            return (&[], if c == 0 { self.root.mask } else { self.uni(c - 1, f) });
+        }
+        if pm == SELF {
+            return (ps, ps.iter().fold(0, |a, n| a | n.mask));
+        }
+        let mut n = 0;
+        let mut base = 0;
+        for sn in ps {
+            let mut m = sn.mask & pm;
+            while m != 0 {
+                let x = m.trailing_zeros();
+                m &= m - 1;
+                if n == S_CAP {
+                    return (&[], self.uni(c - 1, f));
+                }
+                // SAFETY: `x` is a bit of `sn.mask`, `sn` a row-trie node.
+                let ch = unsafe { self.rstep(*sn, x) };
+                base |= ch.mask;
+                buf.set(n, ch);
+                n += 1;
+            }
+        }
+        (buf.first(n), base)
     }
 
     /// Letters a row word can have at position k + 1, given its letter at k is in `f`.
