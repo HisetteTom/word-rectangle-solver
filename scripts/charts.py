@@ -715,6 +715,49 @@ def impact(data: dict[str, list[dict]]) -> str:
     return "\n".join(out) + "\n"
 
 
+def squares_chart() -> str | None:
+    """Per size n: all n×n word rectangles vs the symmetric ones (word squares)."""
+    sq_path = ROOT / "results" / "squares.csv"
+    if not (sq_path.exists() and ATLAS.exists()):
+        return None
+    with ATLAS.open(newline="") as f:
+        rect = {int(x["rows"]): int(x["solutions"] or 0) for x in csv.DictReader(f) if x["rows"] == x["cols"]}
+    with sq_path.open(newline="") as f:
+        sq = {int(x["n"]): int(x["squares"]) for x in csv.DictReader(f)}
+    ns = [n for n in sorted(sq) if n in rect]
+    left, plot_w, right, top, row_h = 70, 520, 230, 96, 44
+    width, height = left + plot_w + right, top + row_h * len(ns) + 60
+    hi = max(max(rect[n] for n in ns), 1)
+    span = math.ceil(math.log10(hi))
+
+    def X(v):
+        return left + (math.log10(v) / span * plot_w if v > 0 else 0)
+
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" font-family="{FONT}">',
+           STYLE, f'<rect class="bg" width="{width}" height="{height}" rx="10"/>',
+           '<text class="t" x="24" y="36" font-size="20" font-weight="800">Word squares: how many are symmetric?</text>',
+           '<text class="m" x="24" y="57" font-size="12.5">all n×n word rectangles (light) vs symmetric squares, where row i = column i (dark) · log scale</text>',
+           '<text class="m" x="24" y="74" font-size="11">exact counts: <tspan font-family="ui-monospace,Menlo,monospace">wordrect count</tspan> and <tspan font-family="ui-monospace,Menlo,monospace">wordrect squares</tspan></text>']
+    for k in range(span + 1):
+        v = 10**k
+        out.append(f'<line class="g" x1="{X(v):.1f}" x2="{X(v):.1f}" y1="{top - 6}" y2="{height - 40}" stroke-dasharray="2 3"/>')
+        out.append(f'<text class="m" x="{X(v):.1f}" y="{height - 24}" font-size="11" text-anchor="middle">{fmt_count(v)}</text>')
+    for i, n in enumerate(ns):
+        y = top + i * row_h
+        out.append(f'<text class="t" x="{left - 14}" y="{y + 25}" font-size="14" font-weight="700" text-anchor="end">{n}×{n}</text>')
+        r, s_ = rect[n], sq[n]
+        if r == 0:
+            out.append(f'<text class="m" x="{left + 4}" y="{y + 25}" font-size="12">none at all (proven)</text>')
+            continue
+        out.append(f'<rect class="bar" x="{left}" y="{y + 6}" width="{max(X(r) - left, 2):.1f}" height="15" rx="3"/>')
+        out.append(f'<rect class="best" x="{left}" y="{y + 22}" width="{max(X(s_) - left, 2):.1f}" height="15" rx="3"/>')
+        share = s_ / r
+        out.append(f'<text class="m" x="{X(r) + 8:.1f}" y="{y + 18}" font-size="11.5">{r:,} rectangles</text>')
+        out.append(f'<text class="t" x="{max(X(s_), left) + 8:.1f}" y="{y + 34}" font-size="11.5" font-weight="600">{s_:,} symmetric <tspan class="x">({share:.0%})</tspan></text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
 def report(data: dict[str, list[dict]]) -> str:
     lines = [
         "# Benchmark progress",
@@ -771,6 +814,8 @@ def main():
         (CHARTS / "heatmap.svg").write_text(hv)
     if (sv := scaling()) is not None:
         (CHARTS / "scaling.svg").write_text(sv)
+    if (qv := squares_chart()) is not None:
+        (CHARTS / "squares.svg").write_text(qv)
     if (gv := gallery()) is not None:
         (CHARTS / "gallery.svg").write_text(gv)
     if (a := atlas()) is not None:

@@ -3,6 +3,7 @@ pub mod naive;
 pub mod par;
 pub mod probe;
 pub mod search;
+pub mod squares;
 pub mod trie;
 pub mod validate;
 

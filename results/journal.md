@@ -1132,3 +1132,27 @@ indexed loop in `bigrams`), fixed. Every `unsafe` block already has its `// SAFE
 `-W clippy::pedantic` reports ~100 items, nearly all deliberate in this code: `#[inline(always)]` on hot
 helpers, bitwise `&`/`|` on booleans in the branch-free look-ahead, single-letter names (r, c, l)
 that match the README's notation, and `as` casts between letter indices and masks. Left as is.
+
+### 2026-11-22: symmetric word squares (`wordrect squares`): new data, no bar
+
+A small dedicated counter (`src/squares.rs`) for the classic puzzle: n×n grids where row i equals
+column i. Row r's first r letters are forced by symmetry, so it walks the trie along them and
+branches only on the rest (each letter must also continue its column). Parallel over the first row.
+Test `squares_match_naive_symmetric_grids`: equal to the number of naive's symmetric grids on 40
+random dictionaries and on ENABLE 2×2, 3×3.
+
+| n | n×n rectangles | symmetric squares | share | time |
+|---|---:|---:|---:|---:|
+| 2 | 2,035 | 661 | 32% | 1 ms |
+| 3 | 1,909,732 | 106,702 | 6% | 2 ms |
+| 4 | 136,245,247 | 2,555,155 | 2% | 7 ms |
+| 5 | 80,364,530 | 5,568,942 | 7% | 23 ms |
+| 6 | 1,584,465 | 915,939 | 58% | 70 ms |
+| 7 | 11,669 | 10,501 | 90% | 137 ms |
+| 8 | 5 | 5 | 100% | 137 ms |
+| 9, 10 | 0 | 0 | | 57 ms, 25 ms |
+
+The share falls, then rises to 100%: in small squares asymmetric fillings are abundant, while the
+big ones that exist at all are almost always symmetric. Symmetric squares are also a much smaller
+search than rectangles (8×8 in 0.14 s against 18 s), because each row's first letters are forced.
+Chart: `charts/squares.svg`.

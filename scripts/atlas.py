@@ -98,6 +98,18 @@ def main():
                 w = csv.DictWriter(f, FIELDS)
                 w.writeheader()
                 w.writerows(rows[k] for k in sorted(rows))
+    # symmetric word squares (row i = column i), a special case of the n×n squares above
+    sq = []
+    for n in range(2, max_r + 1):
+        t0 = time.perf_counter()
+        out = subprocess.run([str(BIN), "squares", "--rows", str(n)], cwd=ROOT, capture_output=True, text=True, check=True).stdout
+        sq.append({"n": n, "squares": int(re.search(r"squares=(\d+)", out)[1]), "time_s": f"{time.perf_counter() - t0:.3f}",
+                   "commit": commit, "date": date.today().isoformat(), "machine": socket.gethostname()})
+        print(f"{n}x{n} symmetric squares: {sq[-1]['squares']}", flush=True)
+    with (ROOT / "results" / "squares.csv").open("w", newline="") as f:
+        w = csv.DictWriter(f, list(sq[0]))
+        w.writeheader()
+        w.writerows(sq)
     subprocess.run([sys.executable, str(ROOT / "scripts" / "charts.py")], cwd=ROOT)
 
 

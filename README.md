@@ -31,6 +31,11 @@ isn't, and nothing at 9×9 or beyond exists. 3×13 has exactly one solution in t
 
 ![gallery](results/charts/gallery.svg)
 
+Among squares, the classic **symmetric word squares** (row i = column i) become the rule as the size
+grows: 2% of the 4×4s, 58% of the 6×6s, 90% of the 7×7s and all five 8×8s (`wordrect squares --rows N`):
+
+![squares](results/charts/squares.svg)
+
 ---
 
 ## 📈 Progress

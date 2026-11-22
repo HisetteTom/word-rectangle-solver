@@ -13,6 +13,7 @@ wordrect — word rectangle solver
 USAGE:
   wordrect find  --rows R --cols C [options]   find one R×C rectangle
   wordrect count --rows R --cols C [options]   count all R×C rectangles (exhaustive)
+  wordrect squares --rows N [options]          count symmetric N×N word squares (row i = column i)
   wordrect info  [options]                     dictionary stats (words per length)
 
 OPTIONS:
@@ -94,6 +95,21 @@ fn run(a: Args) -> Result<(), String> {
         println!("{:>4}  {:>7}", "len", "words");
         for (n, ws) in d.by_len.iter().enumerate().filter(|(_, w)| !w.is_empty()) {
             println!("{n:>4}  {:>7}", ws.len());
+        }
+        return Ok(());
+    }
+    if a.cmd == "squares" {
+        if a.rows == 0 {
+            return Err("--rows is required".into());
+        }
+        let ws = d.words(a.rows);
+        println!("# size={0}x{0} symmetric word squares  words (len {0})={1}", a.rows, ws.len());
+        let t = Instant::now();
+        let (n, nodes) = wordrect::squares::Squares::new(a.rows, ws).count(a.threads);
+        println!("squares={n}");
+        if a.stats {
+            let secs = t.elapsed().as_secs_f64();
+            println!("# nodes={nodes}  time={secs:.6}s  nodes/sec={:.0}  (dict load {:.3}s)", nodes as f64 / secs.max(1e-9), load_time.as_secs_f64());
         }
         return Ok(());
     }

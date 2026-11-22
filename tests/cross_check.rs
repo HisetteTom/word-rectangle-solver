@@ -179,3 +179,31 @@ fn par_mirror_job_test_matches_naive_first_grid() {
     }
     assert!(some > 0 && none > 0, "want both outcomes: some={some} none={none}");
 }
+
+/// Symmetric word squares (`squares`): must equal the number of naive's square grids whose rows
+/// equal their columns. Random dictionaries plus ENABLE 2×2..4×4.
+#[test]
+fn squares_match_naive_symmetric_grids() {
+    let symmetric = |g: &Grid| (0..g.len()).all(|i| g[i].bytes().eq(g.iter().map(|row| row.as_bytes()[i])));
+    let mut seed: u64 = 777;
+    let mut next = || {
+        seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        (seed >> 33) as usize
+    };
+    for n in [2usize, 3, 4, 5] {
+        for _ in 0..10 {
+            let words: Vec<String> = (0..12).map(|_| (0..n).map(|_| (b'a' + (next() % 2) as u8) as char).collect()).collect();
+            let d = Dict::from_words(words.iter().map(String::as_str));
+            let want = all("naive", &d, n, n).iter().filter(|g| symmetric(g)).count() as u64;
+            for threads in [1, 0] {
+                let (got, _) = wordrect::squares::Squares::new(n, d.words(n)).count(threads);
+                assert_eq!(got, want, "n={n} threads={threads} dict={words:?}");
+            }
+        }
+    }
+    let d = Dict::load("dicts/enable.txt".as_ref()).unwrap();
+    for n in [2usize, 3] {
+        let want = all("naive", &d, n, n).iter().filter(|g| symmetric(g)).count() as u64;
+        assert_eq!(wordrect::squares::Squares::new(n, d.words(n)).count(0).0, want, "enable n={n}");
+    }
+}
