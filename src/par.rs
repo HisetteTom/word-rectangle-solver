@@ -64,8 +64,6 @@ pub struct ParSearch {
     sym: bool,
     /// Per position k of a row word: which letters can follow at k + 1 (see `Bigram`).
     bigrams: Vec<Bigram>,
-    /// Per position k: which letters can appear at k + 2 (see `Kernel::fwd`).
-    skipgrams: Vec<Bigram>,
     /// The word lists, to build the re-oriented searches `count` uses (see `count`).
     row_words: Vec<String>,
     col_words: Vec<String>,
@@ -188,8 +186,6 @@ struct Kernel<'t, const W: usize> {
     rt: &'t [Node],
     /// `ParSearch::bigrams`: exactly one table per row position.
     bi: &'t [Bigram; W],
-    /// Skip-gram tables: letters at k + 2 given the letter at k.
-    skip: &'t [Bigram; W],
     /// Column trie nodes.
     ct: &'t [CNode],
     /// Row trie root, cached (no load + bounds check at every row start).
@@ -204,8 +200,7 @@ struct Kernel<'t, const W: usize> {
 impl<'t, const W: usize> Kernel<'t, W> {
     fn new(s: &'t ParSearch) -> Self {
         let bi = s.bigrams.as_slice().try_into().expect("one bigram table per column");
-        let skip = s.skipgrams.as_slice().try_into().expect("one skip-gram table per column");
-        Kernel { rt: s.row_trie.nodes(), bi, skip, ct: s.col_trie.nodes(), root: s.row_trie.node(0), last_r: s.rows - 1, cut: None, cancelled: std::cell::Cell::new(false) }
+        Kernel { rt: s.row_trie.nodes(), bi, ct: s.col_trie.nodes(), root: s.row_trie.node(0), last_r: s.rows - 1, cut: None, cancelled: std::cell::Cell::new(false) }
     }
 
     /// Row child of `n` for letter `l`, without a bounds check (rust-skills `opt-bounds-check`).
@@ -456,7 +451,7 @@ impl<const W: usize> Kernel<'_, W> {
     /// letters in `pm`, or `ps` itself when `pm == SELF`. Built lazily, only if this cell has a live
     /// letter. `ps` empty = unknown (S had more than `S_CAP` nodes): the bigram bound `f` is used.
     #[allow(clippy::too_many_arguments)]
-    fn count<const ANY: bool, const P: bool>(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u64, ps: &[Node], pm: u32) -> u64 {
+    fn count<const ANY: bool, const P: bool>(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[Node], pm: u32) -> u64 {
         if r == self.last_r {
             // Last row: columns only need their masks (their children are never used).
             let mut masks = [0u32; W];
@@ -495,7 +490,7 @@ impl<const W: usize> Kernel<'_, W> {
         // materialize S (or give up on it if it is too big)
         let mut buf = SetBuf::<S_CAP>::new();
         let (s, base): (&[Node], u32) = if !Self::TRACK || ps.is_empty() {
-            (&[], if c == 0 { self.root.mask } else { self.fwd(c, f) })
+            (&[], if c == 0 { self.root.mask } else { self.uni(c - 1, f) })
         } else if pm == SELF {
             (ps, ps.iter().fold(0, |a, n| a | n.mask))
         } else {
@@ -517,7 +512,7 @@ impl<const W: usize> Kernel<'_, W> {
                     n += 1;
                 }
             }
-            if n == 0 { (&[], self.fwd(c, f)) } else { (buf.first(n), base) }
+            if n == 0 { (&[], self.uni(c - 1, f)) } else { (buf.first(n), base) }
         };
         let mut total = 0;
         if c == (W - 1) {
@@ -556,7 +551,7 @@ impl<const W: usize> Kernel<'_, W> {
             }
             colv[c] = cn;
             // SAFETY: `l` comes from `good`, a subset of this node's mask.
-            total += self.count::<ANY, P>(r, c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc as u64 | (f as u32 as u64) << 32, s, cn.mask);
+            total += self.count::<ANY, P>(r, c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc, s, cn.mask);
             if ANY && total > 0 {
                 break;
             }
@@ -571,7 +566,7 @@ impl<const W: usize> Kernel<'_, W> {
     /// Falls back to the generic `count` if S overflows `S_CAP`.
     #[allow(clippy::too_many_arguments)]
     #[inline(never)]
-    fn count_pen<const ANY: bool, const P: bool>(&self, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u64, ps: &[Node], pm: u32) -> u64 {
+    fn count_pen<const ANY: bool, const P: bool>(&self, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, f: u32, ps: &[Node], pm: u32) -> u64 {
         *nodes += 1;
         crate::probe::hit(self.last_r - 1, c);
         if ANY {
@@ -687,27 +682,13 @@ impl<const W: usize> Kernel<'_, W> {
             }
             colv[c] = cn;
             // SAFETY: as above.
-            total += self.count_pen::<ANY, P>(c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc as u64 | (f as u32 as u64) << 32, s, cn.mask);
+            total += self.count_pen::<ANY, P>(c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc, s, cn.mask);
             if ANY && total > 0 {
                 break;
             }
         }
         colv[c] = col;
         total
-    }
-
-    /// Letters the next row can have at position c (c >= 1), from the packed forward masks
-    /// `f` = (letters at c-2) << 32 | (letters at c-1): bigram bound from c-1, narrowed by the
-    /// skip-gram bound from c-2.
-    #[inline(always)]
-    fn fwd(&self, c: usize, f: u64) -> u32 {
-        let b = self.uni(c - 1, f as u32);
-        if c >= 2 { b & Self::chunks(&self.skip[c - 2], (f >> 32) as u32) } else { b }
-    }
-
-    #[inline(always)]
-    fn chunks(t: &Bigram, f: u32) -> u32 {
-        t[0][(f & 127) as usize] | t[1][((f >> 7) & 127) as usize] | t[2][((f >> 14) & 127) as usize] | t[3][((f >> 21) & 31) as usize]
     }
 
     /// Letters a row word can have at position k + 1, given its letter at k is in `f`.
@@ -769,13 +750,12 @@ impl<const N: usize> SetBuf<N> {
 /// the 7-bit chunk `v` (letters 7·chunk ..) at k. The union over any letter set `f` is 4 lookups.
 type Bigram = [[u32; 128]; 4];
 
-/// `gap` 1: bigram tables (letter at k -> letters at k + 1); `gap` 2: skip-grams (k -> k + 2).
-fn bigrams(words: &[String], len: usize, gap: usize) -> Vec<Bigram> {
+fn bigrams(words: &[String], len: usize) -> Vec<Bigram> {
     let mut t = vec![[[0u32; 128]; 4]; len.max(1)];
     for w in words {
         let b = w.as_bytes();
-        for k in 0..len.saturating_sub(gap) {
-            let (a, n) = ((b[k] - b'a') as usize, (b[k + gap] - b'a') as u32);
+        for k in 0..len - 1 {
+            let (a, n) = ((b[k] - b'a') as usize, (b[k + 1] - b'a') as u32);
             let (chunk, bit) = (a / 7, a % 7);
             for v in 0..128 {
                 if v >> bit & 1 == 1 {
@@ -808,8 +788,7 @@ impl ParSearch {
             threads,
             seq_budget: FIND_SEQ_BUDGET,
             sym: rows == cols && row_words == col_words,
-            bigrams: bigrams(row_words, cols, 1),
-            skipgrams: bigrams(row_words, cols, 2),
+            bigrams: bigrams(row_words, cols),
             stats: Stats::default(),
         }
     }
