@@ -650,6 +650,71 @@ def gallery() -> str | None:
     return "\n".join(out) + "\n"
 
 
+def impact(data: dict[str, list[dict]]) -> str:
+    """Every step ranked: speedup vs the kept step it started from (geometric mean over the
+    benchmarks both ran, B4 and up: the quick suite is too short to resolve small steps)."""
+    order: list[str] = []
+    with LOG.open(newline="") as f:
+        for row in csv.DictReader(f):
+            lab = (row.get("label") or "").strip() or row["solver"]
+            if lab not in order:
+                order.append(lab)
+    t = {b: {s["label"]: s["t"] for s in steps} for b, steps in data.items()}
+    rows, prev = [], None
+    for lab in order:
+        if prev is not None:
+            common = [b for b in t if int(b[1:]) >= 4 and lab in t[b] and prev in t[b]]
+            if not common:  # naive -> trie: only the quick suite exists for naive
+                common = [b for b in t if lab in t[b] and prev in t[b]]
+            if common:
+                rows.append((lab, prev, geomean([t[b][prev] / t[b][lab] for b in common]), len(common)))
+        if not failed(lab):
+            prev = lab
+    rows.sort(key=lambda x: -x[2])
+    lo_v = min(r[2] for r in rows)
+    # clip the axis above the second-biggest win: naive -> trie (1,000×+) would squash the rest
+    vals = sorted((r[2] for r in rows), reverse=True)
+    hi_v = vals[1] * 1.6 if len(vals) > 1 and vals[0] > 3 * vals[1] else vals[0]
+    lo, hi = math.log10(min(lo_v, 0.5)), math.log10(hi_v)
+    left, mid_w, right, top, row_h = 290, 520, 150, 92, 22
+    width = left + mid_w + right
+    height = top + row_h * len(rows) + 50
+    span = hi - lo
+
+    def X(v):
+        return left + (math.log10(v) - lo) / span * mid_w
+
+    x1 = X(1)
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" font-family="{FONT}">',
+           STYLE, '<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'
+           '<rect class="hb" width="6" height="6"/><line class="hs" x1="0" y1="0" x2="0" y2="6" stroke-width="2.5"/></pattern></defs>',
+           f'<rect class="bg" width="{width}" height="{height}" rx="10"/>',
+           '<text class="t" x="24" y="36" font-size="20" font-weight="800">Every idea, ranked</text>',
+           f'<text class="m" x="24" y="57" font-size="12.5">speedup of each step over the code it started from · geometric mean over benchmarks B4+ · log scale · {len(rows)} steps</text>',
+           '<text class="m" x="24" y="74" font-size="11">blue = kept · grey hatched = failed experiment, reverted · right of the line = faster, left = slower</text>']
+    for v in [0.5, 1, 1.5, 2, 3, 5, 10, 20, 50, 100, 200]:
+        if lo <= math.log10(v) <= hi + 1e-9:
+            out.append(f'<line class="g" x1="{X(v):.1f}" x2="{X(v):.1f}" y1="{top - 6}" y2="{height - 34}" stroke-dasharray="2 3"/>')
+            out.append(f'<text class="m" x="{X(v):.1f}" y="{height - 18}" font-size="11" text-anchor="middle">{v:g}×</text>')
+    out.append(f'<line class="fx" x1="{x1:.1f}" x2="{x1:.1f}" y1="{top - 8}" y2="{height - 32}" stroke-width="1.5"/>')
+    for i, (lab, prev, v, n) in enumerate(rows):
+        y = top + i * row_h
+        bad = failed(lab)
+        cls = "fail" if bad else "best" if v >= 1 else "bar"
+        clipped = v > hi_v
+        xa, xb = sorted((x1, X(min(v, hi_v))))
+        out.append(f'<rect class="{cls}" x="{xa:.1f}" y="{y + 3}" width="{max(xb - xa, 1.5):.1f}" height="{row_h - 6}" rx="2"/>')
+        name = lab.replace(" (failed)", "")
+        out.append(f'<text class="{"ft" if bad else "t"}" x="{left - 12}" y="{y + row_h / 2 + 4}" font-size="12" text-anchor="end">{escape(name)}{" ✗" if bad else ""}</text>')
+        # values always right of the 1× line: slower bars grow left, their names are further left
+        tx = X(min(v, hi_v)) + 6 if v >= 1 else x1 + 6
+        anchor = "start"
+        txt = (f"» {fmt_x(v)}" if clipped else fmt_x(v)) if v >= 1 else f"{fmt_x(1 / v)} slower"
+        out.append(f'<text class="{"x" if v >= 1.005 and not bad else "m"}" x="{tx:.1f}" y="{y + row_h / 2 + 4}" font-size="11.5" text-anchor="{anchor}">{txt}</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
 def report(data: dict[str, list[dict]]) -> str:
     lines = [
         "# Benchmark progress",
@@ -699,6 +764,7 @@ def main():
     for bench, steps in data.items():
         (CHARTS / f"{bench}.svg").write_text(svg(bench, steps))
     (CHARTS / "progress.svg").write_text(progress(data))
+    (CHARTS / "impact.svg").write_text(impact(data))
     if "B5" in data:
         (CHARTS / "anatomy-B5.svg").write_text(anatomy(data, "B5"))
     if (hv := heatmap()) is not None:

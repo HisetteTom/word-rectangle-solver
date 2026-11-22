@@ -33,6 +33,10 @@ isn't, and nothing at 9×9 or beyond exists. 3×13 has exactly one solution in t
 
 ![anatomy](results/charts/anatomy-B5.svg)
 
+**Every idea ever tried, ranked**: kept and failed, by how much each one changed the speed:
+
+![impact](results/charts/impact.svg)
+
 **Where the search spends its time**: nodes per grid cell, for the current kernel:
 
 ![heatmap](results/charts/heatmap.svg)
