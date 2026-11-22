@@ -1050,3 +1050,24 @@ So squares of 6 or more use it, smaller ones keep plain transpose symmetry.
 | others | | | unchanged (within noise) |
 
 **Verdict:** kept. The bigger the square, the bigger the gain, which matters for the atlas frontier (8×8, 9×9).
+
+### 2026-11-22: two measurements, no change (no commit, no bar)
+
+**Cold paths** (rust-skills `opt-inline-never-cold`): `#[inline(never)]` on the tied symmetry paths
+(`count_sym`, `count_anti`) and `#[cold]` on job expansion and prefix replay. Median of 3: 4×4 0.114 →
+0.113 s, 5×5 3.95 → 3.97 s, 4×5 0.734 → 0.740 s, 5×6 10.16 → 10.24 s, find 6×8 0.918 → 0.913 s.
+Noise: the compiler already keeps them out of the hot loops.
+
+**12-byte row nodes without `next2`, re-measured** on today's code (the 2-cells-ahead look-ahead mask removed):
+
+| Shape | 16-byte nodes | 12-byte, no `next2` | |
+|---|---:|---:|---|
+| count 5×5 | 3.96 s | 3.87 s | 1.02× |
+| count 4×5 | 0.739 s | 0.733 s | ≈ |
+| count 4×6 | 1.42 s | 1.50 s | 0.95× |
+| count 4×7 | 1.75 s | 1.96 s | 0.89× |
+| count 6×6 | 18.0 s | 18.7 s | 0.97× |
+| find 6×8 | 0.915 s | 1.051 s | 0.87× |
+| prove no 6×9 | 9.22 s | 10.48 s | 0.88× |
+
+The smaller node only pays on 5-letter rows. From 6 letters on, the lost pruning costs more. Kept as is.
