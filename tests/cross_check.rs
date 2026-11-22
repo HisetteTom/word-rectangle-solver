@@ -229,7 +229,7 @@ fn par_mirror_job_test_matches_naive_first_grid() {
         (seed >> 33) as usize
     };
     let (mut some, mut none) = (0, 0);
-    for (r, c, n_words) in [(6, 8, 12), (6, 8, 7), (5, 10, 14), (6, 9, 9)] {
+    for (r, c, n_words) in [(6, 8, 12), (6, 8, 7), (5, 10, 14), (6, 9, 9), (8, 7, 10), (8, 7, 16)] {
         for _ in 0..6 {
             let word = |len: usize, next: &mut dyn FnMut() -> usize| -> String { (0..len).map(|_| (b'a' + (next() % 2) as u8) as char).collect() };
             let mut words: Vec<String> = (0..n_words).map(|_| word(c, &mut next)).collect();

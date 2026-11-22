@@ -1110,9 +1110,13 @@ impl Solver for ParSearch {
         //    stay inside row 0, so the mirror test below applies. Until 2026-11-22 it also needed
         //    area >= 48: on smaller grids row-0 jobs were too coarse when the solution comes early
         //    (5×8: 25 -> 100 ms). Since long jobs are split, that's gone (5×9 155 -> 115 ms, 3×12
-        //    29 -> 6 ms). On 7-letter rows the mirror still loses (7×7 43 -> 49 ms, 6×7 33 -> 52 ms).
-        let use_mirror = self.cols >= 8;
-        let (depth, jobs) = self.jobs(FIND_JOBS_PER_THREAD, if use_mirror { self.cols } else { usize::MAX });
+        //    29 -> 6 ms). On 7-letter rows, row-0 jobs lose (7×7 43 -> 49 ms, 6×7 33 -> 52 ms), but
+        //    the usual fine jobs (deeper than row 0, mirror-tested through virtual nodes) make tall
+        //    proofs much faster (no 8×7: 68 -> 48 s, no 9×7: 33 -> 23 s). They cost short finds
+        //    5–7% (7×7, 6×7, 7×6), and are worse than row-0 jobs on 9–10 letter rows (5×10 0.45 -> 0.76 s).
+        let coarse = self.cols >= 8;
+        let use_mirror = coarse || (self.cols == 7 && self.rows >= 8);
+        let (depth, jobs) = self.jobs(FIND_JOBS_PER_THREAD, if coarse { self.cols } else { usize::MAX });
         // 3. each job is first *tested*: does any grid extend its prefix? Only a job with solutions
         //    is searched (from its start, so it still yields its first grid). The test runs the count
         //    kernel, and once it is built (on a detached thread: it takes tens of ms, and a short find
@@ -1120,7 +1124,7 @@ impl Solver for ParSearch {
         //    work). There the job's prefix is the *end* of row 0, forced through virtual column nodes
         //    (`exists_with_prefix`).
         let mirror: std::sync::Arc<std::sync::OnceLock<ParSearch>> = Default::default();
-        if use_mirror && depth <= self.cols {
+        if use_mirror {
             let (m, rw, cw) = (mirror.clone(), self.row_words.clone(), self.col_words.clone());
             let (rows, cols, threads) = (self.rows, self.cols, self.threads);
             let build = move || {
