@@ -1209,3 +1209,19 @@ more than the subtree it saves. Worth retrying with a cheaper existence test.
 Follow-up (not committed): a per-thread direct-mapped memo of U-tuples → yes/no (4,096 slots,
 full tuple stored so hits are exact) in front of the walk at c = 0: 5×6 10.67 s, 5×5 4.15 s, so no
 better than without it. The U-tuples rarely repeat, so a memo isn't the cheap test.
+
+### 2026-11-22: bigram path check for the last row (`96fc6cc`) ❌ reverted
+
+**Idea:** a cheap stand-in for the whole-word check. In the second-to-last row, with U_k = the letters
+column k allows one row down (exact at the current cell, from a column `next` field beyond it), the
+last row's letters must at least form a **bigram path** through U_c..U_{W−1}, starting from what the set
+allows at c: A_{k+1} = U_{k+1} ∩ (letters that can follow A_k). That's W table lookups, no trie walk.
+
+| Benchmark | Before (mirror-image job test) | After | Change |
+|---|---|---|---|
+| B10 count 5×5 | 3.91 s · 3.12 G nodes | 4.456472 s · 3.05 G | slower |
+| B15 count 5×6 | 9.99 s · 5.95 G | 11.284881 s · 5.71 G | slower |
+| B17 count 4×7 | 1.72 s | 2.060289 s | slower |
+
+**Verdict:** reverted. It prunes 2–4%, against the whole-word check's 26–39%: the last two rows die on
+whole-word constraints that letter pairs can't see. Plus the 12-byte column node.

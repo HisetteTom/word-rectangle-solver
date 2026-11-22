@@ -740,3 +740,21 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,ee7042b,fast,par,B16,find --rows 6 --cols 9,6.2617,7234755664,no solution: 6x9 exhausted,6.149963,whole-word last-row check (failed),hephaestus
 2026-11-22,ee7042b,fast,par,B17,count --rows 4 --cols 7,2.0164,947315421,solutions=7139499,1.920300,whole-word last-row check (failed),hephaestus
 2026-11-22,ee7042b,fast,par,B18,count --rows 6 --cols 6,18.1346,15343179249,solutions=1584465,18.031711,whole-word last-row check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B1,count --rows 3 --cols 3,0.0847,994996,solutions=1909732,0.001659,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B2,find --rows 5 --cols 6,0.0872,7220,found,0.000145,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B3,find --rows 6 --cols 6,0.0923,12839,found,0.000230,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B4,count --rows 4 --cols 4,0.1964,170637018,solutions=136245247,0.115942,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B5,count --rows 4 --cols 5,0.8107,414768985,solutions=114846713,0.731566,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B6,count --rows 3 --cols 7,0.1900,73694913,solutions=4453472,0.094056,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B7,find --rows 7 --cols 7,0.2122,27508675,found,0.108972,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B8,find --rows 6 --cols 7,0.1829,15431469,found,0.082884,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B9,find --rows 5 --cols 9,0.2552,157286771,found,0.152615,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B10,count --rows 5 --cols 5,4.5376,3046679344,solutions=80364530,4.456472,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B11,count --rows 4 --cols 6,1.5103,774415735,solutions=37812638,1.424720,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B12,find --rows 6 --cols 8,0.9690,435512663,found,0.855648,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B13,find --rows 5 --cols 10,0.6471,605188529,no solution: 5x10 exhausted,0.547457,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B14,count --rows 6 --cols 4,1.5137,774415735,solutions=37812638,1.432716,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B15,count --rows 5 --cols 6,11.3732,5711298906,solutions=7424362,11.284881,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B16,find --rows 6 --cols 9,6.2670,7234712692,no solution: 6x9 exhausted,6.167395,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B17,count --rows 4 --cols 7,2.1541,989407265,solutions=7139499,2.060289,bigram path check (failed),hephaestus
+2026-11-22,96fc6cc,fast,par,B18,count --rows 6 --cols 6,18.9246,15518026106,solutions=1584465,18.831019,bigram path check (failed),hephaestus
