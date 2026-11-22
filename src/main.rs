@@ -164,6 +164,11 @@ fn run(a: Args) -> Result<(), String> {
             load_time.as_secs_f64()
         );
         if wordrect::probe::ENABLED {
+            for e in wordrect::probe::events() {
+                println!("# ev {} {} {:.1} {:.1} {}", e.lane, wordrect::probe::KINDS[e.kind as usize], e.start_us, e.end_us, e.rank);
+            }
+        }
+        if wordrect::probe::ENABLED {
             // per-cell node counts for the heatmap; row "L" = the last-row kernel
             let n = wordrect::probe::N;
             for (i, v) in wordrect::probe::take().iter().enumerate().filter(|(_, v)| **v > 0) {

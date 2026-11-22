@@ -811,6 +811,81 @@ def report(data: dict[str, list[dict]]) -> str:
     return "\n".join(lines)
 
 
+TIMELINE = ROOT / "results" / "timeline.csv"
+
+
+def timeline() -> str | None:
+    """Gantt of one parallel find, thread by thread: splitting long jobs off vs on."""
+    if not TIMELINE.exists():
+        return None
+    with TIMELINE.open(newline="") as f:
+        rows = list(csv.DictReader(f))
+    task = rows[0]["task"]
+    lane_h, lane_gap, left, right, pad = 6, 1, 70, 24, 24
+    lanes = max(int(r["lane"]) for r in rows) + 1
+    tmax = max(float(r["end_us"]) for r in rows) / 1e3
+    width = 920
+    plot_w = width - left - right
+    xs = lambda ms: left + ms / tmax * plot_w
+    panel_h = lanes * (lane_h + lane_gap) + 66
+    top = 128
+    height = top + 2 * panel_h + 40
+    css = (" .k0{fill:#8fb8de} .k1{fill:#1baf7a} .k3{fill:#1baf7a} .k2{fill:#eb6834} .k4{fill:#a371f7} .k5{fill:#afb8c1}"
+           " .mk{stroke:#1f2328;stroke-dasharray:3 3}\n@media (prefers-color-scheme: dark){ .k0{fill:#2f5f8f} .k1{fill:#199e70}"
+           " .k3{fill:#199e70} .k2{fill:#d95926} .k4{fill:#8957e5} .k5{fill:#484f58} .mk{stroke:#e6edf3}}\n</style>")
+    kinds = {"test-empty": 0, "test-positive": 1, "aborted-split": 2, "search-found": 3, "part": 4, "cut": 5}
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" font-family="{FONT}">',
+           STYLE.replace("</style>", css),
+           f'<rect class="bg" width="{width}" height="{height}" rx="10"/>',
+           f'<text class="t" x="{pad}" y="36" font-size="20" font-weight="800">Splitting long jobs: {escape(describe(task))}, thread by thread</text>',
+           f'<text class="m" x="{pad}" y="57" font-size="12.5">each row is one of {lanes} threads · same code (commit {escape(rows[0]["commit"])}), splitting switched off and on · median of 5 runs</text>',
+           f'<text class="m" x="{pad}" y="74" font-size="11">jobs are tested in lexicographic order; once a job is known to hold the first grid, only the jobs before it matter.</text>',
+           f'<text class="m" x="{pad}" y="89" font-size="11">Without splitting, one thread walks a huge earlier job alone. With it, an idle thread lets the long job be cut into pieces that all threads share.</text>']
+    legend = [("k0", "test: no grid"), ("k1", "test: has a grid / search"), ("k2", "over budget: aborted, split"), ("k4", "part of a split test"), ("k5", "cut: an earlier job won")]
+    lx = pad
+    for cls, name in legend:
+        out.append(f'<rect class="{cls}" x="{lx}" y="102" width="12" height="10" rx="2"/><text class="m" x="{lx + 17}" y="111" font-size="11">{escape(name)}</text>')
+        lx += 30 + 6.2 * len(name)
+    for p, split in enumerate(("0", "1")):
+        evs = [r for r in rows if r["split"] == split]
+        y0 = top + p * panel_h
+        done = max(float(r["end_us"]) for r in evs) / 1e3
+        known = min((float(r["end_us"]) for r in evs if r["kind"] == "test-positive"), default=None)
+        name = "splitting on (the code now)" if split == "1" else "splitting off"
+        out.append(f'<text class="t" x="{pad}" y="{y0 + 14}" font-size="14" font-weight="700">{name}</text>')
+        out.append(f'<text class="{"x" if split == "1" else "m"}" x="{pad + 8.6 * len(name) + 14:.0f}" y="{y0 + 14}" font-size="13" font-weight="600">done in {done:.0f} ms</text>')
+        py = y0 + 26
+        # merge consecutive same-kind events per lane (gaps < 0.15 ms) to keep the SVG small
+        by_lane: dict[int, list] = {}
+        for r in sorted(evs, key=lambda r: float(r["start_us"])):
+            segs = by_lane.setdefault(int(r["lane"]), [])
+            k, s, e = kinds[r["kind"]], float(r["start_us"]) / 1e3, float(r["end_us"]) / 1e3
+            if segs and segs[-1][0] == k and s - segs[-1][2] < 0.15:
+                segs[-1][2] = max(segs[-1][2], e)
+                segs[-1][3] += 1
+            else:
+                segs.append([k, s, e, 1])
+        for lane in range(lanes):
+            ly = py + lane * (lane_h + lane_gap)
+            out.append(f'<rect class="hb" x="{left}" y="{ly}" width="{plot_w}" height="{lane_h}"/>')
+            for k, s, e, n in by_lane.get(lane, []):
+                x0, x1 = xs(s), xs(e)
+                label = legend[[0, 1, 2, 1, 3, 4][k]][1]
+                out.append(f'<rect class="k{k}" x="{x0:.1f}" y="{ly}" width="{max(x1 - x0, 0.6):.1f}" height="{lane_h}"><title>thread {lane}: {escape(label)}, {s:.1f}–{e:.1f} ms ({n} job{"s" if n > 1 else ""})</title></rect>')
+        out.append(f'<text class="m" x="{left - 8}" y="{py + 8}" font-size="10" text-anchor="end">thread 0</text>')
+        out.append(f'<text class="m" x="{left - 8}" y="{py + lanes * (lane_h + lane_gap) - 1}" font-size="10" text-anchor="end">{lanes - 1}</text>')
+        bottom = py + lanes * (lane_h + lane_gap)
+        if known is not None:
+            kx = xs(known / 1e3)
+            out.append(f'<line class="mk" x1="{kx:.1f}" x2="{kx:.1f}" y1="{py - 4}" y2="{bottom + 2}"/>')
+            out.append(f'<text class="t" x="{kx + 4:.1f}" y="{py - 6}" font-size="10.5">job with the first grid known ({known / 1e3:.0f} ms)</text>')
+        for ms in range(0, int(tmax) + 1, 10):
+            out.append(f'<text class="m" x="{xs(ms):.1f}" y="{bottom + 14}" font-size="10" text-anchor="middle">{ms}{" ms" if ms == 0 else ""}</text>')
+    out.append(f'<text class="ft" x="{pad}" y="{height - 14}" font-size="10">{escape(MACHINE)} · scripts/timeline.py (probe build) · hover a bar for details</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
 def main():
     data = load()
     CHARTS.mkdir(parents=True, exist_ok=True)
@@ -826,6 +901,8 @@ def main():
         (CHARTS / "scaling.svg").write_text(sv)
     if (qv := squares_chart()) is not None:
         (CHARTS / "squares.svg").write_text(qv)
+    if (tv := timeline()) is not None:
+        (CHARTS / "timeline.svg").write_text(tv)
     if (gv := gallery()) is not None:
         (CHARTS / "gallery.svg").write_text(gv)
     for path in sorted(ROOT.glob("results/atlas*.csv")):

@@ -1109,10 +1109,20 @@ impl Solver for ParSearch {
             }).collect())
         };
         let deadline = |split: bool, budget: Duration| split.then(|| (Instant::now() + budget, &hurry));
+        // probe builds only: timeline events, and WR_NO_SPLIT=1 turns splitting off (for the chart)
+        let no_split = crate::probe::ENABLED && std::env::var_os("WR_NO_SPLIT").is_some();
+        let clock = || crate::probe::ENABLED.then(Instant::now);
+        let ev = |kind: u8, t: Option<Instant>, lo: u64| {
+            if let Some(t) = t {
+                crate::probe::event(kind, t, lo);
+            }
+        };
+        crate::probe::epoch();
         // the job is known to have solutions: find its first one
         let search = |w: &mut Worker, lo: u64, hi: u64, prefix: &[u8], budget: Duration| {
-            let mut split = true;
+            let mut split = !no_split;
             loop {
+                let t = clock();
                 let d = deadline(split, budget);
                 let late = || d.is_some_and(|(d, h)| h.load(Relaxed) && Instant::now() > d);
                 let mut sol = None;
@@ -1124,11 +1134,14 @@ impl Solver for ParSearch {
                 if let Some(g) = sol {
                     bound.fetch_min(hi, Relaxed);
                     results.lock().unwrap().push((lo, g));
+                    ev(3, t, lo);
                     return;
                 }
                 if bound.load(Relaxed) <= lo {
+                    ev(5, t, lo);
                     return;
                 }
+                ev(2, t, lo);
                 let (subs, n) = this.expand(w, prefix, 4 * this.threads);
                 extra.fetch_add(n, Relaxed);
                 match ranked(lo, hi, budget, subs) {
@@ -1143,8 +1156,9 @@ impl Solver for ParSearch {
             if bound.load(Relaxed) <= lo {
                 return; // an earlier job already has a solution
             }
-            let mut split = true;
+            let mut split = !no_split;
             loop {
+                let t = clock();
                 let cut = (&bound, lo, deadline(split, budget));
                 let eager = split && this.eager_split; // tests: split without trying
                 let any = match mw.as_deref_mut() {
@@ -1164,6 +1178,7 @@ impl Solver for ParSearch {
                             tri(any, mw.cancelled)
                         };
                         if any.is_none() && split && bound.load(Relaxed) > lo {
+                            ev(2, t, lo);
                             let (parts, n) = mw.s.expand(mw, &m, 4 * this.threads);
                             extra.fetch_add(n, Relaxed);
                             if parts.len() >= 2 {
@@ -1184,8 +1199,10 @@ impl Solver for ParSearch {
                     }
                 };
                 if bound.load(Relaxed) <= lo || any == Some(false) {
+                    ev(if any == Some(false) { 0 } else { 5 }, t, lo);
                     return;
                 }
+                ev(if any == Some(true) { 1 } else { 2 }, t, lo);
                 if any == Some(true) {
                     // the first grid is in this job: later jobs are useless
                     bound.fetch_min(hi, Relaxed);
@@ -1202,8 +1219,9 @@ impl Solver for ParSearch {
         };
         // one part of a job's mirror test
         let part = |w: &mut Worker, mw: &mut Worker, t: &Task, group: &AtomicBool, prefix: &[u8], m: &[u8]| {
-            let mut split = true;
+            let mut split = !no_split;
             loop {
+                let tt = clock();
                 if bound.load(Relaxed) <= t.lo || group.load(Relaxed) {
                     return; // the job is settled
                 }
@@ -1212,6 +1230,7 @@ impl Solver for ParSearch {
                     let any = mw.count_job(m.len(), Some((&bound, t.lo, deadline(split, t.budget)))) > 0;
                     tri(any, mw.cancelled)
                 };
+                ev(if any.is_none() { 2 } else { 4 }, tt, t.lo);
                 match any {
                     Some(false) => return,
                     Some(true) => {
