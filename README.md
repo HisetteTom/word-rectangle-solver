@@ -128,7 +128,7 @@ Build profiles:
 Compile-speed tricks already in place: **zero dependencies**, linking with **lld** (`.cargo/config.toml`),
 incremental `fast` profile. `target-cpu=native` is set globally.
 
-Current status: **M2 + M4 + Level 6 done** (trie + mask solver, compact 8-byte trie nodes, counting without leaf visits, deterministic parallel search on all cores). Next: dictionary pruning (Level 4) and micro-optimizations.
+Current status: Levels 0–3 and 5–7 done, Level 4 partly (look-ahead, exact next-row sets). Every size up to 10×22 is settled (see the atlas). Next steps: [`PLAN.md`](PLAN.md).
 
 ---
 
@@ -369,12 +369,12 @@ Each step gets its own entry in the [optimization journal](#16-optimization-jour
 - [x] Store nodes in one flat `Vec`, in **BFS order**, so nodes at the same depth sit close together in memory.
 - [x] Compress children: store only existing children, and find the index of letter `c` with `popcount(mask & ((1 << c) - 1))`. Much smaller trie → better cache behaviour.
 - [x] Use `u32` indices everywhere (never `usize` in hot data).
-- [ ] Keep the per-search state (`row_state`, `col_state`, `grid`) in fixed-size arrays on the stack.
+- [x] ✅ ("by-value node kernel", "const-generic width") Keep the per-search state in fixed-size arrays on the stack.
 
 ### Level 3: smarter search order
-- [ ] **Most-constrained cell first:** at each step, pick the empty cell whose `allowed` mask has the fewest bits (`count_ones()`), not just the next one in row-major order.
+- [x] ❌ tried, reverted ("staircase MRV": 2× slower) — **Most-constrained cell first:** at each step, pick the empty cell whose `allowed` mask has the fewest bits (`count_ones()`), not just the next one in row-major order.
 - [ ] Try a **diagonal or spiral fill order** and compare.
-- [ ] **Forward checking:** after placing a letter, check that every *unfilled* cell in the affected row and column still has at least one legal letter. Cut the branch early if not.
+- [x] ✅ ("row look-ahead", "next-row forward check", "exact next-row set") **Forward checking:** after placing a letter, check that every *unfilled* cell in the affected row and column still has at least one legal letter. Cut the branch early if not.
 - [ ] Fill the **dimension with fewer words** first (e.g. if there are far fewer 9-letter than 7-letter words, constrain on the 9-letter side early).
 
 ### Level 4: dictionary pruning (before the search even starts)
@@ -384,7 +384,7 @@ Each step gets its own entry in the [optimization journal](#16-optimization-jour
 ### Level 5: symmetry and duplicates
 - [ ] For perfect squares, exploit symmetry: filling cell `(r, c)` also fills `(c, r)`. Roughly halves the work.
 - [x] For *counting* squares (rows and columns from one word list): transposition symmetry. Search only row₀ ≤ col₀ and count = 2·#{row₀ < col₀} + #{row₀ = col₀}: half the nodes.
-- [ ] For rectangles, only search `R ≤ C`.
+- [x] ✅ ("tall grids transposed") For rectangles, only search `R ≤ C`. Also: counts run on the mirror image (rows from their last letter), 1.07–1.6× faster.
 - [ ] For "all words distinct" variants, track used words cheaply (e.g. a bitset over word IDs at full depth).
 
 ### Level 6: parallelism
@@ -393,10 +393,10 @@ Each step gets its own entry in the [optimization journal](#16-optimization-jour
 - [x] Stop early when one solution is enough, deterministically: the lowest job index with a solution wins (atomic `fetch_min`), so `find` returns the same grid as the sequential solver.
 
 ### Level 7: micro-optimizations (only after profiling!)
-- [ ] `#[inline]` on hot functions; check with `cargo asm` / Compiler Explorer.
-- [ ] Turn the recursion into an explicit loop with a manual stack.
-- [ ] Remove bounds checks in the hot loop (prefer iterator patterns or proven-safe indexing; use `unsafe` only with a comment explaining why it's sound).
-- [ ] Branchless tricks where they measurably help.
+- [x] `#[inline]` on hot functions (`inline(always)` on the look-ahead and trie steps; const-generic kernels).
+- [x] ❌ tried, reverted ("iterative DFS") — Turn the recursion into an explicit loop with a manual stack.
+- [x] ✅ ("unchecked trie steps") Remove bounds checks in the hot loop (prefer iterator patterns or proven-safe indexing; use `unsafe` only with a comment explaining why it's sound).
+- [x] ✅ ("branch-free look-ahead") Branchless tricks where they measurably help.
 
 ### Release profile
 
@@ -421,30 +421,31 @@ Target suite (once the trie solver exists):
 | `B4` | Find first solution of the current record size | Measures "time to record" |
 
 **Current suite in `scripts/bench.sh`.** Times are search times on hephaestus, at the step where each
-suite was introduced and at the current code ("unchecked trie steps"). IDs never change meaning:
+suite was introduced and at the current code ("mirrored rows for counts", 2026-11-22). IDs never change meaning:
 when the code gets too fast for a suite, a bigger one is added.
 
 | ID | Task | At its baseline | Now |
 |---|---|---:|---:|
-| `B1` | `count --rows 3 --cols 3` (1,909,732 solutions) | naive 5.87 s | 1.67 ms |
+| `B1` | `count --rows 3 --cols 3` (1,909,732 solutions) | naive 5.87 s | 1.69 ms |
 | `B2` | `find --rows 5 --cols 6` | naive 1.15 s | 0.15 ms |
-| `B3` | `find --rows 6 --cols 6` | naive 2.71 s | 0.24 ms |
-| `B4` | `count --rows 4 --cols 4` | trie + masks 14.3 s | 0.16 s |
-| `B5` | `count --rows 4 --cols 5` | trie + masks 57.7 s | 1.20 s |
-| `B6` | `count --rows 3 --cols 7` | trie + masks 5.87 s | 0.09 s |
-| `B7` | `find --rows 7 --cols 7` | trie + masks 1.81 s | 0.13 s |
-| `B8` | `find --rows 6 --cols 7` | trie + masks 1.47 s | 0.12 s |
-| `B9` | `find --rows 5 --cols 9` | trie + masks 8.36 s | 0.20 s |
-| `B10` | `count --rows 5 --cols 5` (80,364,530 solutions) | parallel 15.9 s | 3.91 s |
-| `B11` | `count --rows 4 --cols 6` | parallel 5.02 s | 2.19 s |
-| `B12` | `find --rows 6 --cols 8` | parallel 2.64 s | 1.01 s |
-| `B13` | `find --rows 5 --cols 10` (no 5×10 exists: exhaustive proof) | parallel 2.46 s | 0.99 s |
-| `B14` | `count --rows 6 --cols 4` (tall shape) | parallel 9.63 s | 2.18 s |
-| `B15` | `count --rows 5 --cols 6` (7,424,362 solutions) | parallel 30.0 s | 13.5 s |
-| `B16` | `find --rows 6 --cols 9` (no 6×9 exists: exhaustive proof) | parallel 26.0 s | 9.93 s |
+| `B3` | `find --rows 6 --cols 6` | naive 2.71 s | 0.23 ms |
+| `B4` | `count --rows 4 --cols 4` | trie + masks 14.3 s | 0.116 s |
+| `B5` | `count --rows 4 --cols 5` | trie + masks 57.7 s | 0.728 s |
+| `B6` | `count --rows 3 --cols 7` | trie + masks 5.87 s | 0.089 s |
+| `B7` | `find --rows 7 --cols 7` | trie + masks 1.81 s | 0.105 s |
+| `B8` | `find --rows 6 --cols 7` | trie + masks 1.47 s | 0.086 s |
+| `B9` | `find --rows 5 --cols 9` | trie + masks 8.36 s | 0.154 s |
+| `B10` | `count --rows 5 --cols 5` (80,364,530 solutions) | parallel 15.9 s | 3.99 s |
+| `B11` | `count --rows 4 --cols 6` | parallel 5.02 s | 1.41 s |
+| `B12` | `find --rows 6 --cols 8` | parallel 2.64 s | 0.907 s |
+| `B13` | `find --rows 5 --cols 10` (no 5×10 exists: exhaustive proof) | parallel 2.46 s | 0.886 s |
+| `B14` | `count --rows 6 --cols 4` (tall shape) | parallel 9.63 s | 1.42 s |
+| `B15` | `count --rows 5 --cols 6` (7,424,362 solutions) | parallel 30.0 s | 10.1 s |
+| `B16` | `find --rows 6 --cols 9` (no 6×9 exists: exhaustive proof) | parallel 26.0 s | 9.39 s |
 
 Suite history: B1–B3 were sized for naive; B4–B9 were added when B2/B3 hit ~1 ms; B10–B13 when the heavy
 suite hit ~8 s; B14 to cover tall grids; B15–B16 when hephaestus became the main machine.
+Heavy and huge benchmarks report the median of 3 runs (since 2026-11-22; one run before).
 
 **One machine.** `bench.sh` refuses to log on any host other than `MAIN_MACHINE` (hephaestus). Runs from
 the previous machine are kept in `results/legacy/bench-log.csv` but not charted. If the main machine

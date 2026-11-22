@@ -19,7 +19,7 @@
 </style>
 <rect class="bg" width="820" height="496" rx="10"/>
 <text class="t" x="24" y="36" font-size="20" font-weight="800">Thread scaling · speedup over 1 thread</text>
-<text class="m" x="24" y="57" font-size="12.5">current code (commit 648e411) · hephaestus · Ryzen 9 3950X · 16 cores / 32 threads</text>
+<text class="m" x="24" y="57" font-size="12.5">current code (commit e92eddd) · hephaestus · Ryzen 9 3950X · 16 cores / 32 threads</text>
 <text class="m" x="24" y="74" font-size="11">dashed = perfect scaling · past 16 threads the extra threads share cores (SMT)</text>
 <line class="g" x1="70" x2="630" y1="426.0" y2="426.0" stroke-dasharray="2 3"/>
 <text class="m" x="60" y="430.0" font-size="11" text-anchor="end">0×</text>
@@ -51,37 +51,37 @@
 <rect class="hb" x="350.0" y="96" width="280.0" height="330" opacity=".5"/>
 <text class="m" x="358.0" y="110" font-size="11">2 threads per core</text>
 <line class="fx" x1="70.0" y1="426.0" x2="630.0" y2="96.0" stroke-dasharray="5 4" stroke-width="1.5"/>
-<polyline class="ln" points="87.5,415.7 105.0,405.6 140.0,386.6 210.0,347.7 280.0,310.7 350.0,274.8 490.0,243.1 630.0,214.7" stroke-width="2.5" stroke-linejoin="round"/>
+<polyline class="ln" points="87.5,415.7 105.0,405.7 140.0,386.5 210.0,347.9 280.0,310.9 350.0,275.1 490.0,242.3 630.0,212.1" stroke-width="2.5" stroke-linejoin="round"/>
 <circle class="lnf ring" cx="87.5" cy="415.7" r="4" stroke-width="1.5"/>
-<circle class="lnf ring" cx="105.0" cy="405.6" r="4" stroke-width="1.5"/>
-<circle class="lnf ring" cx="140.0" cy="386.6" r="4" stroke-width="1.5"/>
-<circle class="lnf ring" cx="210.0" cy="347.7" r="4" stroke-width="1.5"/>
-<circle class="lnf ring" cx="280.0" cy="310.7" r="4" stroke-width="1.5"/>
-<circle class="lnf ring" cx="350.0" cy="274.8" r="4" stroke-width="1.5"/>
-<circle class="lnf ring" cx="490.0" cy="243.1" r="4" stroke-width="1.5"/>
-<circle class="lnf ring" cx="630.0" cy="214.7" r="4" stroke-width="1.5"/>
-<polyline class="s2" points="87.5,415.7 105.0,405.6 140.0,386.5 210.0,347.5 280.0,310.1 350.0,274.0 490.0,243.5 630.0,215.6" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="7 4"/>
+<circle class="lnf ring" cx="105.0" cy="405.7" r="4" stroke-width="1.5"/>
+<circle class="lnf ring" cx="140.0" cy="386.5" r="4" stroke-width="1.5"/>
+<circle class="lnf ring" cx="210.0" cy="347.9" r="4" stroke-width="1.5"/>
+<circle class="lnf ring" cx="280.0" cy="310.9" r="4" stroke-width="1.5"/>
+<circle class="lnf ring" cx="350.0" cy="275.1" r="4" stroke-width="1.5"/>
+<circle class="lnf ring" cx="490.0" cy="242.3" r="4" stroke-width="1.5"/>
+<circle class="lnf ring" cx="630.0" cy="212.1" r="4" stroke-width="1.5"/>
+<polyline class="s2" points="87.5,415.7 105.0,405.6 140.0,386.5 210.0,347.9 280.0,310.9 350.0,275.3 490.0,242.9 630.0,212.9" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="7 4"/>
 <circle class="s2f ring" cx="87.5" cy="415.7" r="4" stroke-width="1.5"/>
 <circle class="s2f ring" cx="105.0" cy="405.6" r="4" stroke-width="1.5"/>
 <circle class="s2f ring" cx="140.0" cy="386.5" r="4" stroke-width="1.5"/>
-<circle class="s2f ring" cx="210.0" cy="347.5" r="4" stroke-width="1.5"/>
-<circle class="s2f ring" cx="280.0" cy="310.1" r="4" stroke-width="1.5"/>
-<circle class="s2f ring" cx="350.0" cy="274.0" r="4" stroke-width="1.5"/>
-<circle class="s2f ring" cx="490.0" cy="243.5" r="4" stroke-width="1.5"/>
-<circle class="s2f ring" cx="630.0" cy="215.6" r="4" stroke-width="1.5"/>
-<polyline class="s3" points="87.5,415.7 105.0,405.7 140.0,386.6 210.0,348.2 280.0,312.8 350.0,279.6 490.0,256.7 630.0,234.9" stroke-width="2.5" stroke-linejoin="round"/>
+<circle class="s2f ring" cx="210.0" cy="347.9" r="4" stroke-width="1.5"/>
+<circle class="s2f ring" cx="280.0" cy="310.9" r="4" stroke-width="1.5"/>
+<circle class="s2f ring" cx="350.0" cy="275.3" r="4" stroke-width="1.5"/>
+<circle class="s2f ring" cx="490.0" cy="242.9" r="4" stroke-width="1.5"/>
+<circle class="s2f ring" cx="630.0" cy="212.9" r="4" stroke-width="1.5"/>
+<polyline class="s3" points="87.5,415.7 105.0,405.6 140.0,386.1 210.0,347.4 280.0,310.4 350.0,275.6 490.0,244.4 630.0,216.3" stroke-width="2.5" stroke-linejoin="round"/>
 <circle class="s3f ring" cx="87.5" cy="415.7" r="4" stroke-width="1.5"/>
-<circle class="s3f ring" cx="105.0" cy="405.7" r="4" stroke-width="1.5"/>
-<circle class="s3f ring" cx="140.0" cy="386.6" r="4" stroke-width="1.5"/>
-<circle class="s3f ring" cx="210.0" cy="348.2" r="4" stroke-width="1.5"/>
-<circle class="s3f ring" cx="280.0" cy="312.8" r="4" stroke-width="1.5"/>
-<circle class="s3f ring" cx="350.0" cy="279.6" r="4" stroke-width="1.5"/>
-<circle class="s3f ring" cx="490.0" cy="256.7" r="4" stroke-width="1.5"/>
-<circle class="s3f ring" cx="630.0" cy="234.9" r="4" stroke-width="1.5"/>
-<text class="lnf" x="642.0" y="218.7" font-size="16" font-weight="800">20.5×</text>
-<text class="m" x="642.0" y="232.7" font-size="10.5">B5 · count all 4×5 (exhaustive)</text>
-<text class="s2f" x="642.0" y="250.7" font-size="16" font-weight="800">20.4×</text>
-<text class="m" x="642.0" y="264.7" font-size="10.5">B11 · count all 4×6 (exhaustive)</text>
-<text class="s3f" x="642.0" y="282.7" font-size="16" font-weight="800">18.5×</text>
-<text class="m" x="642.0" y="296.7" font-size="10.5">B13 · prove no 5×10 exists (exhaustive)</text>
+<circle class="s3f ring" cx="105.0" cy="405.6" r="4" stroke-width="1.5"/>
+<circle class="s3f ring" cx="140.0" cy="386.1" r="4" stroke-width="1.5"/>
+<circle class="s3f ring" cx="210.0" cy="347.4" r="4" stroke-width="1.5"/>
+<circle class="s3f ring" cx="280.0" cy="310.4" r="4" stroke-width="1.5"/>
+<circle class="s3f ring" cx="350.0" cy="275.6" r="4" stroke-width="1.5"/>
+<circle class="s3f ring" cx="490.0" cy="244.4" r="4" stroke-width="1.5"/>
+<circle class="s3f ring" cx="630.0" cy="216.3" r="4" stroke-width="1.5"/>
+<text class="lnf" x="642.0" y="216.1" font-size="16" font-weight="800">20.7×</text>
+<text class="m" x="642.0" y="230.1" font-size="10.5">B5 · count all 4×5 (exhaustive)</text>
+<text class="s2f" x="642.0" y="248.1" font-size="16" font-weight="800">20.7×</text>
+<text class="m" x="642.0" y="262.1" font-size="10.5">B11 · count all 4×6 (exhaustive)</text>
+<text class="s3f" x="642.0" y="280.1" font-size="16" font-weight="800">20.3×</text>
+<text class="m" x="642.0" y="294.1" font-size="10.5">B13 · prove no 5×10 exists (exhaustive)</text>
 </svg>
