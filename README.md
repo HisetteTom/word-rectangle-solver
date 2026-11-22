@@ -14,7 +14,7 @@ Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal
 > long while a thread is idle is **split into pieces that all threads share**, and the pieces resume
 > where the aborted run stopped. Finds with solutions are **1.25–2.5× faster** (7×7: 104 → 43 ms, 6×7: 82 → 33 ms),
 > and there's a new chart of what the 32 threads do. Re-tuning old limits for the mirror image made proofs
-> that no grid exists **1.2–1.3× faster** (no 6×9: 6.0 → 4.6 s). 9 more benchmarked steps today (8 kept, 1 failed), all in
+> that no grid exists **1.2–1.3× faster** (no 6×9: 6.0 → 4.6 s). 10 more benchmarked steps today (9 kept, 1 failed), all in
 > [`results/journal.md`](results/journal.md).
 >
 > **Night of 2026-11-21:** the whole history was re-run on one machine, and **every grid size up to

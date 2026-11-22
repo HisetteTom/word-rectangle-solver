@@ -315,6 +315,10 @@ impl<const W: usize> Kernel<'_, W> {
     /// 4 rows and 6 columns (`P` = true instances of the kernels). On 4×7, 5×5, 5×6, 5×7 and 6×6 it
     /// was 1.5–4% slower than the generic kernel, for no reason I could isolate without a profiler.
     const PEN: bool = W <= 6;
+    /// The look-ahead uses `next2` (letters two cells further) only on rows of 6+ letters: on 4- and
+    /// 5-letter rows it costs more than it prunes (4×4 6%, 4×5 and 5×5 2% faster without), from 6
+    /// letters up it pays (4×7 9%, 6×8 16% slower without).
+    const NEXT2: bool = W >= 6;
 
     /// Last row, cell `c`: completions of `row` with letter `c'` in `masks[c']` for every c' >= c.
     fn count_last(&self, c: usize, row: Node, masks: &[u32; W], nodes: &mut u64) -> u64 {
@@ -822,7 +826,7 @@ impl<const W: usize> Kernel<'_, W> {
     /// pass turns one unpredictable branch per letter into straight-line code.
     #[inline(always)]
     fn good(&self, row: Node, allowed: u32, c: usize, m1: u32, m2: u32, m3: u32) -> u32 {
-        let (e2, e3) = (c + 2 >= W, c + 3 >= W);
+        let (e2, e3) = (c + 2 >= W, c + 3 >= W || !Self::NEXT2);
         let mut a = allowed;
         let mut good = 0;
         while a != 0 {
