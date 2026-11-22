@@ -71,6 +71,9 @@ pub struct ParSearch {
     mirrored: bool,
     /// Mirror image of a square with one word list: count with anti-diagonal symmetry.
     anti: bool,
+    /// `find`: build the mirror for the job tests before starting (for tests; normally it is
+    /// built on a detached thread and used once ready).
+    sync_mirror: bool,
     stats: Stats,
 }
 
@@ -195,6 +198,7 @@ struct Kernel<'t, const W: usize> {
     /// has a solution; `cancelled` then makes every frame return at once.
     cut: Option<(&'t AtomicUsize, usize)>,
     cancelled: std::cell::Cell<bool>,
+
 }
 
 impl<'t, const W: usize> Kernel<'t, W> {
@@ -783,6 +787,7 @@ impl ParSearch {
             col_words: col_words.to_vec(),
             mirrored: false,
             anti: false,
+            sync_mirror: false,
             row_trie: Trie::new(row_words),
             col_trie: CTrie::new(&Trie::new(col_words)),
             threads,
@@ -791,6 +796,13 @@ impl ParSearch {
             bigrams: bigrams(row_words, cols),
             stats: Stats::default(),
         }
+    }
+
+    /// `find` builds its mirror image before starting the parallel jobs, so every big-grid job is
+    /// tested on it (tests use this; see `find`).
+    pub fn with_sync_mirror(mut self) -> Self {
+        self.sync_mirror = true;
+        self
     }
 
     /// Node budget of `find`'s sequential first attempt (0 = always go parallel; for tests).
@@ -871,6 +883,36 @@ impl ParSearch {
         r
     }
 
+    /// On a mirrored search (row words reversed): is there a grid whose *original* row 0 starts
+    /// with `prefix` (letters 0..26)? In the mirror image those letters are the end of row 0,
+    /// right to left. They are forced by starting their columns at virtual nodes
+    /// `{mask: 1 << l, first: index of the real child}`: the only letter allowed is `l`, and
+    /// stepping it lands on the real column-trie child. No kernel change needed.
+    fn exists_with_row0_prefix(&self, prefix: &[u8], cut: (&AtomicUsize, usize), nodes: &mut u64) -> bool {
+        by_width!(self.cols, |W| self.exists_w::<W>(prefix, cut, nodes))
+    }
+
+    fn exists_w<const W: usize>(&self, prefix: &[u8], cut: (&AtomicUsize, usize), nodes: &mut u64) -> bool {
+        let root = self.col_trie.node(0);
+        let mut colv = [root; W];
+        for (k, &l) in prefix.iter().enumerate() {
+            if root.mask >> l & 1 == 0 {
+                return false;
+            }
+            colv[W - 1 - k] = CNode { mask: 1 << l, first: self.col_trie.child(0, l as usize) };
+        }
+        let mut k = Kernel::<W>::new(self);
+        k.cut = Some(cut);
+        let row = k.root;
+        let ps = std::slice::from_ref(&k.root);
+        let total = if Kernel::<W>::PEN && self.rows <= 4 {
+            k.count::<true, true>(0, 0, row, &mut colv, nodes, !0, ps, SELF)
+        } else {
+            k.count::<true, false>(0, 0, row, &mut colv, nodes, !0, ps, SELF)
+        };
+        total > 0
+    }
+
     fn to_grid(&self, g: &[u8]) -> Grid {
         g.chunks(self.cols).map(|r| String::from_utf8(r.to_vec()).unwrap()).collect()
     }
@@ -893,28 +935,64 @@ impl Solver for ParSearch {
             self.stats.solutions = g.is_some() as u64;
             return g;
         }
-        // 2. parallel: restart from scratch on many small jobs
-        let (depth, jobs) = self.jobs(FIND_JOBS_PER_THREAD, usize::MAX);
+        // 2. parallel: restart from scratch on many small jobs. On big grids (area >= 48, rows of
+        //    8+ letters) jobs stay inside row 0, so the mirror test below applies. Big grids rarely
+        //    have solutions, so proving jobs empty dominates. On smaller ones solutions come early,
+        //    and row-0 jobs are too coarse: one thread walks the job holding the first solution
+        //    (5×8: 25 -> 100 ms, 5×9: 150 -> 187 ms with the cap).
+        let use_mirror = self.cols >= 8 && self.rows * self.cols >= 48;
+        let (depth, jobs) = self.jobs(FIND_JOBS_PER_THREAD, if use_mirror { self.cols } else { usize::MAX });
+        // 3. each job is first *tested*: does any grid extend its prefix? Only a job with solutions
+        //    is searched (from its start, so it still yields its first grid). The test runs the count
+        //    kernel, and once it is built (on a detached thread: it takes tens of ms, and a short find
+        //    must not wait for it), on the mirror image (rows reversed: 1.4–1.7× faster on exhaustive
+        //    work). There the job's prefix is the *end* of row 0, forced through virtual column nodes
+        //    (`exists_with_row0_prefix`).
+        let mirror: std::sync::Arc<std::sync::OnceLock<ParSearch>> = Default::default();
+        if use_mirror && depth <= self.cols {
+            let (m, rw, cw) = (mirror.clone(), self.row_words.clone(), self.col_words.clone());
+            let (rows, cols, threads) = (self.rows, self.cols, self.threads);
+            let build = move || {
+                let rev: Vec<String> = rw.iter().map(|w| w.chars().rev().collect()).collect();
+                let _ = m.set(ParSearch::new(rows, cols, &rev, &cw, threads));
+            };
+            if self.sync_mirror {
+                build();
+            } else {
+                std::thread::spawn(build);
+            }
+        }
+        let mirror_nodes = AtomicU64::new(0);
         let best = AtomicUsize::new(usize::MAX);
-        let found = self.run(depth, &jobs, |w, j, _| {
-            if best.load(Relaxed) < j {
-                return None; // an earlier job already has a solution
-            }
-            // the count kernel is faster than `search` and proves most jobs empty; only a job
-            // with solutions is searched (from its start, so it still yields its first grid)
-            if w.count_job(depth, Some((&best, j))) == 0 || best.load(Relaxed) < j {
-                return None;
-            }
-            let mut sol = None;
-            w.search(depth, &mut |g: &[u8]| {
-                sol = Some(g.to_vec());
-                false
-            }, &|| best.load(Relaxed) < j);
-            if sol.is_some() {
-                best.fetch_min(j, Relaxed);
-            }
-            sol
-        });
+        let found = {
+            self.run(depth, &jobs, |w, j, prefix| {
+                if best.load(Relaxed) < j {
+                    return None; // an earlier job already has a solution
+                }
+                let any = match mirror.get() {
+                    Some(m) => {
+                        let mut n = 0;
+                        let any = m.exists_with_row0_prefix(prefix, (&best, j), &mut n);
+                        mirror_nodes.fetch_add(n, Relaxed);
+                        any
+                    }
+                    None => w.count_job(depth, Some((&best, j))) > 0,
+                };
+                if !any || best.load(Relaxed) < j {
+                    return None;
+                }
+                let mut sol = None;
+                w.search(depth, &mut |g: &[u8]| {
+                    sol = Some(g.to_vec());
+                    false
+                }, &|| best.load(Relaxed) < j);
+                if sol.is_some() {
+                    best.fetch_min(j, Relaxed);
+                }
+                sol
+            })
+        };
+        self.stats.nodes += mirror_nodes.into_inner();
         let g = found.into_iter().next().map(|(_, g)| self.to_grid(&g));
         self.stats.solutions = g.is_some() as u64;
         g

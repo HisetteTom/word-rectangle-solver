@@ -148,3 +148,34 @@ fn match_naive_on_big_random_squares() {
         }
     }
 }
+
+/// Big grids (area >= 48, rows of 8+ letters) test `find`'s parallel jobs on the mirror image, with
+/// the job prefix forced at the end of the mirrored row 0. The answer must still be naive's
+/// first grid (or none). Dense random dictionaries over 2 letters: some have solutions, some don't.
+#[test]
+fn par_mirror_job_test_matches_naive_first_grid() {
+    let mut seed: u64 = 42;
+    let mut next = || {
+        seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        (seed >> 33) as usize
+    };
+    let (mut some, mut none) = (0, 0);
+    for (r, c, n_words) in [(6, 8, 12), (6, 8, 7), (5, 10, 14), (6, 9, 9)] {
+        for _ in 0..6 {
+            let word = |len: usize, next: &mut dyn FnMut() -> usize| -> String { (0..len).map(|_| (b'a' + (next() % 2) as u8) as char).collect() };
+            let mut words: Vec<String> = (0..n_words).map(|_| word(c, &mut next)).collect();
+            words.extend((0..n_words).map(|_| word(r, &mut next)));
+            let d = Dict::from_words(words.iter().map(String::as_str));
+            let want = find("naive", &d, r, c);
+            if want.is_some() { some += 1 } else { none += 1 }
+            for threads in [1, 3, 0] {
+                for sync in [false, true] {
+                    let p = ParSearch::new(r, c, d.words(c), d.words(r), threads).with_seq_budget(0);
+                    let got = if sync { p.with_sync_mirror() } else { p }.find();
+                    assert_eq!(got, want, "size={r}x{c} threads={threads} sync_mirror={sync} dict={words:?}");
+                }
+            }
+        }
+    }
+    assert!(some > 0 && none > 0, "want both outcomes: some={some} none={none}");
+}
