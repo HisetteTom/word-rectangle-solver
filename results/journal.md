@@ -1425,3 +1425,26 @@ Benchmarks:
 
 **Verdict:** kept. Lesson again: after a big change (here: the mirror), re-sweep the old
 thresholds.
+
+### 2026-11-22: last-row end check (`9dadbe1`) ❌ reverted
+
+**Idea (PLAN 0, cheap version):** at the start of the second-to-last row, compute for each column the
+letters it can still *end* with (union of its grandchildren's masks). When a node is added to the
+set of possible last rows, drop it if its own look-ahead masks (`mask`, `next`, `next2`: positions
+c..c+2) miss those letters. A first version checked every remaining position through a per-node
+table (`nodes × W` u32: 3.6 MB on 9-letter rows) and pruned slightly more but was slower still.
+
+| Benchmark | Before (set up to 10 letters) | After | Change |
+|---|---|---|---|
+| B5 count 4×5 | 716 ms · 375 M nodes | 763 ms · 363 M | 0.94× |
+| B10 count 5×5 | 3.94 s · 3.13 G | 4.36 s · 3.07 G | 0.90× |
+| B13 prove no 5×10 | 454 ms · 607 M | 442 ms · **233 M** | 1.03× |
+| B15 count 5×6 | 10.0 s · 5.95 G | 10.7 s · 5.79 G | 0.94× |
+| B16 prove no 6×9 | 4.61 s · 7.24 G | 4.68 s · **2.51 G** | 0.98× |
+| B17 count 4×7 | 1.73 s · 996 M | 1.86 s · 897 M | 0.93× |
+
+**Verdict:** reverted. The striking part: on wide rows it removes **65% of the nodes** and saves
+no time. The removed nodes are almost all last-row nodes, which `count_last` counts in bulk by
+popcount and which cost nearly nothing. **Node counts overstate where the time goes** for the last
+rows. The 90–100% "dead ends" of the second-to-last row (PLAN 0) are similar: cheap to visit,
+expensive to rule out. PLAN 0 downgraded.
