@@ -69,7 +69,6 @@ pub struct ParSearch {
     sym: bool,
     /// Per position k of a row word: which letters can follow at k + 1 (see `Bigram`).
     bigrams: Vec<Bigram>,
-
     /// The word lists, to build the re-oriented searches `count` uses (see `count`).
     row_words: Vec<String>,
     col_words: Vec<String>,
@@ -249,14 +248,13 @@ struct Kernel<'t, const W: usize> {
     /// return at once.
     cut: Option<Cut<'t>>,
     cancelled: std::cell::Cell<bool>,
-    /// Letters each column can still end with, set at the start of the second-to-last row.
-    lend: std::cell::Cell<[u32; W]>,
+
 }
 
 impl<'t, const W: usize> Kernel<'t, W> {
     fn new(s: &'t ParSearch) -> Self {
         let bi = s.bigrams.as_slice().try_into().expect("one bigram table per column");
-        Kernel { rt: s.row_trie.nodes(), bi, ct: s.col_trie.nodes(), root: s.row_trie.node(0), last_r: s.rows - 1, cut: None, cancelled: std::cell::Cell::new(false), lend: std::cell::Cell::new([!0; W]) }
+        Kernel { rt: s.row_trie.nodes(), bi, ct: s.col_trie.nodes(), root: s.row_trie.node(0), last_r: s.rows - 1, cut: None, cancelled: std::cell::Cell::new(false) }
     }
 
     /// Row child of `n` for letter `l`, without a bounds check (rust-skills `opt-bounds-check`).
@@ -353,9 +351,6 @@ impl<const W: usize> Kernel<'_, W> {
             }
             return self.count_last(c, row, &masks, nodes);
         }
-        if r + 1 == self.last_r && c == 0 {
-            self.set_lend(colv);
-        }
         *nodes += 1;
         crate::probe::hit(r, c);
         let col = colv[c];
@@ -410,9 +405,6 @@ impl<const W: usize> Kernel<'_, W> {
             masks[W - 1] = m & !((2u32 << w) - 1);
             let gt = self.count_last(c, row, &masks, nodes);
             return eq + 2 * gt;
-        }
-        if r + 1 == self.last_r && c == 0 {
-            self.set_lend(colv);
         }
         *nodes += 1;
         crate::probe::hit(r, c);
@@ -524,9 +516,6 @@ impl<const W: usize> Kernel<'_, W> {
             }
             return self.count_last(c, row, &masks, nodes);
         }
-        if r + 1 == self.last_r && c == 0 {
-            self.set_lend(colv);
-        }
         if P && r + 1 == self.last_r && !ps.is_empty() {
             return self.count_pen::<ANY, P>(c, row, colv, nodes, f, ps, pm);
         }
@@ -563,9 +552,6 @@ impl<const W: usize> Kernel<'_, W> {
         } else {
             let mut n = 0;
             let mut base = 0;
-            let mut over = false;
-            let check = r + 1 == self.last_r;
-            let lend = self.lend.get();
             'fill: for sn in ps {
                 let mut m = sn.mask & pm;
                 while m != 0 {
@@ -573,21 +559,14 @@ impl<const W: usize> Kernel<'_, W> {
                     m &= m - 1;
                     if n == S_CAP {
                         n = 0;
-                        over = true;
                         break 'fill;
                     }
                     // SAFETY: `x` is a bit of `sn.mask`, `sn` a row-trie node.
                     let ch = unsafe { self.rstep(*sn, x) };
-                    if check && !self.alive(ch, c, &lend) {
-                        continue; // this last row can't end inside the columns
-                    }
                     base |= ch.mask;
                     buf.set(n, ch);
                     n += 1;
                 }
-            }
-            if n == 0 && !over {
-                return 0;
             }
             if n == 0 { (&[], self.uni(c - 1, f)) } else { (buf.first(n), base) }
         };
@@ -675,7 +654,6 @@ impl<const W: usize> Kernel<'_, W> {
         } else {
             let mut n = 0;
             let mut base = 0;
-            let lend = self.lend.get();
             for sn in ps {
                 let mut m = sn.mask & pm;
                 while m != 0 {
@@ -686,9 +664,6 @@ impl<const W: usize> Kernel<'_, W> {
                     }
                     // SAFETY: `x` is a bit of `sn.mask`, `sn` a row-trie node.
                     let ch = unsafe { self.rstep(*sn, x) };
-                    if !self.alive(ch, c, &lend) {
-                        continue; // this last row can't end inside the columns
-                    }
                     base |= ch.mask;
                     buf.set(n, ch);
                     n += 1;
@@ -770,30 +745,6 @@ impl<const W: usize> Kernel<'_, W> {
         }
         colv[c] = col;
         total
-    }
-
-    /// Can last-row node `n` (depth c) still end inside the columns? Checks positions c..c+2 with
-    /// the node's own look-ahead masks (no extra memory).
-    #[inline(always)]
-    fn alive(&self, n: Node, c: usize, lend: &[u32; W]) -> bool {
-        let l = |k: usize| if k < W { lend[k] } else { !0 };
-        (n.mask & l(c) != 0) & (c + 1 >= W || n.next & l(c + 1) != 0) & (c + 2 >= W || n.next2 & l(c + 2) != 0)
-    }
-
-    /// At the start of the second-to-last row: the letters each column can end with.
-    #[inline(never)]
-    fn set_lend(&self, colv: &[CNode; W]) {
-        let mut l = [0u32; W];
-        for (k, n) in colv.iter().enumerate() {
-            let mut m = n.mask;
-            while m != 0 {
-                let x = m.trailing_zeros();
-                m &= m - 1;
-                // SAFETY: `x` is a bit of `n.mask`.
-                l[k] |= unsafe { self.cstep(*n, x) }.mask;
-            }
-        }
-        self.lend.set(l);
     }
 
     /// Letters a row word can have at position k + 1, given its letter at k is in `f`.
