@@ -1573,3 +1573,32 @@ budgets cost little. Median of 5 (of 9 for the second table):
 | others | | | ≈ |
 
 **Verdict:** kept (small). 1 ms and 2 ms measured the same; 2 ms aborts less on big grids.
+
+### 2026-11-22: mirror job tests from 8 letters (`ce2c2ec`) ✅ kept
+
+PLAN idea "mirror job tests for small grids too", retried now that long jobs are split, resume, and
+the next-row set covers rows up to 10 letters. Mirror tests were limited to rows of 8+ letters *and* area ≥ 48,
+because row-0 jobs were too coarse when a solution comes early. Splitting removed that reason.
+Median of 5, `find`:
+
+| Shape | area ≥ 48 rule | mirror for all | |
+|---|---:|---:|---|
+| 5×9 | 155 ms | **115 ms** | 1.35× |
+| 5×8 | 17.7 ms | 16.3 ms | 1.09× |
+| 4×9 | 11.6 ms | 7.5 ms | 1.5× |
+| 4×10 | 10.7 ms | 7.7 ms | 1.4× |
+| 3×12 | 29.3 ms | **5.8 ms** | 5× |
+| 2×12 | 15.1 ms | 4.8 ms | 3× |
+| 3×14 | 22.7 ms | 5.2 ms | 4× |
+| 4×11, 4×12 | 44 / 36 ms | 43 / 36 ms | ≈ |
+| 7×7 | 43 ms | 49 ms | 0.88× ✗ |
+| 6×7 | 33 ms | 52 ms | 0.63× ✗ |
+
+New rule: rows of 8+ letters, any area.
+
+| Benchmark | Before | After | Change |
+|---|---|---|---|
+| B9 find 5×9 | 155 ms | **118 ms** | **1.31×** |
+| others | | | ≈ (already mirrored, or 7-letter rows) |
+
+**Verdict:** kept.
