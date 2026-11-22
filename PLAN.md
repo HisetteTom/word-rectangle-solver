@@ -34,6 +34,15 @@ Where the time goes now (`results/charts/heatmap.svg`, `scripts/heatmap.py`):
 
 ## Ideas, roughly by expected value
 
+0. **The last two rows are where the waste is, and whole-word checks are the lever.** Probe (journal,
+   "dead ends measured"): 99–100% of the second-to-last row's nodes in columns 1–3 of 5×6 have *no*
+   solution under them (90–95% on 5×5; 86–91% of the third-to-last row on 6×6). A check that one of
+   the last-row prefixes completes to a whole word inside the columns' union masks cuts **39% of
+   nodes** on 5×6, but walking the trie to prove a node dead costs more than it saves. Needed: a much
+   cheaper existence test for "a word whose letter at each position k is in U_k". Candidates: memo on
+   U-tuples (they're unions, so they may repeat far more than exact mask tuples did), or two-level
+   tables (position pairs) that reject most dead U's in O(1) before the walk.
+
 1. **Mirror job tests for small grids too.** Today only big grids (area ≥ 48) use them, because their
    jobs must stay in row 0 and coarse jobs hurt finds with early solutions (5×8, 5×9). A dynamic
    scheme could start with fine jobs and switch to row-0 mirror jobs once the mirror is built and
@@ -59,7 +68,8 @@ Exact next-row set ✅ · find kernel set ❌ · column look-ahead on the set �
 children ❌ · 12-byte packed nodes ❌ · count-kernel job test in find ✅ · wide-row set ❌ ·
 second-to-last-row kernel + uninit buffers ✅ · set cap 32 ✅ · short find budget ✅ · DAWG set ❌ ·
 mirrored rows for counts ✅ · anti-diagonal symmetry ✅ · skip-gram bound ❌ · mirror-image job
-test in find ✅. Plus: B17–B18 (replayed for every step), whole history replayed on hephaestus, B15–B16, the atlas
+test in find ✅ · pair look-ahead ❌ · whole-word last-row check ❌ (strong pruning, too costly).
+Also: `wordrect squares` (symmetric word squares) and a second dictionary atlas. Plus: B17–B18 (replayed for every step), whole history replayed on hephaestus, B15–B16, the atlas
 (every size to 10×22 settled; largest = 8×8), gallery, anatomy, heatmap and scaling charts.
 
 ## From the rust-skills checklist (still open)
