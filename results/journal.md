@@ -1225,3 +1225,23 @@ allows at c: A_{k+1} = U_{k+1} ∩ (letters that can follow A_k). That's W table
 
 **Verdict:** reverted. It prunes 2–4%, against the whole-word check's 26–39%: the last two rows die on
 whole-word constraints that letter pairs can't see. Plus the 12-byte column node.
+
+### 2026-11-22: second-to-last-row set cap 128 (`d3b387c`) ✅ kept (small)
+
+`count_pen` (grids ≤ 4×6) hands a node to the generic kernel when its last-row set overflows. With the
+uninitialized buffer, a bigger cap costs only stack. Sweep (median of 5):
+
+| S_CAP_PEN | 4×4 | 4×5 | 4×6 | 3×6 | 3×5 |
+|---|---:|---:|---:|---:|---:|
+| 16 | 0.116 s | 0.771 s | 1.491 s | 67 ms | |
+| 32 | 0.115 s | 0.722 s | 1.421 s | 64 ms | |
+| 64 | 0.117 s | 0.713 s | 1.409 s | 60 ms | 25.6 ms |
+| **128** | 0.113 s | 0.717 s | 1.391 s | 56 ms | 23.8 ms |
+
+| Benchmark | Before (mirror-image job test) | After | Change |
+|---|---|---|---|
+| B5 count 4×5 | 0.728 s | 0.718 s | 1.01× |
+| B11 count 4×6 | 1.418 s | 1.389 s | 1.02× |
+| B14 count 6×4 | 1.422 s | 1.394 s | 1.02× |
+
+**Verdict:** kept: small but consistent on every shape that uses `count_pen`.
