@@ -48,9 +48,9 @@ const FIND_JOBS_PER_THREAD: usize = 4096;
 /// `find` first searches sequentially for this many nodes (~0.5 ms); small instances finish
 /// there without paying for threads and job expansion.
 const FIND_SEQ_BUDGET: u64 = 30_000;
-/// Time budget of one parallel `find` job before it is split (see `find`), in µs. Measured: 1 ms
-/// splits too often, 2–10 ms are about equal.
-const FIND_JOB_BUDGET_US: u64 = 5_000;
+/// Time budget of one parallel `find` job before it is split (see `find`), in µs. 5 ms when aborts
+/// threw their work away; since aborted jobs resume (2026-11-22), 1–2 ms are best (7×7 47 -> 43 ms).
+const FIND_JOB_BUDGET_US: u64 = 2_000;
 /// Largest exact next-row set the count kernel tracks (see `Kernel::count`). 32 since the buffer is
 /// uninitialized (5×6: 12.44 s at 16, 11.99 s at 32; 5×5 unchanged).
 const S_CAP: usize = 32;
