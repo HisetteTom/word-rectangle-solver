@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Replay the whole optimization history on THIS machine.
 
-Every step in results/legacy/bench-log.csv (one per label, in order) is rebuilt from its
-commit (fast profile, in a throwaway git worktree) and run on the CURRENT benchmark list
+Every step in results/legacy/bench-log.csv and results/bench-log.csv (one per label, in order;
+the latest commit of each label) is rebuilt from its commit (fast profile, in a throwaway git worktree) and run on the CURRENT benchmark list
 from scripts/bench.sh. Rows are appended to results/bench-log.csv, then the charts are redrawn.
 Use it when the main machine changes: old numbers from another CPU are not comparable.
 
@@ -10,7 +10,8 @@ Use it when the main machine changes: old numbers from another CPU are not compa
   single-thread  -> B1–B9      (trie, mrv: the huge suites would take hours)
   parallel       -> everything
 
-Resumable: (label, bench) pairs already in the log are skipped.
+Resumable: (label, bench) pairs already in the log are skipped, so after adding a benchmark,
+running it again fills the new benchmark in for every step.
 Usage: python3 scripts/replay.py [--only LABEL] [--dry-run]
 """
 
@@ -41,15 +42,20 @@ def benches():
 
 
 def steps():
+    """Legacy steps first (in order), then the steps recorded on this machine since (in order)."""
     out: dict[str, dict] = {}
-    with LEGACY.open(newline="") as f:
-        for row in csv.DictReader(f):
-            label = (row.get("label") or "").strip() or row["solver"]
-            if label in SKIP or row["commit"].endswith("-dirty"):
-                continue
-            label = RENAME.get(label, label)
-            step = out.setdefault(label, {"label": label})
-            step.update(commit=row["commit"], solver=row["solver"])  # latest commit of the label
+    rows = []
+    for path in (LEGACY, LOG):
+        if path.exists():
+            with path.open(newline="") as f:
+                rows += list(csv.DictReader(f))
+    for row in rows:
+        label = (row.get("label") or "").strip() or row["solver"]
+        if label in SKIP or row["commit"].endswith("-dirty"):
+            continue
+        label = RENAME.get(label, label)
+        step = out.setdefault(label, {"label": label})
+        step.update(commit=row["commit"], solver=row["solver"])  # latest commit of the label
     return list(out.values())
 
 

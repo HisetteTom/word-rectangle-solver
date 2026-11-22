@@ -60,6 +60,9 @@ BENCHES=(
   # giant suite, added when hephaestus became the main machine (~10 s each at "unchecked trie steps")
   "B15|count --rows 5 --cols 6|count all 5x6 (exhaustive)|huge"
   "B16|find --rows 6 --cols 9|prove no 6x9 exists (exhaustive)|huge"
+  # added 2026-11-22 at "mirrored rows for counts" (B5–B8 had dropped under 0.2 s)
+  "B17|count --rows 4 --cols 7|count all 4x7 (exhaustive)|huge"
+  "B18|count --rows 6 --cols 6|count all 6x6 (exhaustive)|huge"
 )
 
 commit=$(git rev-parse --short HEAD 2>/dev/null || echo unknown)
