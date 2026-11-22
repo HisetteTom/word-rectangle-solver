@@ -48,9 +48,9 @@ isn't, and nothing at 9×9 or beyond exists. 3×13 has exactly one solution in t
 Regenerate with `python3 scripts/heatmap.py` and `python3 scripts/scaling.py` (both describe the
 current code), and `python3 scripts/atlas.py` for the atlas.
 
-Per-benchmark history (one bar per step):
+### Per-benchmark history
 
-Every optimization step ever tried — including the failed ones — was rebuilt from its commit and
+One bar per step, oldest at the top. Every optimization step ever tried — including the failed ones — was rebuilt from its commit and
 re-run on **one machine** (hephaestus · Ryzen 9 3950X · 32 threads), so every bar below is directly
 comparable. **Solid blue** = kept, **bright blue ◀ current** = the code in the tree now,
 **grey hatched ✗ reverted** = a failed experiment (measured, then undone; never part of the code).
