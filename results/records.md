@@ -71,6 +71,6 @@ Re-run 2026-11-22 02:40 with the night's code ("mirror-image job test in find"):
 
 - **Largest rectangle: 7×7, exactly 32 grids, all symmetric word squares** (`squares-american.csv`:
   32 symmetric 7×7 squares, 0 at 8×8).
-- Rarest: 2×11 (2: `haemophilia/admonitions`, `hydrophobia/orderliness`), 3×10 (5), 5×8 (39),
+- Rarest: 2×11 (2: `haemophilia/admonitions`, `hydrophobia/orderliness`), 3×10 (5), 5×7 (39),
   4×8 (139), 3×9 (94).
-- Nothing at 8×8, 6×7, 5×9, 4×9, 3×11 or 2×12 and beyond.
+- Nothing at 8×8, 6×7, 5×8, 4×9, 3×11 or 2×12 and beyond.
