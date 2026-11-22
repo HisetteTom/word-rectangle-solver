@@ -60,275 +60,275 @@
 <text class="t" x="80" y="562" font-size="13" font-weight="600" text-anchor="end">10</text>
 <rect class="d3 cell" x="92" y="132" width="62" height="50" rx="5"/>
 <text class="ink" x="123.0" y="158.0" font-size="14" font-weight="700" text-anchor="middle">2.04k</text>
-<text class="ink" x="123.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">68 ms</text>
+<text class="ink" x="123.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">86 ms</text>
 <rect class="d4 cell" x="154" y="132" width="62" height="50" rx="5"/>
 <text class="ink" x="185.0" y="158.0" font-size="14" font-weight="700" text-anchor="middle">19.3k</text>
-<text class="ink" x="185.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">79 ms</text>
+<text class="ink" x="185.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">70 ms</text>
 <rect class="d4 cell" x="216" y="132" width="62" height="50" rx="5"/>
 <text class="ink" x="247.0" y="158.0" font-size="14" font-weight="700" text-anchor="middle">62.9k</text>
-<text class="ink" x="247.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">80 ms</text>
+<text class="ink" x="247.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">79 ms</text>
 <rect class="d4 cell" x="278" y="132" width="62" height="50" rx="5"/>
 <text class="ink" x="309.0" y="158.0" font-size="14" font-weight="700" text-anchor="middle">75.6k</text>
-<text class="ink" x="309.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">72 ms</text>
+<text class="ink" x="309.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">81 ms</text>
 <rect class="d4 cell" x="340" y="132" width="62" height="50" rx="5"/>
 <text class="ink" x="371.0" y="158.0" font-size="14" font-weight="700" text-anchor="middle">73.6k</text>
-<text class="ink" x="371.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">86 ms</text>
+<text class="ink" x="371.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">94 ms</text>
 <rect class="d4 cell" x="402" y="132" width="62" height="50" rx="5"/>
 <text class="ink" x="433.0" y="158.0" font-size="14" font-weight="700" text-anchor="middle">42.2k</text>
-<text class="ink" x="433.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">86 ms</text>
+<text class="ink" x="433.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">107 ms</text>
 <rect class="d4 cell" x="464" y="132" width="62" height="50" rx="5"/>
 <text class="ink" x="495.0" y="158.0" font-size="14" font-weight="700" text-anchor="middle">18.9k</text>
-<text class="ink" x="495.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">93 ms</text>
+<text class="ink" x="495.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">121 ms</text>
 <rect class="d3 cell" x="526" y="132" width="62" height="50" rx="5"/>
 <text class="ink" x="557.0" y="158.0" font-size="14" font-weight="700" text-anchor="middle">2.76k</text>
-<text class="ink" x="557.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">95 ms</text>
+<text class="ink" x="557.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">115 ms</text>
 <rect class="d2 cell" x="588" y="132" width="62" height="50" rx="5"/>
 <text class="ink" x="619.0" y="158.0" font-size="14" font-weight="700" text-anchor="middle">475</text>
-<text class="ink" x="619.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">95 ms</text>
+<text class="ink" x="619.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">128 ms</text>
 <rect class="d1 cell" x="650" y="132" width="62" height="50" rx="5"/>
 <text class="ink" x="681.0" y="158.0" font-size="14" font-weight="700" text-anchor="middle">76</text>
-<text class="ink" x="681.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">101 ms</text>
+<text class="ink" x="681.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">121 ms</text>
 <rect class="d0 cell" x="712" y="132" width="62" height="50" rx="5"/>
 <text class="ink" x="743.0" y="158.0" font-size="14" font-weight="700" text-anchor="middle">4</text>
-<text class="ink" x="743.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">95 ms</text>
+<text class="ink" x="743.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">100 ms</text>
 <rect class="d0 cell" x="774" y="132" width="62" height="50" rx="5"/>
 <text class="ink" x="805.0" y="158.0" font-size="14" font-weight="700" text-anchor="middle">2</text>
-<text class="ink" x="805.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">92 ms</text>
+<text class="ink" x="805.0" y="172.0" font-size="9" text-anchor="middle" opacity=".75">96 ms</text>
 <rect class="none" x="838" y="134" width="58" height="46" rx="5"/>
 <text class="m" x="867.0" y="158.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="867.0" y="172.0" font-size="9" text-anchor="middle">76 ms</text>
+<text class="m" x="867.0" y="172.0" font-size="9" text-anchor="middle">86 ms</text>
 <rect class="none" x="900" y="134" width="58" height="46" rx="5"/>
 <text class="m" x="929.0" y="158.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="929.0" y="172.0" font-size="9" text-anchor="middle">74 ms</text>
+<text class="m" x="929.0" y="172.0" font-size="9" text-anchor="middle">78 ms</text>
 <rect class="d6 cell" x="154" y="182" width="62" height="50" rx="5"/>
 <text class="inv" x="185.0" y="208.0" font-size="14" font-weight="700" text-anchor="middle">1.91M</text>
-<text class="inv" x="185.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">67 ms</text>
+<text class="inv" x="185.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">73 ms</text>
 <rect class="d7 cell" x="216" y="182" width="62" height="50" rx="5"/>
 <text class="inv" x="247.0" y="208.0" font-size="14" font-weight="700" text-anchor="middle">11.3M</text>
-<text class="inv" x="247.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">95 ms</text>
+<text class="inv" x="247.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">78 ms</text>
 <rect class="d7 cell" x="278" y="182" width="62" height="50" rx="5"/>
 <text class="inv" x="309.0" y="208.0" font-size="14" font-weight="700" text-anchor="middle">15.8M</text>
-<text class="inv" x="309.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">97 ms</text>
+<text class="inv" x="309.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">104 ms</text>
 <rect class="d7 cell" x="340" y="182" width="62" height="50" rx="5"/>
 <text class="inv" x="371.0" y="208.0" font-size="14" font-weight="700" text-anchor="middle">10.4M</text>
-<text class="inv" x="371.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">158 ms</text>
+<text class="inv" x="371.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">142 ms</text>
 <rect class="d6 cell" x="402" y="182" width="62" height="50" rx="5"/>
 <text class="inv" x="433.0" y="208.0" font-size="14" font-weight="700" text-anchor="middle">4.45M</text>
-<text class="inv" x="433.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">180 ms</text>
+<text class="inv" x="433.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">179 ms</text>
 <rect class="d5 cell" x="464" y="182" width="62" height="50" rx="5"/>
 <text class="inv" x="495.0" y="208.0" font-size="14" font-weight="700" text-anchor="middle">989k</text>
-<text class="inv" x="495.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">182 ms</text>
+<text class="inv" x="495.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">179 ms</text>
 <rect class="d4 cell" x="526" y="182" width="62" height="50" rx="5"/>
 <text class="ink" x="557.0" y="208.0" font-size="14" font-weight="700" text-anchor="middle">81.9k</text>
-<text class="ink" x="557.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">141 ms</text>
+<text class="ink" x="557.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">160 ms</text>
 <rect class="d3 cell" x="588" y="182" width="62" height="50" rx="5"/>
 <text class="ink" x="619.0" y="208.0" font-size="14" font-weight="700" text-anchor="middle">7.12k</text>
-<text class="ink" x="619.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">110 ms</text>
+<text class="ink" x="619.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">142 ms</text>
 <rect class="d2 cell" x="650" y="182" width="62" height="50" rx="5"/>
 <text class="ink" x="681.0" y="208.0" font-size="14" font-weight="700" text-anchor="middle">441</text>
-<text class="ink" x="681.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">96 ms</text>
+<text class="ink" x="681.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">127 ms</text>
 <rect class="d1 cell" x="712" y="182" width="62" height="50" rx="5"/>
 <text class="ink" x="743.0" y="208.0" font-size="14" font-weight="700" text-anchor="middle">15</text>
-<text class="ink" x="743.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">98 ms</text>
+<text class="ink" x="743.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">102 ms</text>
 <rect class="d0 cell" x="774" y="182" width="62" height="50" rx="5"/>
 <text class="ink" x="805.0" y="208.0" font-size="14" font-weight="700" text-anchor="middle">1</text>
-<text class="ink" x="805.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">100 ms</text>
+<text class="ink" x="805.0" y="222.0" font-size="9" text-anchor="middle" opacity=".75">97 ms</text>
 <rect class="none" x="838" y="184" width="58" height="46" rx="5"/>
 <text class="m" x="867.0" y="208.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="867.0" y="222.0" font-size="9" text-anchor="middle">81 ms</text>
+<text class="m" x="867.0" y="222.0" font-size="9" text-anchor="middle">93 ms</text>
 <rect class="none" x="900" y="184" width="58" height="46" rx="5"/>
 <text class="m" x="929.0" y="208.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="929.0" y="222.0" font-size="9" text-anchor="middle">80 ms</text>
+<text class="m" x="929.0" y="222.0" font-size="9" text-anchor="middle">81 ms</text>
 <rect class="d8 cell" x="216" y="232" width="62" height="50" rx="5"/>
 <text class="inv" x="247.0" y="258.0" font-size="14" font-weight="700" text-anchor="middle">136M</text>
-<text class="inv" x="247.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">204 ms</text>
+<text class="inv" x="247.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">195 ms</text>
 <rect class="d8 cell" x="278" y="232" width="62" height="50" rx="5"/>
 <text class="inv" x="309.0" y="258.0" font-size="14" font-weight="700" text-anchor="middle">115M</text>
-<text class="inv" x="309.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">915 ms</text>
+<text class="inv" x="309.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">785 ms</text>
 <rect class="d7 cell" x="340" y="232" width="62" height="50" rx="5"/>
 <text class="inv" x="371.0" y="258.0" font-size="14" font-weight="700" text-anchor="middle">37.8M</text>
-<text class="inv" x="371.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">1.62 s</text>
+<text class="inv" x="371.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">1.44 s</text>
 <rect class="d6 cell" x="402" y="232" width="62" height="50" rx="5"/>
 <text class="inv" x="433.0" y="258.0" font-size="14" font-weight="700" text-anchor="middle">7.14M</text>
-<text class="inv" x="433.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">2.23 s</text>
+<text class="inv" x="433.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">1.78 s</text>
 <rect class="d5 cell" x="464" y="232" width="62" height="50" rx="5"/>
 <text class="inv" x="495.0" y="258.0" font-size="14" font-weight="700" text-anchor="middle">627k</text>
-<text class="inv" x="495.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">2.12 s</text>
+<text class="inv" x="495.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">1.50 s</text>
 <rect class="d4 cell" x="526" y="232" width="62" height="50" rx="5"/>
 <text class="ink" x="557.0" y="258.0" font-size="14" font-weight="700" text-anchor="middle">12.6k</text>
-<text class="ink" x="557.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">863 ms</text>
+<text class="ink" x="557.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">636 ms</text>
 <rect class="d2 cell" x="588" y="232" width="62" height="50" rx="5"/>
 <text class="ink" x="619.0" y="258.0" font-size="14" font-weight="700" text-anchor="middle">207</text>
-<text class="ink" x="619.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">367 ms</text>
+<text class="ink" x="619.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">273 ms</text>
 <rect class="d0 cell" x="650" y="232" width="62" height="50" rx="5"/>
 <text class="ink" x="681.0" y="258.0" font-size="14" font-weight="700" text-anchor="middle">2</text>
-<text class="ink" x="681.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">179 ms</text>
+<text class="ink" x="681.0" y="272.0" font-size="9" text-anchor="middle" opacity=".75">162 ms</text>
 <rect class="none" x="714" y="234" width="58" height="46" rx="5"/>
 <text class="m" x="743.0" y="258.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="743.0" y="272.0" font-size="9" text-anchor="middle">120 ms</text>
+<text class="m" x="743.0" y="272.0" font-size="9" text-anchor="middle">122 ms</text>
 <rect class="none" x="776" y="234" width="58" height="46" rx="5"/>
 <text class="m" x="805.0" y="258.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="805.0" y="272.0" font-size="9" text-anchor="middle">96 ms</text>
+<text class="m" x="805.0" y="272.0" font-size="9" text-anchor="middle">113 ms</text>
 <rect class="none" x="838" y="234" width="58" height="46" rx="5"/>
 <text class="m" x="867.0" y="258.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="867.0" y="272.0" font-size="9" text-anchor="middle">84 ms</text>
+<text class="m" x="867.0" y="272.0" font-size="9" text-anchor="middle">96 ms</text>
 <rect class="none" x="900" y="234" width="58" height="46" rx="5"/>
 <text class="m" x="929.0" y="258.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="929.0" y="272.0" font-size="9" text-anchor="middle">77 ms</text>
+<text class="m" x="929.0" y="272.0" font-size="9" text-anchor="middle">84 ms</text>
 <rect class="d7 cell" x="278" y="282" width="62" height="50" rx="5"/>
 <text class="inv" x="309.0" y="308.0" font-size="14" font-weight="700" text-anchor="middle">80.4M</text>
-<text class="inv" x="309.0" y="322.0" font-size="9" text-anchor="middle" opacity=".75">3.91 s</text>
+<text class="inv" x="309.0" y="322.0" font-size="9" text-anchor="middle" opacity=".75">4.00 s</text>
 <rect class="d6 cell" x="340" y="282" width="62" height="50" rx="5"/>
 <text class="inv" x="371.0" y="308.0" font-size="14" font-weight="700" text-anchor="middle">7.42M</text>
-<text class="inv" x="371.0" y="322.0" font-size="9" text-anchor="middle" opacity=".75">12.3 s</text>
+<text class="inv" x="371.0" y="322.0" font-size="9" text-anchor="middle" opacity=".75">9.95 s</text>
 <rect class="d5 cell" x="402" y="282" width="62" height="50" rx="5"/>
 <text class="inv" x="433.0" y="308.0" font-size="14" font-weight="700" text-anchor="middle">441k</text>
-<text class="inv" x="433.0" y="322.0" font-size="9" text-anchor="middle" opacity=".75">15.1 s</text>
+<text class="inv" x="433.0" y="322.0" font-size="9" text-anchor="middle" opacity=".75">9.77 s</text>
 <rect class="d4 cell" x="464" y="282" width="62" height="50" rx="5"/>
 <text class="ink" x="495.0" y="308.0" font-size="14" font-weight="700" text-anchor="middle">10.7k</text>
-<text class="ink" x="495.0" y="322.0" font-size="9" text-anchor="middle" opacity=".75">11.7 s</text>
+<text class="ink" x="495.0" y="322.0" font-size="9" text-anchor="middle" opacity=".75">6.60 s</text>
 <rect class="d1 cell" x="526" y="282" width="62" height="50" rx="5"/>
 <text class="ink" x="557.0" y="308.0" font-size="14" font-weight="700" text-anchor="middle">42</text>
-<text class="ink" x="557.0" y="322.0" font-size="9" text-anchor="middle" opacity=".75">3.40 s</text>
+<text class="ink" x="557.0" y="322.0" font-size="9" text-anchor="middle" opacity=".75">2.49 s</text>
 <rect class="none" x="590" y="284" width="58" height="46" rx="5"/>
 <text class="m" x="619.0" y="308.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="619.0" y="322.0" font-size="9" text-anchor="middle">1.05 s</text>
+<text class="m" x="619.0" y="322.0" font-size="9" text-anchor="middle">708 ms</text>
 <rect class="none" x="652" y="284" width="58" height="46" rx="5"/>
 <text class="m" x="681.0" y="308.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="681.0" y="322.0" font-size="9" text-anchor="middle">367 ms</text>
+<text class="m" x="681.0" y="322.0" font-size="9" text-anchor="middle">271 ms</text>
 <rect class="none" x="714" y="284" width="58" height="46" rx="5"/>
 <text class="m" x="743.0" y="308.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="743.0" y="322.0" font-size="9" text-anchor="middle">164 ms</text>
+<text class="m" x="743.0" y="322.0" font-size="9" text-anchor="middle">140 ms</text>
 <rect class="none" x="776" y="284" width="58" height="46" rx="5"/>
 <text class="m" x="805.0" y="308.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="805.0" y="322.0" font-size="9" text-anchor="middle">114 ms</text>
+<text class="m" x="805.0" y="322.0" font-size="9" text-anchor="middle">108 ms</text>
 <rect class="none" x="838" y="284" width="58" height="46" rx="5"/>
 <text class="m" x="867.0" y="308.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="867.0" y="322.0" font-size="9" text-anchor="middle">86 ms</text>
+<text class="m" x="867.0" y="322.0" font-size="9" text-anchor="middle">104 ms</text>
 <rect class="none" x="900" y="284" width="58" height="46" rx="5"/>
 <text class="m" x="929.0" y="308.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="929.0" y="322.0" font-size="9" text-anchor="middle">80 ms</text>
+<text class="m" x="929.0" y="322.0" font-size="9" text-anchor="middle">103 ms</text>
 <rect class="d6 cell" x="340" y="332" width="62" height="50" rx="5"/>
 <text class="inv" x="371.0" y="358.0" font-size="14" font-weight="700" text-anchor="middle">1.58M</text>
-<text class="inv" x="371.0" y="372.0" font-size="9" text-anchor="middle" opacity=".75">20.2 s</text>
+<text class="inv" x="371.0" y="372.0" font-size="9" text-anchor="middle" opacity=".75">17.6 s</text>
 <rect class="d3 cell" x="402" y="332" width="62" height="50" rx="5"/>
 <text class="ink" x="433.0" y="358.0" font-size="14" font-weight="700" text-anchor="middle">3.58k</text>
-<text class="ink" x="433.0" y="372.0" font-size="9" text-anchor="middle" opacity=".75">50.3 s</text>
+<text class="ink" x="433.0" y="372.0" font-size="9" text-anchor="middle" opacity=".75">32.6 s</text>
 <rect class="d0 cell" x="464" y="332" width="62" height="50" rx="5"/>
 <text class="ink" x="495.0" y="358.0" font-size="14" font-weight="700" text-anchor="middle">9</text>
-<text class="ink" x="495.0" y="372.0" font-size="9" text-anchor="middle" opacity=".75">39.1 s</text>
+<text class="ink" x="495.0" y="372.0" font-size="9" text-anchor="middle" opacity=".75">21.9 s</text>
 <rect class="none" x="528" y="334" width="58" height="46" rx="5"/>
 <text class="m" x="557.0" y="358.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="557.0" y="372.0" font-size="9" text-anchor="middle">9.95 s</text>
+<text class="m" x="557.0" y="372.0" font-size="9" text-anchor="middle">7.09 s</text>
 <rect class="none" x="590" y="334" width="58" height="46" rx="5"/>
 <text class="m" x="619.0" y="358.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="619.0" y="372.0" font-size="9" text-anchor="middle">2.82 s</text>
+<text class="m" x="619.0" y="372.0" font-size="9" text-anchor="middle">1.89 s</text>
 <rect class="none" x="652" y="334" width="58" height="46" rx="5"/>
 <text class="m" x="681.0" y="358.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="681.0" y="372.0" font-size="9" text-anchor="middle">802 ms</text>
+<text class="m" x="681.0" y="372.0" font-size="9" text-anchor="middle">575 ms</text>
 <rect class="none" x="714" y="334" width="58" height="46" rx="5"/>
 <text class="m" x="743.0" y="358.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="743.0" y="372.0" font-size="9" text-anchor="middle">270 ms</text>
+<text class="m" x="743.0" y="372.0" font-size="9" text-anchor="middle">190 ms</text>
 <rect class="none" x="776" y="334" width="58" height="46" rx="5"/>
 <text class="m" x="805.0" y="358.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="805.0" y="372.0" font-size="9" text-anchor="middle">140 ms</text>
+<text class="m" x="805.0" y="372.0" font-size="9" text-anchor="middle">133 ms</text>
 <rect class="none" x="838" y="334" width="58" height="46" rx="5"/>
 <text class="m" x="867.0" y="358.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="867.0" y="372.0" font-size="9" text-anchor="middle">104 ms</text>
+<text class="m" x="867.0" y="372.0" font-size="9" text-anchor="middle">101 ms</text>
 <rect class="none" x="900" y="334" width="58" height="46" rx="5"/>
 <text class="m" x="929.0" y="358.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="929.0" y="372.0" font-size="9" text-anchor="middle">92 ms</text>
+<text class="m" x="929.0" y="372.0" font-size="9" text-anchor="middle">90 ms</text>
 <rect class="d4 cell" x="402" y="382" width="62" height="50" rx="5"/>
 <text class="ink" x="433.0" y="408.0" font-size="14" font-weight="700" text-anchor="middle">11.7k</text>
-<text class="ink" x="433.0" y="422.0" font-size="9" text-anchor="middle" opacity=".75">42.4 s</text>
+<text class="ink" x="433.0" y="422.0" font-size="9" text-anchor="middle" opacity=".75">30.4 s</text>
 <rect class="none" x="466" y="384" width="58" height="46" rx="5"/>
 <text class="m" x="495.0" y="408.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="495.0" y="422.0" font-size="9" text-anchor="middle">60.1 s</text>
+<text class="m" x="495.0" y="422.0" font-size="9" text-anchor="middle">35.9 s</text>
 <rect class="none" x="528" y="384" width="58" height="46" rx="5"/>
 <text class="m" x="557.0" y="408.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="557.0" y="422.0" font-size="9" text-anchor="middle">13.8 s</text>
+<text class="m" x="557.0" y="422.0" font-size="9" text-anchor="middle">9.78 s</text>
 <rect class="none" x="590" y="384" width="58" height="46" rx="5"/>
 <text class="m" x="619.0" y="408.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="619.0" y="422.0" font-size="9" text-anchor="middle">3.46 s</text>
+<text class="m" x="619.0" y="422.0" font-size="9" text-anchor="middle">2.43 s</text>
 <rect class="none" x="652" y="384" width="58" height="46" rx="5"/>
 <text class="m" x="681.0" y="408.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="681.0" y="422.0" font-size="9" text-anchor="middle">864 ms</text>
+<text class="m" x="681.0" y="422.0" font-size="9" text-anchor="middle">691 ms</text>
 <rect class="none" x="714" y="384" width="58" height="46" rx="5"/>
 <text class="m" x="743.0" y="408.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="743.0" y="422.0" font-size="9" text-anchor="middle">281 ms</text>
+<text class="m" x="743.0" y="422.0" font-size="9" text-anchor="middle">196 ms</text>
 <rect class="none" x="776" y="384" width="58" height="46" rx="5"/>
 <text class="m" x="805.0" y="408.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="805.0" y="422.0" font-size="9" text-anchor="middle">142 ms</text>
+<text class="m" x="805.0" y="422.0" font-size="9" text-anchor="middle">125 ms</text>
 <rect class="none" x="838" y="384" width="58" height="46" rx="5"/>
 <text class="m" x="867.0" y="408.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="867.0" y="422.0" font-size="9" text-anchor="middle">109 ms</text>
+<text class="m" x="867.0" y="422.0" font-size="9" text-anchor="middle">117 ms</text>
 <rect class="none" x="900" y="384" width="58" height="46" rx="5"/>
 <text class="m" x="929.0" y="408.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="929.0" y="422.0" font-size="9" text-anchor="middle">101 ms</text>
+<text class="m" x="929.0" y="422.0" font-size="9" text-anchor="middle">90 ms</text>
 <rect class="d0 cell" x="464" y="432" width="62" height="50" rx="5"/>
 <text class="ink" x="495.0" y="458.0" font-size="14" font-weight="700" text-anchor="middle">5</text>
-<text class="ink" x="495.0" y="472.0" font-size="9" text-anchor="middle" opacity=".75">27.8 s</text>
+<text class="ink" x="495.0" y="472.0" font-size="9" text-anchor="middle" opacity=".75">18.1 s</text>
 <text class="star" x="518" y="445" font-size="12" text-anchor="middle">★</text>
 <rect class="none" x="528" y="434" width="58" height="46" rx="5"/>
 <text class="m" x="557.0" y="458.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="557.0" y="472.0" font-size="9" text-anchor="middle">11.7 s</text>
+<text class="m" x="557.0" y="472.0" font-size="9" text-anchor="middle">8.61 s</text>
 <rect class="none" x="590" y="434" width="58" height="46" rx="5"/>
 <text class="m" x="619.0" y="458.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="619.0" y="472.0" font-size="9" text-anchor="middle">3.02 s</text>
+<text class="m" x="619.0" y="472.0" font-size="9" text-anchor="middle">2.33 s</text>
 <rect class="none" x="652" y="434" width="58" height="46" rx="5"/>
 <text class="m" x="681.0" y="458.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="681.0" y="472.0" font-size="9" text-anchor="middle">766 ms</text>
+<text class="m" x="681.0" y="472.0" font-size="9" text-anchor="middle">658 ms</text>
 <rect class="none" x="714" y="434" width="58" height="46" rx="5"/>
 <text class="m" x="743.0" y="458.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="743.0" y="472.0" font-size="9" text-anchor="middle">269 ms</text>
+<text class="m" x="743.0" y="472.0" font-size="9" text-anchor="middle">197 ms</text>
 <rect class="none" x="776" y="434" width="58" height="46" rx="5"/>
 <text class="m" x="805.0" y="458.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="805.0" y="472.0" font-size="9" text-anchor="middle">138 ms</text>
+<text class="m" x="805.0" y="472.0" font-size="9" text-anchor="middle">126 ms</text>
 <rect class="none" x="838" y="434" width="58" height="46" rx="5"/>
 <text class="m" x="867.0" y="458.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="867.0" y="472.0" font-size="9" text-anchor="middle">103 ms</text>
+<text class="m" x="867.0" y="472.0" font-size="9" text-anchor="middle">105 ms</text>
 <rect class="none" x="900" y="434" width="58" height="46" rx="5"/>
 <text class="m" x="929.0" y="458.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="929.0" y="472.0" font-size="9" text-anchor="middle">90 ms</text>
+<text class="m" x="929.0" y="472.0" font-size="9" text-anchor="middle">106 ms</text>
 <rect class="none" x="528" y="484" width="58" height="46" rx="5"/>
 <text class="m" x="557.0" y="508.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="557.0" y="522.0" font-size="9" text-anchor="middle">3.53 s</text>
+<text class="m" x="557.0" y="522.0" font-size="9" text-anchor="middle">2.86 s</text>
 <rect class="none" x="590" y="484" width="58" height="46" rx="5"/>
 <text class="m" x="619.0" y="508.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="619.0" y="522.0" font-size="9" text-anchor="middle">2.07 s</text>
+<text class="m" x="619.0" y="522.0" font-size="9" text-anchor="middle">1.45 s</text>
 <rect class="none" x="652" y="484" width="58" height="46" rx="5"/>
 <text class="m" x="681.0" y="508.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="681.0" y="522.0" font-size="9" text-anchor="middle">587 ms</text>
+<text class="m" x="681.0" y="522.0" font-size="9" text-anchor="middle">496 ms</text>
 <rect class="none" x="714" y="484" width="58" height="46" rx="5"/>
 <text class="m" x="743.0" y="508.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="743.0" y="522.0" font-size="9" text-anchor="middle">232 ms</text>
+<text class="m" x="743.0" y="522.0" font-size="9" text-anchor="middle">186 ms</text>
 <rect class="none" x="776" y="484" width="58" height="46" rx="5"/>
 <text class="m" x="805.0" y="508.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="805.0" y="522.0" font-size="9" text-anchor="middle">130 ms</text>
+<text class="m" x="805.0" y="522.0" font-size="9" text-anchor="middle">124 ms</text>
 <rect class="none" x="838" y="484" width="58" height="46" rx="5"/>
 <text class="m" x="867.0" y="508.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="867.0" y="522.0" font-size="9" text-anchor="middle">106 ms</text>
+<text class="m" x="867.0" y="522.0" font-size="9" text-anchor="middle">115 ms</text>
 <rect class="none" x="900" y="484" width="58" height="46" rx="5"/>
 <text class="m" x="929.0" y="508.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="929.0" y="522.0" font-size="9" text-anchor="middle">89 ms</text>
+<text class="m" x="929.0" y="522.0" font-size="9" text-anchor="middle">100 ms</text>
 <rect class="none" x="590" y="534" width="58" height="46" rx="5"/>
 <text class="m" x="619.0" y="558.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="619.0" y="572.0" font-size="9" text-anchor="middle">480 ms</text>
+<text class="m" x="619.0" y="572.0" font-size="9" text-anchor="middle">460 ms</text>
 <rect class="none" x="652" y="534" width="58" height="46" rx="5"/>
 <text class="m" x="681.0" y="558.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="681.0" y="572.0" font-size="9" text-anchor="middle">298 ms</text>
+<text class="m" x="681.0" y="572.0" font-size="9" text-anchor="middle">270 ms</text>
 <rect class="none" x="714" y="534" width="58" height="46" rx="5"/>
 <text class="m" x="743.0" y="558.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="743.0" y="572.0" font-size="9" text-anchor="middle">160 ms</text>
+<text class="m" x="743.0" y="572.0" font-size="9" text-anchor="middle">145 ms</text>
 <rect class="none" x="776" y="534" width="58" height="46" rx="5"/>
 <text class="m" x="805.0" y="558.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="805.0" y="572.0" font-size="9" text-anchor="middle">122 ms</text>
+<text class="m" x="805.0" y="572.0" font-size="9" text-anchor="middle">117 ms</text>
 <rect class="none" x="838" y="534" width="58" height="46" rx="5"/>
 <text class="m" x="867.0" y="558.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="867.0" y="572.0" font-size="9" text-anchor="middle">95 ms</text>
+<text class="m" x="867.0" y="572.0" font-size="9" text-anchor="middle">103 ms</text>
 <rect class="none" x="900" y="534" width="58" height="46" rx="5"/>
 <text class="m" x="929.0" y="558.0" font-size="15" text-anchor="middle">∅</text>
-<text class="m" x="929.0" y="572.0" font-size="9" text-anchor="middle">90 ms</text>
+<text class="m" x="929.0" y="572.0" font-size="9" text-anchor="middle">101 ms</text>
 <text class="m" x="92" y="612" font-size="11">number of rectangles (and time to the answer, 32 threads)</text>
 <rect class="d0" x="92" y="622" width="38" height="14" rx="2"/>
 <text class="m" x="92" y="650" font-size="10">1</text>

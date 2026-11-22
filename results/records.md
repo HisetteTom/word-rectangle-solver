@@ -57,3 +57,8 @@ squares (each row equals the matching column). So no non-symmetric 8×8 exists, 
 | 3×13 | 1 | 0.10 s | `acetazolamide/aeromedicines/serriednesses`: the only one |
 | 2×13 | 2 | 0.09 s | `antihistamine/guanethidines`, `antisatellite/leishmaniasis` |
 | 9×9, 10×10 | 0 | 3.5 s, 0.5 s | proven impossible |
+
+Re-run 2026-11-22 02:40 with the night's code ("mirror-image job test in find"): same answers for all
+153 sizes. Times on the slow ones: 8×8 27.8 → **18.1 s**, 7×7 42.4 → **30.4 s**, 7×8 60.1 →
+**35.9 s**, 6×8 39.1 → **21.9 s**, 6×7 50.3 → **32.6 s**, 6×6 20.2 → 17.6 s, 6×9 9.95 → 7.09 s,
+5×7 15.1 → 9.8 s. The whole atlas now takes about 5 minutes.
