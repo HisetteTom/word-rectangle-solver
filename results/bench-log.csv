@@ -776,3 +776,21 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,d3b387c,fast,par,B16,find --rows 6 --cols 9,6.1486,7235095156,no solution: 6x9 exhausted,6.042140,second-to-last-row set cap 128,hephaestus
 2026-11-22,d3b387c,fast,par,B17,count --rows 4 --cols 7,1.8466,996185895,solutions=7139499,1.749792,second-to-last-row set cap 128,hephaestus
 2026-11-22,d3b387c,fast,par,B18,count --rows 6 --cols 6,18.1117,15605237112,solutions=1584465,18.020634,second-to-last-row set cap 128,hephaestus
+2026-11-22,acc0a0b,fast,par,B1,count --rows 3 --cols 3,0.0790,994996,solutions=1909732,0.001804,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B2,find --rows 5 --cols 6,0.0912,7220,found,0.000150,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B3,find --rows 6 --cols 6,0.0862,12839,found,0.000228,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B4,count --rows 4 --cols 4,0.1968,170485926,solutions=136245247,0.116188,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B5,count --rows 4 --cols 5,0.8093,375002641,solutions=114846713,0.723775,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B6,count --rows 3 --cols 7,0.3173,92856296,solutions=4453472,0.219644,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B7,find --rows 7 --cols 7,0.2022,28159077,found,0.104816,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B8,find --rows 6 --cols 7,0.1767,15440618,found,0.081082,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B9,find --rows 5 --cols 9,0.2556,157331935,found,0.151836,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B10,count --rows 5 --cols 5,4.8400,3167969514,solutions=80364530,4.760514,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B11,count --rows 4 --cols 6,1.4848,716449909,solutions=37812638,1.397257,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B12,find --rows 6 --cols 8,0.9061,432097480,found,0.793128,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B13,find --rows 5 --cols 10,0.6442,608109201,no solution: 5x10 exhausted,0.533533,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B14,count --rows 6 --cols 4,1.4845,716449909,solutions=37812638,1.404282,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B15,count --rows 5 --cols 6,12.0560,5921750409,solutions=7424362,11.964775,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B16,find --rows 6 --cols 9,6.1277,7234712692,no solution: 6x9 exhausted,6.018856,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B17,count --rows 4 --cols 7,2.4388,1012479414,solutions=7139499,2.340569,last row first (failed),hephaestus
+2026-11-22,acc0a0b,fast,par,B18,count --rows 6 --cols 6,19.6259,15583124906,solutions=1584465,19.543245,last row first (failed),hephaestus

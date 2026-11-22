@@ -1260,3 +1260,23 @@ uninitialized buffer, a bigger cap costs only stack. Sweep (median of 5):
 | B14 count 6×4 | 1.422 s | 1.394 s | 1.02× |
 
 **Verdict:** kept: small but consistent on every shape that uses `count_pen`.
+
+### 2026-11-22: last two rows, last row first (`acc0a0b`) ❌ reverted
+
+**Idea:** each column only constrains the pair (A_c, B_c) of the last two rows to its two-letter
+endings. The kernel enumerates A (second-to-last row) and tracks the B prefixes. B's letters are
+column-word *endings*, the more selective side (that's why the mirror image helped), so: enumerate B
+first (with the look-ahead against "letters the column can end with"), and track the possible A
+prefixes as a set. Per row start, a table per column maps each B-letter to the A-letters that allow it.
+The last column adds popcounts. If the A set overflows 128 slots, the row is recounted the usual way.
+
+| Benchmark | Before (set cap 128) | After | Change |
+|---|---|---|---|
+| B10 count 5×5 | 3.96 s · 3.12 G nodes | 4.76 s · 3.17 G | slower |
+| B15 count 5×6 | 10.13 s · 5.95 G | 12 s · 5.92 G | slower |
+| B17 count 4×7 | 1.75 s | 2.34 s | slower |
+| B18 count 6×6 | 18.0 s | 19.5 s | slower |
+
+**Verdict:** reverted. The node counts barely move: the pair constraints prune the same from either
+side, and the per-row tables add cost. The selectivity of word endings had already been used up by
+the mirror image.

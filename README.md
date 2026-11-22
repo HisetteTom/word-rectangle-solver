@@ -15,7 +15,7 @@ Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal
 > **8×8 (exactly five, all symmetric squares)**. New tricks: exact next-row sets, counting the
 > **mirror image** of the grid (rows filled from their last letter: up to 1.7× faster), an
 > **anti-diagonal symmetry** for mirrored squares, and mirror-image tests for `find` (proofs that no
-> grid exists: 1.5–1.7× faster). 20 benchmarked steps that night (9 kept, 11 failed), all documented:
+> grid exists: 1.5–1.7× faster). 21 benchmarked steps that night (9 kept, 12 failed), all documented:
 > [`results/journal.md`](results/journal.md).
 
 ---

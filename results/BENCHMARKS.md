@@ -67,6 +67,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 1.66 ms | 3,543× | 1.06× | 994,996 | solutions=1909732 |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 1.66 ms | 3,536× | 1.06× | 994,996 | solutions=1909732 |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 1.73 ms | 3,389× | 1.02× | 994,996 | solutions=1909732 |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 1.8 ms | 3,252× | 0.96× | 994,996 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -120,6 +121,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 150 µs | 7,693× | 0.97× | 7,220 | found |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 145 µs | 7,958× | 1.00× | 7,220 | found |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 149 µs | 7,745× | 0.97× | 7,220 | found |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 150 µs | 7,693× | 0.99× | 7,220 | found |
 
 ## B3 · find first 6×6
 
@@ -173,6 +175,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 231 µs | 11,740× | 0.99× | 12,839 | found |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 230 µs | 11,791× | 1.00× | 12,839 | found |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 232 µs | 11,689× | 0.99× | 12,839 | found |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 228 µs | 11,894× | 1.02× | 12,839 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -225,6 +228,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 113 ms | 127× | 1.01× | 170,637,018 | solutions=136245247 |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 116 ms | 124× | 0.99× | 170,637,018 | solutions=136245247 |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 113 ms | 127× | 1.01× | 170,485,926 | solutions=136245247 |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 116 ms | 123× | 0.97× | 170,485,926 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -277,6 +281,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 741 ms | 77.9× | 0.98× | 414,768,985 | solutions=114846713 |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 732 ms | 78.9× | 1.00× | 414,768,985 | solutions=114846713 |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 718 ms | 80.4× | 1.01× | 375,002,641 | solutions=114846713 |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 724 ms | 79.8× | 0.99× | 375,002,641 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -329,6 +334,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 88.6 ms | 66.2× | 0.99× | 73,694,947 | solutions=4453472 |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 94.1 ms | 62.4× | 0.94× | 73,694,913 | solutions=4453472 |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 89.4 ms | 65.6× | 0.98× | 73,695,021 | solutions=4453472 |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 220 ms | 26.7× | 0.41× | 92,856,296 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -381,6 +387,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 110 ms | 16.5× | 0.94× | 27,664,437 | found |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 109 ms | 16.6× | 0.95× | 27,508,675 | found |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 103 ms | 17.5× | 1.00× | 28,869,782 | found |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 105 ms | 17.3× | 0.99× | 28,159,077 | found |
 
 ## B8 · find first 6×7
 
@@ -433,6 +440,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 82.9 ms | 17.7× | 0.97× | 15,376,212 | found |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 82.9 ms | 17.7× | 0.97× | 15,431,469 | found |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 82.4 ms | 17.8× | 0.98× | 15,474,634 | found |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 81.1 ms | 18.1× | 1.02× | 15,440,618 | found |
 
 ## B9 · find first 5×9
 
@@ -485,6 +493,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 155 ms | 53.9× | 0.96× | 157,462,043 | found |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 153 ms | 54.8× | 0.97× | 157,286,771 | found |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 151 ms | 55.5× | 0.99× | 157,429,780 | found |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 152 ms | 55.1× | 0.99× | 157,331,935 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -533,6 +542,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 4.09 s | 3.90× | 0.96× | 2,580,297,915 | solutions=80364530 |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 4.46 s | 3.57× | 0.88× | 3,046,679,344 | solutions=80364530 |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 3.96 s | 4.02× | 0.99× | 3,129,472,451 | solutions=80364530 |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 4.76 s | 3.35× | 0.83× | 3,167,969,514 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -581,6 +591,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 1.42 s | 3.52× | 1.00× | 774,415,735 | solutions=37812638 |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 1.42 s | 3.52× | 1.00× | 774,415,735 | solutions=37812638 |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 1.39 s | 3.61× | 1.02× | 716,449,909 | solutions=37812638 |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 1.40 s | 3.59× | 0.99× | 716,449,909 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -629,6 +640,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 824 ms | 3.20× | 0.97× | 435,882,985 | found |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 856 ms | 3.09× | 0.94× | 435,512,663 | found |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 803 ms | 3.29× | 1.00× | 433,144,128 | found |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 793 ms | 3.33× | 1.01× | 432,097,480 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -677,6 +689,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 553 ms | 4.44× | 0.99× | 605,269,014 | no solution: 5x10 exhausted |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 547 ms | 4.49× | 1.00× | 605,188,529 | no solution: 5x10 exhausted |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 538 ms | 4.57× | 1.02× | 606,400,112 | no solution: 5x10 exhausted |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 534 ms | 4.61× | 1.01× | 608,109,201 | no solution: 5x10 exhausted |
 
 ## B14 · count all 6×4 (exhaustive)
 
@@ -725,6 +738,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 1.43 s | 6.73× | 0.99× | 774,415,735 | solutions=37812638 |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 1.43 s | 6.72× | 0.99× | 774,415,735 | solutions=37812638 |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 1.39 s | 6.91× | 1.02× | 716,449,909 | solutions=37812638 |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 1.40 s | 6.86× | 0.99× | 716,449,909 | solutions=37812638 |
 
 ## B15 · count all 5×6 (exhaustive)
 
@@ -773,6 +787,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 10.5 s | 2.87× | 0.96× | 4,154,854,672 | solutions=7424362 |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 11.3 s | 2.66× | 0.89× | 5,711,298,906 | solutions=7424362 |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 10.1 s | 2.96× | 0.99× | 5,947,012,110 | solutions=7424362 |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 12.0 s | 2.50× | 0.85× | 5,921,750,409 | solutions=7424362 |
 
 ## B16 · prove no 6×9 exists (exhaustive)
 
@@ -821,6 +836,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 6.15 s | 4.22× | 0.98× | 7,234,755,664 | no solution: 6x9 exhausted |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 6.17 s | 4.21× | 0.97× | 7,234,712,692 | no solution: 6x9 exhausted |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 6.04 s | 4.30× | 0.99× | 7,235,095,156 | no solution: 6x9 exhausted |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 6.02 s | 4.31× | 1.00× | 7,234,712,692 | no solution: 6x9 exhausted |
 
 ## B17 · count all 4×7 (exhaustive)
 
@@ -869,6 +885,7 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 1.92 s | 3.61× | 0.90× | 947,315,421 | solutions=7139499 |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 2.06 s | 3.36× | 0.83× | 989,407,265 | solutions=7139499 |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 1.75 s | 3.96× | 0.98× | 996,185,895 | solutions=7139499 |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 2.34 s | 2.96× | 0.75× | 1,012,479,414 | solutions=7139499 |
 
 ## B18 · count all 6×6 (exhaustive)
 
@@ -917,3 +934,4 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~whole-word last-row check (failed)~~ | `ee7042b` | 2026-11-22 | fast | 18.0 s | 4.94× | 0.99× | 15,343,179,249 | solutions=1584465 |
 | ❌ | ~~bigram path check (failed)~~ | `96fc6cc` | 2026-11-22 | fast | 18.8 s | 4.73× | 0.95× | 15,518,026,106 | solutions=1584465 |
 | ⭐ | **second-to-last-row set cap 128** | `d3b387c` | 2026-11-22 | fast | 18.0 s | 4.94× | 0.99× | 15,605,237,112 | solutions=1584465 |
+| ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 19.5 s | 4.56× | 0.92× | 15,583,124,906 | solutions=1584465 |
