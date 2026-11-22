@@ -40,9 +40,10 @@ macro_rules! by_width {
     };
 }
 
-/// Jobs per thread. Exhaustive counting balances fine with few jobs; `find` needs many
-/// small jobs, because the job that holds the first solution must not be one huge subtree.
-const COUNT_JOBS_PER_THREAD: usize = 256;
+/// Jobs per thread. Exhaustive counting balances fine with few jobs (512: 1–3% faster than 256 on
+/// 4×5, 4×6, 4×7, 5×5 since the kernels got faster; 1024 costs 3×7 25% in job expansion); `find`
+/// needs many small jobs, because the job that holds the first solution must not be one huge subtree.
+const COUNT_JOBS_PER_THREAD: usize = 512;
 const FIND_JOBS_PER_THREAD: usize = 4096;
 /// `find` first searches sequentially for this many nodes (~0.5 ms); small instances finish
 /// there without paying for threads and job expansion.
