@@ -956,3 +956,21 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,ce2c2ec,fast,par,B16,find --rows 6 --cols 9,4.8255,2502277255,no solution: 6x9 exhausted,4.719978,mirror tests from 8 letters,hephaestus
 2026-11-22,ce2c2ec,fast,par,B17,count --rows 4 --cols 7,1.7596,993187402,solutions=7139499,1.668497,mirror tests from 8 letters,hephaestus
 2026-11-22,ce2c2ec,fast,par,B18,count --rows 6 --cols 6,17.9624,15605237112,solutions=1584465,17.866533,mirror tests from 8 letters,hephaestus
+2026-11-22,6764763,fast,par,B1,count --rows 3 --cols 3,0.0843,994996,solutions=1909732,0.001691,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B2,find --rows 5 --cols 6,0.0864,7220,found,0.000142,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B3,find --rows 6 --cols 6,0.0912,12839,found,0.000227,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B4,count --rows 4 --cols 4,0.1935,170485926,solutions=136245247,0.111967,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B5,count --rows 4 --cols 5,0.7493,376530299,solutions=114846713,0.672419,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B6,count --rows 3 --cols 7,0.1808,72352263,solutions=4453472,0.084201,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B7,find --rows 7 --cols 7,0.1445,22463631,found,0.043210,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B8,find --rows 6 --cols 7,0.1277,14686393,found,0.033625,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B9,find --rows 5 --cols 9,0.2294,65164682,found,0.117540,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B10,count --rows 5 --cols 5,4.0031,3129472451,solutions=80364530,3.923387,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B11,count --rows 4 --cols 6,1.4193,722346874,solutions=37812638,1.333976,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B12,find --rows 6 --cols 8,0.7335,375241385,found,0.630069,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B13,find --rows 5 --cols 10,0.5525,232789126,no solution: 5x10 exhausted,0.444065,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B14,count --rows 6 --cols 4,1.4185,722346874,solutions=37812638,1.334013,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B15,count --rows 5 --cols 6,10.0655,5948229468,solutions=7424362,9.973195,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B16,find --rows 6 --cols 9,4.8813,2507970427,no solution: 6x9 exhausted,4.773245,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B17,count --rows 4 --cols 7,1.7659,993187402,solutions=7139499,1.670127,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,6764763,fast,par,B18,count --rows 6 --cols 6,18.0139,15605237112,solutions=1584465,17.922634,mirror tests for tall 7-letter grids,hephaestus

@@ -1602,3 +1602,34 @@ New rule: rows of 8+ letters, any area.
 | others | | | ≈ (already mirrored, or 7-letter rows) |
 
 **Verdict:** kept.
+
+### 2026-11-22: mirror tests for tall 7-letter grids (`6764763`) ✅ kept (no benchmark moves)
+
+On 7-letter rows, row-0 mirror jobs lose (7×7 43 → 49 ms, 6×7 33 → 52 ms), because the jobs are coarse
+and the mirror isn't built yet for short finds. The *usual fine jobs* (deeper than row 0) can also be
+mirror-tested: the test places the full rows and forces the partial row through virtual column
+nodes. Measured (median of 3; the proofs once):
+
+| find | no mirror | mirror, row-0 jobs | mirror, fine jobs |
+|---|---:|---:|---:|
+| 7×7 | 44.6 ms | 52.0 ms | 44.9 ms (5% slower in a median-of-9 recheck) |
+| 6×7 | 32.2 ms | 51.5 ms | 34.5 ms |
+| 7×6 | 51.8 ms | 109 ms | 55.7 ms |
+| 8×6 | 4.11 s | 4.02 s | 4.01 s |
+| **prove no 8×7** | **68.3 s** | 48.3 s | **47.7 s** (1.43×) |
+| **prove no 9×7** | **32.6 s** | | **23.3 s** (1.40×) |
+| 6×8 (8+ letters) | 637 ms (row-0) | | 585 ms |
+| 5×10 (8+ letters) | 453 ms (row-0) | | 764 ms ✗ |
+| prove no 6×9 | 4.65 s (row-0) | | 5.21 s ✗ |
+
+Rule now: rows of 8+ letters, mirror with row-0 jobs (as before); 7-letter rows on grids of 8+ rows,
+mirror with fine jobs. That's where the long proofs are. No benchmark has that shape (7×7 stays
+as it was), so the bars don't move. The atlas's tall proofs do. New test cases 8×7 in the mirror
+cross-check; a deliberate bug in the virtual nodes is caught.
+
+**Also measured: B16 drift.** B16 (no 6×9) read 4.61 s at "next-row set up to 10 letters" and 4.77 s
+now, though no step since touches its path. Rebuilding each commit: 4.60 → 4.70 (count jobs 512,
+which changes only counts) → 4.63 (resume) → 4.72 (mirror rule, same path for 6×9) → 4.77. That is
+**code layout**: unrelated edits move the hot loops. Forcing 64-byte function alignment
+(`-C llvm-args=-align-all-functions=6`) made it *worse* everywhere (6×9 5.8 s). So differences of
+±3% on a single benchmark are within layout noise unless the step touches that path.
