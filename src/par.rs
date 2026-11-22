@@ -12,9 +12,10 @@
 //!    enough jobs (`*_JOBS_PER_THREAD` × threads). A job = the letters of that prefix.
 //! 2. Workers pull jobs from an atomic counter (dynamic load balancing: subtrees are
 //!    wildly uneven, and P-cores / E-cores run at different speeds).
-//! 3. `find` is deterministic: `best` = lowest job index that found a solution; workers
-//!    skip / abort any job after it, so the answer is the lexicographically first grid,
-//!    exactly what the sequential solver returns.
+//! 3. `find` is deterministic: jobs are ranked in lexicographic order, and workers skip / abort
+//!    any job ranked after one known to hold a solution, so the answer is the lexicographically
+//!    first grid, exactly what the sequential solver returns. Long jobs are split while threads
+//!    are idle (see `find`).
 
 use crate::trie::{CNode, CTrie, Node, Trie};
 
@@ -22,7 +23,8 @@ use crate::trie::{CNode, CTrie, Node, Trie};
 const _: () = assert!(size_of::<Node>() == 16 && size_of::<CNode>() == 8);
 use crate::{Grid, Solver, Stats};
 use std::sync::Mutex;
-use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed, Ordering::SeqCst};
+use std::sync::atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering::Relaxed, Ordering::SeqCst};
+use std::time::{Duration, Instant};
 
 /// Calls `$body` with the const generic `$W` = `$w` (1..=32): the kernels are monomorphized per
 /// row width, so column loops, `c + k < W` tests and array bounds are compile-time constants.
@@ -82,8 +84,43 @@ pub struct ParSearch {
     stats: Stats,
 }
 
-/// `find`'s job cut: (rank of the best job with a solution so far, this job's rank, deadline).
-type Cut<'a> = (&'a AtomicU64, u64, Option<(std::time::Instant, &'a std::sync::atomic::AtomicBool)>);
+/// A queued piece of `find` work, ranked by `lo` (see `find`; the queue serves the lowest first).
+struct Task {
+    lo: u64,
+    hi: u64,
+    budget: Duration,
+    kind: TaskKind,
+}
+
+enum TaskKind {
+    /// Test the job `prefix` (on the mirror if `mirror_ok` and it is built) and search it if it has
+    /// solutions.
+    Job { prefix: Vec<u8>, mirror_ok: bool },
+    /// Part of the mirror test of job `prefix`: does the mirror prefix `m` extend to a grid? `group`
+    /// is set once a part of this job found one (the job is then searched, once).
+    Part { group: std::sync::Arc<AtomicBool>, prefix: Vec<u8>, m: Vec<u8> },
+}
+
+impl PartialEq for Task {
+    fn eq(&self, o: &Self) -> bool {
+        self.lo == o.lo
+    }
+}
+impl Eq for Task {}
+impl PartialOrd for Task {
+    fn partial_cmp(&self, o: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(o))
+    }
+}
+impl Ord for Task {
+    /// Reversed: `BinaryHeap` pops the greatest, the queue must pop the lowest rank.
+    fn cmp(&self, o: &Self) -> std::cmp::Ordering {
+        o.lo.cmp(&self.lo)
+    }
+}
+
+/// `find`'s job cut: (rank bound: work ranked at or above it is useless, this job's rank, deadline).
+type Cut<'a> = (&'a AtomicU64, u64, Option<(Instant, &'a AtomicBool)>);
 
 /// Per-thread search state.
 struct Worker<'a> {
@@ -123,8 +160,9 @@ impl<'a> Worker<'a> {
     }
 
     /// Count all completions of the loaded job prefix (`cell` = first empty cell).
-    /// `plain` = Some((best, job, budget)) for `find`: no square symmetry (prefixes leave row 0), stop at the
-    /// first solution (the result is then only "0" or "some"), and give up (0) once `best` < job.
+    /// `plain` = Some(cut) for `find`: no square symmetry (prefixes leave row 0), stop at the first
+    /// solution (the result is then only "0" or "some"), and give up (0, `cancelled` set) when
+    /// the cut says so (see `Cut`).
     fn count_job(&mut self, cell: usize, plain: Option<Cut>) -> u64 {
         by_width!(self.s.cols, |W| self.count_job_w::<W>(cell, plain))
     }
@@ -205,9 +243,9 @@ struct Kernel<'t, const W: usize> {
     /// Row trie root, cached (no load + bounds check at every row start).
     root: Node,
     last_r: usize,
-    /// `count::<ANY>` only: (best job so far, this job, deadline). The job is cancelled once an
-    /// earlier job has a solution or the deadline passed; `cancelled` then makes every frame return
-    /// at once.
+    /// `count::<ANY>` only (see `Cut`). The job is cancelled once an earlier job is known to hold a
+    /// solution, or the deadline passed while a thread is idle; `cancelled` then makes every frame
+    /// return at once.
     cut: Option<Cut<'t>>,
     cancelled: std::cell::Cell<bool>,
 
@@ -483,8 +521,8 @@ impl<const W: usize> Kernel<'_, W> {
         crate::probe::hit(r, c);
         if ANY {
             if *nodes & 1023 == 0
-                && let Some((best, j, deadline)) = self.cut
-                && (best.load(Relaxed) < j || deadline.is_some_and(|(d, hurry)| hurry.load(Relaxed) && std::time::Instant::now() > d))
+                && let Some((bound, j, deadline)) = self.cut
+                && (bound.load(Relaxed) <= j || deadline.is_some_and(|(d, hurry)| hurry.load(Relaxed) && Instant::now() > d))
             {
                 self.cancelled.set(true);
             }
@@ -587,8 +625,8 @@ impl<const W: usize> Kernel<'_, W> {
         crate::probe::hit(self.last_r - 1, c);
         if ANY {
             if *nodes & 1023 == 0
-                && let Some((best, j, deadline)) = self.cut
-                && (best.load(Relaxed) < j || deadline.is_some_and(|(d, hurry)| hurry.load(Relaxed) && std::time::Instant::now() > d))
+                && let Some((bound, j, deadline)) = self.cut
+                && (bound.load(Relaxed) <= j || deadline.is_some_and(|(d, hurry)| hurry.load(Relaxed) && Instant::now() > d))
             {
                 self.cancelled.set(true);
             }
@@ -1022,127 +1060,225 @@ impl Solver for ParSearch {
                 std::thread::spawn(build);
             }
         }
-        // 4. every job gets a time budget (test, then search; enforced only once a solution is known
-        //    or every job has started: before that, other threads have work of their own). A job over
-        //    budget is split into sub-jobs (budget doubled), which go to a shared queue that workers
-        //    serve first, so all threads help on a huge subtree instead of one walking it while the
-        //    others wait (7×7: 104 -> 62 ms, 6×7: 82 -> 43 ms). Jobs are ranked by
-        //    disjoint intervals [lo, hi) in lexicographic order (top job j: [j·SPAN, (j+1)·SPAN),
-        //    sub-jobs split their parent's interval), so the solution of the lowest-ranked job that
-        //    has one is the first grid, and jobs ranked above a found solution are skipped.
+        // 4. every job gets a time budget (test, then search; enforced only while a thread is idle). Work over
+        //    budget is split (budget doubled), and the pieces go to a shared queue that workers serve
+        //    first, so all threads help on a huge subtree instead of one walking it while the others
+        //    wait (7×7: 104 -> 62 ms, 6×7: 82 -> 43 ms). Jobs are ranked by disjoint intervals
+        //    [lo, hi) in lexicographic order (top job j: [j·SPAN, (j+1)·SPAN), sub-jobs split their
+        //    parent's interval), so the solution of the lowest-ranked job that has one is the first
+        //    grid, and work ranked above a found solution is skipped.
+        //    A mirror test is split in the *mirror's* order (`Part`s: more of the mirror's rows,
+        //    left to right), since forcing original-order letters at the end of mirror rows would
+        //    redo most of the parent's test in every sub-job (6×9: 6.0 -> 12.2 s). The parts only
+        //    decide whether the job has a solution; the first part that finds one starts the job's
+        //    search.
         const SPAN: u64 = 1 << 40;
         let count = jobs.len().checked_div(depth).unwrap_or(1);
-        let budget = std::time::Duration::from_micros(if self.eager_split { 0 } else { FIND_JOB_BUDGET_US });
-        let best = AtomicU64::new(u64::MAX);
-        // set once a solution is known or all top-level jobs are taken: only then are long jobs split
-        let hurry = std::sync::atomic::AtomicBool::new(self.eager_split);
+        let budget = Duration::from_micros(if self.eager_split { 0 } else { FIND_JOB_BUDGET_US });
+        // `bound`: everything ranked at or above it is useless, because an earlier interval is known
+        // to hold a solution (min `hi` over jobs whose test or search found one)
+        let bound = AtomicU64::new(u64::MAX);
+        // set while some thread is idle and the queue is empty: only then is work split (aborting a
+        // job wastes what it did, which only pays if a thread would otherwise wait)
+        let hurry = AtomicBool::new(self.eager_split);
         let (next, inflight) = (AtomicUsize::new(0), AtomicUsize::new(self.threads.min(count)));
-        let queue = Mutex::new(std::collections::BinaryHeap::new());
+        let queue = Mutex::new(std::collections::BinaryHeap::<Task>::new());
         let queued = AtomicUsize::new(0);
         let (nodes, extra) = (AtomicU64::new(0), AtomicU64::new(0));
         let results = Mutex::new(Vec::new());
         let this: &ParSearch = self;
-        let process = |w: &mut Worker, lo: u64, hi: u64, prefix: &[u8], budget: std::time::Duration| {
-            if best.load(Relaxed) < lo {
+        let w_cols = self.cols;
+        let push = |tasks: Vec<Task>| {
+            let mut q = queue.lock().unwrap();
+            q.extend(tasks);
+            queued.store(q.len(), SeqCst);
+        };
+        // `subs` (lexicographic order) as tasks with sub-intervals of [lo, hi); None if they can't be ranked
+        let ranked = |lo: u64, hi: u64, budget: Duration, subs: Vec<Vec<u8>>| -> Option<Vec<Task>> {
+            let step = (hi - lo) / subs.len() as u64;
+            if step == 0 || subs.len() < 2 {
+                return None;
+            }
+            let last = subs.len() - 1;
+            Some(subs.into_iter().enumerate().map(|(i, prefix)| {
+                let a = lo + i as u64 * step;
+                Task { lo: a, hi: if i == last { hi } else { a + step }, budget: budget * 2, kind: TaskKind::Job { prefix, mirror_ok: false } }
+            }).collect())
+        };
+        let deadline = |split: bool, budget: Duration| split.then(|| (Instant::now() + budget, &hurry));
+        // the job is known to have solutions: find its first one
+        let search = |w: &mut Worker, lo: u64, hi: u64, prefix: &[u8], budget: Duration| {
+            let mut split = true;
+            loop {
+                let d = deadline(split, budget);
+                let late = || d.is_some_and(|(d, h)| h.load(Relaxed) && Instant::now() > d);
+                let mut sol = None;
+                w.load(prefix);
+                w.search(prefix.len(), &mut |g: &[u8]| {
+                    sol = Some(g.to_vec());
+                    false
+                }, &|| bound.load(Relaxed) <= lo || late());
+                if let Some(g) = sol {
+                    bound.fetch_min(hi, Relaxed);
+                    results.lock().unwrap().push((lo, g));
+                    return;
+                }
+                if bound.load(Relaxed) <= lo {
+                    return;
+                }
+                let (subs, n) = this.expand(w, prefix, 4 * this.threads);
+                extra.fetch_add(n, Relaxed);
+                match ranked(lo, hi, budget, subs) {
+                    Some(t) => return push(t),
+                    None => split = false, // can't split (rank space or tree exhausted): finish here
+                }
+            }
+        };
+        // tri-state test result: Some(any) or None = cut short
+        let tri = |any: bool, cancelled: bool| if any { Some(true) } else if cancelled { None } else { Some(false) };
+        let job = |w: &mut Worker, mut mw: Option<&mut Worker>, lo: u64, hi: u64, prefix: &[u8], budget: Duration, mirror_ok: bool| {
+            if bound.load(Relaxed) <= lo {
                 return; // an earlier job already has a solution
             }
-            // mirror-tested jobs are not split: their sub-jobs would force letters at the *end* of a
-            // mirror row, so each would redo most of its parent's test (6×9: 6.0 -> 12.2 s)
-            let mut split = !use_mirror;
+            let mut split = true;
             loop {
-                let deadline = split.then(|| (std::time::Instant::now() + budget, &hurry));
-                let late = || deadline.is_some_and(|(d, h)| h.load(Relaxed) && std::time::Instant::now() > d);
-                let cut = (&best, lo, deadline);
-                let any = match mirror.get() {
-                    _ if split && this.eager_split => None, // tests: split without trying
-                    Some(m) => {
+                let cut = (&bound, lo, deadline(split, budget));
+                let eager = split && this.eager_split; // tests: split without trying
+                let any = match mw.as_deref_mut() {
+                    Some(mw) if mirror_ok && !prefix.len().is_multiple_of(w_cols) => {
+                        // partial row: forced through virtual nodes, never split
                         let mut n = 0;
-                        let any = m.exists_with_prefix(prefix, cut, &mut n);
+                        let any = mw.s.exists_with_prefix(prefix, (&bound, lo, None), &mut n);
                         extra.fetch_add(n, Relaxed);
                         any
                     }
-                    None => {
-                        w.load(prefix);
-                        let any = w.count_job(prefix.len(), Some(cut)) > 0;
-                        if any { Some(true) } else if w.cancelled { None } else { Some(false) }
+                    Some(mw) if mirror_ok => {
+                        // full rows: test on the mirror's own worker (each row reversed)
+                        let m: Vec<u8> = prefix.chunks(w_cols).flat_map(|r| r.iter().rev().copied()).collect();
+                        let any = if eager { None } else {
+                            mw.load(&m);
+                            let any = mw.count_job(m.len(), Some(cut)) > 0;
+                            tri(any, mw.cancelled)
+                        };
+                        if any.is_none() && split && bound.load(Relaxed) > lo {
+                            let (parts, n) = mw.s.expand(mw, &m, 4 * this.threads);
+                            extra.fetch_add(n, Relaxed);
+                            if parts.len() >= 2 {
+                                let group = std::sync::Arc::new(AtomicBool::new(false));
+                                return push(parts.into_iter().map(|m| Task { lo, hi, budget: budget * 2, kind: TaskKind::Part { group: group.clone(), prefix: prefix.to_vec(), m } }).collect());
+                            }
+                            split = false;
+                            continue;
+                        }
+                        any
+                    }
+                    _ => {
+                        if eager { None } else {
+                            w.load(prefix);
+                            let any = w.count_job(prefix.len(), Some(cut)) > 0;
+                            tri(any, w.cancelled)
+                        }
                     }
                 };
-                if best.load(Relaxed) < lo || any == Some(false) {
+                if bound.load(Relaxed) <= lo || any == Some(false) {
                     return;
                 }
-                if any.is_some() {
-                    let mut sol = None;
-                    w.load(prefix);
-                    w.search(prefix.len(), &mut |g: &[u8]| {
-                        sol = Some(g.to_vec());
-                        false
-                    }, &|| best.load(Relaxed) < lo || late());
-                    if let Some(g) = sol {
-                        best.fetch_min(lo, Relaxed);
-                        hurry.store(true, Relaxed);
-                        results.lock().unwrap().push((lo, g));
+                if any == Some(true) {
+                    // the first grid is in this job: later jobs are useless
+                    bound.fetch_min(hi, Relaxed);
+                    return search(w, lo, hi, prefix, budget);
+                }
+                // over budget: split into sub-jobs
+                let (subs, n) = this.expand(w, prefix, 4 * this.threads);
+                extra.fetch_add(n, Relaxed);
+                match ranked(lo, hi, budget, subs) {
+                    Some(t) => return push(t),
+                    None => split = false,
+                }
+            }
+        };
+        // one part of a job's mirror test
+        let part = |w: &mut Worker, mw: &mut Worker, t: &Task, group: &AtomicBool, prefix: &[u8], m: &[u8]| {
+            let mut split = true;
+            loop {
+                if bound.load(Relaxed) <= t.lo || group.load(Relaxed) {
+                    return; // the job is settled
+                }
+                let any = if split && this.eager_split { None } else {
+                    mw.load(m);
+                    let any = mw.count_job(m.len(), Some((&bound, t.lo, deadline(split, t.budget)))) > 0;
+                    tri(any, mw.cancelled)
+                };
+                match any {
+                    Some(false) => return,
+                    Some(true) => {
+                        if !group.swap(true, Relaxed) {
+                            bound.fetch_min(t.hi, Relaxed);
+                            search(w, t.lo, t.hi, prefix, t.budget);
+                        }
                         return;
                     }
-                    if best.load(Relaxed) < lo {
-                        return;
+                    None if bound.load(Relaxed) <= t.lo => return,
+                    None => {
+                        let (parts, n) = mw.s.expand(mw, m, 4 * this.threads);
+                        extra.fetch_add(n, Relaxed);
+                        if parts.len() < 2 {
+                            split = false;
+                            continue;
+                        }
+                        let tasks = parts.into_iter().map(|m| Task { lo: t.lo, hi: t.hi, budget: t.budget * 2, kind: TaskKind::Part { group: match &t.kind { TaskKind::Part { group, .. } => group.clone(), _ => unreachable!() }, prefix: prefix.to_vec(), m } }).collect();
+                        return push(tasks);
                     }
                 }
-                // over budget: split into sub-jobs with sub-intervals of [lo, hi)
-                let (subs, expanded) = this.expand(w, prefix, 4 * this.threads);
-                extra.fetch_add(expanded, Relaxed);
-                let step = (hi - lo) / subs.len() as u64;
-                if step == 0 || subs.len() == 1 {
-                    split = false; // can't split (rank space or tree exhausted): finish it here
-                    continue;
-                }
-                let mut q = queue.lock().unwrap();
-                let last = subs.len() - 1;
-                for (i, sub) in subs.into_iter().enumerate() {
-                    let a = lo + i as u64 * step;
-                    q.push(std::cmp::Reverse((a, if i == last { hi } else { a + step }, budget * 2, sub)));
-                }
-                queued.store(q.len(), Relaxed);
-                return;
             }
         };
         std::thread::scope(|scope| {
             for _ in 0..this.threads.min(count) {
                 scope.spawn(|| {
                     let mut w = Worker::new(this);
+                    let mut mw: Option<Worker> = None;
                     // `inflight` counts the threads that are not idle (only they add to the queue)
                     'work: loop {
+                        if mw.is_none() && let Some(m) = mirror.get() {
+                            mw = Some(Worker::new(m));
+                        }
                         let urgent = if queued.load(Relaxed) > 0 {
                             let mut q = queue.lock().unwrap();
-                            let job = q.pop();
+                            let t = q.pop();
                             queued.store(q.len(), SeqCst);
-                            job
+                            t
                         } else {
                             None
                         };
-                        if let Some(std::cmp::Reverse((lo, hi, budget, prefix))) = urgent {
-                            process(&mut w, lo, hi, &prefix, budget);
+                        if let Some(t) = urgent {
+                            match &t.kind {
+                                TaskKind::Job { prefix, mirror_ok } => job(&mut w, mw.as_mut(), t.lo, t.hi, prefix, t.budget, *mirror_ok),
+                                TaskKind::Part { group, prefix, m } => part(&mut w, mw.as_mut().expect("parts exist only once the mirror does"), &t, group, prefix, m),
+                            }
                             continue;
                         }
                         let j = next.fetch_add(1, Relaxed);
                         if j < count {
                             let prefix = &jobs[j * depth..(j + 1) * depth];
-                            process(&mut w, j as u64 * SPAN, (j as u64 + 1) * SPAN, prefix, budget);
+                            job(&mut w, mw.as_mut(), j as u64 * SPAN, (j as u64 + 1) * SPAN, prefix, budget, true);
                             continue;
                         }
-                        hurry.store(true, Relaxed);
                         inflight.fetch_sub(1, SeqCst);
                         loop {
                             if queued.load(SeqCst) > 0 {
-                                inflight.fetch_add(1, SeqCst);
+                                if inflight.fetch_add(1, SeqCst) + 1 == this.threads.min(count) {
+                                    hurry.store(this.eager_split, Relaxed); // nobody idle any more
+                                }
                                 continue 'work;
                             }
+                            hurry.store(true, Relaxed);
                             if inflight.load(SeqCst) == 0 && queued.load(SeqCst) == 0 {
                                 break 'work;
                             }
                             std::thread::yield_now();
                         }
                     }
-                    nodes.fetch_add(w.nodes, Relaxed);
+                    nodes.fetch_add(w.nodes + mw.map_or(0, |m| m.nodes), Relaxed);
                     crate::probe::flush();
                 });
             }
@@ -1153,7 +1289,6 @@ impl Solver for ParSearch {
         self.stats.solutions = g.is_some() as u64;
         g
     }
-
     fn count(&mut self) -> u64 {
         // Counts don't depend on orientation, so count the cheapest one:
         // 1. tall grids transposed: long rows are much cheaper (6×4 explores 2.4× the nodes of 4×6);
