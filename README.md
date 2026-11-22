@@ -10,6 +10,14 @@ T E N
 
 Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal of this project is to push as far as a single CPU can go.
 
+> **🆕 Latest (night of 2026-11-21):** the whole history was re-run on one machine, and
+> **every grid size up to 10×22 is now settled**: the largest word rectangle in the dictionary is
+> **8×8 (exactly five, all symmetric squares)**. New tricks: exact next-row sets, counting the
+> **mirror image** of the grid (rows filled from their last letter: up to 1.7× faster), an
+> **anti-diagonal symmetry** for mirrored squares, and mirror-image tests for `find` (proofs that no
+> grid exists: 1.5–1.7× faster). 22 experiments that night, 9 failed and documented:
+> [`results/journal.md`](results/journal.md).
+
 ---
 
 ## 🗺️ What the dictionary allows
