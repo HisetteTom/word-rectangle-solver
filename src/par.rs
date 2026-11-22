@@ -69,6 +69,8 @@ pub struct ParSearch {
     col_words: Vec<String>,
     /// This search counts the horizontal mirror image of the asked grid (row words reversed).
     mirrored: bool,
+    /// Mirror image of a square with one word list: count with anti-diagonal symmetry.
+    anti: bool,
     stats: Stats,
 }
 
@@ -125,13 +127,18 @@ impl<'a> Worker<'a> {
         let pen = Kernel::<W>::PEN && s.rows <= 4;
         let mut nodes = 0;
         let row = s.row_trie.node(self.row_state[r]);
-        let total = if s.sym && plain.is_none() {
-            // job prefixes stay inside row 0 when `sym` (see `count`), so they are all "tied"
+        let total = if (s.sym || s.anti) && plain.is_none() {
+            // job prefixes stay inside row 0 when `sym`/`anti` (see `count`), so they are all "tied"
             let mut row0 = [0u8; W];
             for (d, &g) in row0.iter_mut().zip(&self.grid[..cell]) {
                 *d = g - b'a';
             }
-            if pen { k.count_sym::<true>(r, c, row, &mut colv, &mut nodes, &mut row0) } else { k.count_sym::<false>(r, c, row, &mut colv, &mut nodes, &mut row0) }
+            match (s.anti, pen) {
+                (true, true) => k.count_anti::<true>(r, c, row, &mut colv, &mut nodes, &mut row0),
+                (true, false) => k.count_anti::<false>(r, c, row, &mut colv, &mut nodes, &mut row0),
+                (false, true) => k.count_sym::<true>(r, c, row, &mut colv, &mut nodes, &mut row0),
+                (false, false) => k.count_sym::<false>(r, c, row, &mut colv, &mut nodes, &mut row0),
+            }
         } else {
             let ps: &[Node] = if c == 0 { std::slice::from_ref(&k.root) } else { &[] };
             match (plain.is_some(), pen) {
@@ -312,6 +319,61 @@ impl<const W: usize> Kernel<'_, W> {
                 2 * self.count::<false, P>(nr, nc, nrow, colv, nodes, !0, if nc == 0 { std::slice::from_ref(&self.root) } else { &[] }, SELF)
             } else {
                 self.count_sym::<P>(nr, nc, nrow, colv, nodes, row0)
+            };
+        }
+        colv[c] = col;
+        total
+    }
+}
+
+impl<const W: usize> Kernel<'_, W> {
+    /// Anti-diagonal symmetry, for the **mirror image** of a square (rows = reversed words, columns =
+    /// words; see `ParSearch::count`). Reflecting it across the anti-diagonal maps solutions to
+    /// solutions: row i becomes column W-1-i read bottom-up (a reversed word), column j becomes row
+    /// W-1-j read right-to-left (a word). With A = row 0 read right-to-left and B = the last column
+    /// read top-down (the reflection swaps them),
+    ///   count = 2 * #{A < B} + #{A == B}.
+    /// Like `count_sym`, this runs only on the tied path; the tie cells are (r, W-1), where
+    /// B[r] meets A[r] = row0[W-1-r].
+    fn count_anti<const P: bool>(&self, r: usize, c: usize, row: Node, colv: &mut [CNode; W], nodes: &mut u64, row0: &mut [u8; W]) -> u64 {
+        if r == self.last_r {
+            let mut masks = [0u32; W];
+            for (m, n) in masks.iter_mut().zip(colv.iter()) {
+                *m = n.mask;
+            }
+            // the last cell of the last row is the last tie cell
+            let w = row0[W - 1 - r] as u32;
+            let m = masks[W - 1];
+            masks[W - 1] = m & (1 << w);
+            let eq = self.count_last(c, row, &masks, nodes);
+            masks[W - 1] = m & !((2u32 << w) - 1);
+            let gt = self.count_last(c, row, &masks, nodes);
+            return eq + 2 * gt;
+        }
+        *nodes += 1;
+        crate::probe::hit(r, c);
+        let col = colv[c];
+        let mut allowed = row.mask & col.mask;
+        let tie_cell = c == W - 1 && r >= 1;
+        let w = row0[W - 1 - r] as u32;
+        if tie_cell {
+            allowed &= !((1u32 << w) - 1); // letters >= A[r]
+        }
+        let mut total = 0;
+        while allowed != 0 {
+            let l = allowed.trailing_zeros();
+            allowed &= allowed - 1;
+            if r == 0 {
+                row0[c] = l as u8;
+            }
+            // SAFETY: `l` comes from `allowed`, a subset of this node's mask.
+            colv[c] = unsafe { self.cstep(col, l) };
+            // SAFETY: as above.
+            let (nr, nc, nrow) = if c == (W - 1) { (r + 1, 0, self.root) } else { (r, c + 1, unsafe { self.rstep(row, l) }) };
+            total += if tie_cell && l > w {
+                2 * self.count::<false, P>(nr, nc, nrow, colv, nodes, !0, if nc == 0 { std::slice::from_ref(&self.root) } else { &[] }, SELF)
+            } else {
+                self.count_anti::<P>(nr, nc, nrow, colv, nodes, row0)
             };
         }
         colv[c] = col;
@@ -720,6 +782,7 @@ impl ParSearch {
             row_words: row_words.to_vec(),
             col_words: col_words.to_vec(),
             mirrored: false,
+            anti: false,
             row_trie: Trie::new(row_words),
             col_trie: CTrie::new(&Trie::new(col_words)),
             threads,
@@ -861,14 +924,16 @@ impl Solver for ParSearch {
         // Counts don't depend on orientation, so count the cheapest one:
         // 1. tall grids transposed: long rows are much cheaper (6×4 explores 2.4× the nodes of 4×6);
         // 2. rows mirrored (each row word reversed, so rows fill from their last letter): 1.07–1.6×
-        //    faster on every shape measured. Not for squares with one word list: mirroring only the
-        //    rows would lose transpose symmetry (count_sym).
+        //    faster on every shape measured. A square with one word list loses its transpose
+        //    symmetry when mirrored, but gains an anti-diagonal one (`Kernel::count_anti`): faster
+        //    from 6×6 up (1.13× at 6×6, 1.34× at 7×7, 1.50× at 8×8), slightly slower below.
         let other = if self.rows > self.cols && self.rows <= 32 {
             Some(ParSearch::new(self.cols, self.rows, &self.col_words, &self.row_words, self.threads))
-        } else if !self.sym && !self.mirrored {
+        } else if !self.mirrored && (!self.sym || self.cols >= 6) {
             let rev: Vec<String> = self.row_words.iter().map(|w| w.chars().rev().collect()).collect();
             let mut m = ParSearch::new(self.rows, self.cols, &rev, &self.col_words, self.threads);
             m.mirrored = true;
+            m.anti = self.sym; // the mirror of a square keeps a symmetry: the anti-diagonal one
             Some(m)
         } else {
             None
@@ -879,7 +944,7 @@ impl Solver for ParSearch {
             return total;
         }
         // with symmetry, job prefixes must stay in row 0 (they are expanded without the tie rule)
-        let max_depth = if self.sym { self.cols } else { usize::MAX };
+        let max_depth = if self.sym || self.anti { self.cols } else { usize::MAX };
         let (depth, jobs) = self.jobs(COUNT_JOBS_PER_THREAD, max_depth);
         let total: u64 = self.run(depth, &jobs, |w, _, _| Some(w.count_job(depth, None))).iter().map(|(_, c)| c).sum();
         self.stats.solutions = total;

@@ -126,3 +126,25 @@ fn par_parallel_find_path_is_deterministic() {
     let d = Dict::from_words(["cat", "dog"]);
     assert!(ParSearch::new(3, 3, d.words(3), d.words(3), 0).with_seq_budget(0).find().is_none());
 }
+
+/// Big squares take special count paths in `par` (mirror image + anti-diagonal symmetry from 6×6
+/// up), which the small sizes above never reach. Dense random dictionaries over a 2-letter
+/// alphabet give many solutions, including symmetric ones (the tie paths).
+#[test]
+fn match_naive_on_big_random_squares() {
+    let mut seed: u64 = 1234567;
+    let mut next = || {
+        seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        (seed >> 33) as usize
+    };
+    for n in [6usize, 7] {
+        for _ in 0..12 {
+            let words: Vec<String> = (0..14).map(|_| (0..n).map(|_| (b'a' + (next() % 2) as u8) as char).collect()).collect();
+            let d = Dict::from_words(words.iter().map(String::as_str));
+            let want = all("naive", &d, n, n);
+            for s in optimized() {
+                assert_eq!(count(s, &d, n, n), want.len() as u64, "solver={s} dict={words:?} size={n}x{n}");
+            }
+        }
+    }
+}
