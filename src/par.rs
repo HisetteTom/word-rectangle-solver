@@ -761,9 +761,9 @@ fn bigrams(words: &[String], len: usize) -> Vec<Bigram> {
         for k in 0..len - 1 {
             let (a, n) = ((b[k] - b'a') as usize, (b[k + 1] - b'a') as u32);
             let (chunk, bit) = (a / 7, a % 7);
-            for v in 0..128 {
+            for (v, e) in t[k][chunk].iter_mut().enumerate() {
                 if v >> bit & 1 == 1 {
-                    t[k][chunk][v] |= 1 << n;
+                    *e |= 1 << n;
                 }
             }
         }

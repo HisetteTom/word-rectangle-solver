@@ -1124,3 +1124,11 @@ Details that mattered:
 | B7, B8, B9 (smaller finds) | | | unchanged |
 
 **Verdict:** kept. "Prove it doesn't exist" is the long-running query of the atlas frontier.
+
+### 2026-11-22: clippy pass (no speed change, no bar)
+
+`cargo clippy --all-targets -- -W clippy::perf -W clippy::undocumented_unsafe_blocks`: one warning (an
+indexed loop in `bigrams`), fixed. Every `unsafe` block already has its `// SAFETY:` comment.
+`-W clippy::pedantic` reports ~100 items, nearly all deliberate in this code: `#[inline(always)]` on hot
+helpers, bitwise `&`/`|` on booleans in the branch-free look-ahead, single-letter names (r, c, l)
+that match the README's notation, and `as` casts between letter indices and masks. Left as is.
