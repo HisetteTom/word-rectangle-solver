@@ -812,3 +812,21 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,03b95c7,fast,par,B16,find --rows 6 --cols 9,6.1767,7234489546,no solution: 6x9 exhausted,6.068442,split long find jobs,hephaestus
 2026-11-22,03b95c7,fast,par,B17,count --rows 4 --cols 7,1.8241,996185895,solutions=7139499,1.732182,split long find jobs,hephaestus
 2026-11-22,03b95c7,fast,par,B18,count --rows 6 --cols 6,18.1010,15605237112,solutions=1584465,18.020035,split long find jobs,hephaestus
+2026-11-22,cae250c,fast,par,B1,count --rows 3 --cols 3,0.0790,994996,solutions=1909732,0.001772,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B2,find --rows 5 --cols 6,0.0840,7220,found,0.000150,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B3,find --rows 6 --cols 6,0.0890,12839,found,0.000234,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B4,count --rows 4 --cols 4,0.1929,170485926,solutions=136245247,0.111762,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B5,count --rows 4 --cols 5,0.8011,375002641,solutions=114846713,0.717061,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B6,count --rows 3 --cols 7,0.1841,73695021,solutions=4453472,0.088368,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B7,find --rows 7 --cols 7,0.1563,27371843,found,0.052992,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B8,find --rows 6 --cols 7,0.1360,19082373,found,0.041277,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B9,find --rows 5 --cols 9,0.2570,155979713,found,0.150658,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B10,count --rows 5 --cols 5,4.0469,3129472451,solutions=80364530,3.963966,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B11,count --rows 4 --cols 6,1.4781,716449909,solutions=37812638,1.390803,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B12,find --rows 6 --cols 8,0.8314,448705718,found,0.726128,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B13,find --rows 5 --cols 10,0.6425,604069013,no solution: 5x10 exhausted,0.545053,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B14,count --rows 6 --cols 4,1.4755,716449909,solutions=37812638,1.395772,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B15,count --rows 5 --cols 6,10.0783,5947012110,solutions=7424362,10.001003,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B16,find --rows 6 --cols 9,6.1600,7237682685,no solution: 6x9 exhausted,6.052832,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B17,count --rows 4 --cols 7,1.8214,996185895,solutions=7139499,1.731513,split mirror tests + early cut,hephaestus
+2026-11-22,cae250c,fast,par,B18,count --rows 6 --cols 6,17.8904,15605237112,solutions=1584465,17.802210,split mirror tests + early cut,hephaestus

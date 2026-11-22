@@ -1353,3 +1353,35 @@ New test `par_split_jobs_find_naive_first_grid` (every job split at once, recurs
 max instead of the min rank, are both caught.
 
 **Verdict:** kept. Next: split mirror tests in the mirror's own order (B12).
+
+### 2026-11-22: split mirror tests + early cut (`58d0c55`) ✅ kept
+
+Three follow-ups to "split long find jobs":
+1. **Mirror tests split in the mirror's order.** A job made of whole rows is tested on the mirror's
+   own worker (its rows reversed). Over budget, the *test* is split by the mirror's next cells into
+   parts. A part only answers "does this job have a solution?", and the first part that finds one starts
+   the job's search (in the original order, splittable as before).
+2. **Cut as soon as a test says yes**, not when the search returns a grid. The cut is now a rank
+   bound: everything ranked at or above the `hi` of a job known to hold a solution is useless. On
+   6×8 the job holding the solution (job 192) tested positive at 549 ms, but its search then ran
+   157 ms on one thread while 31 others kept testing jobs 193+.
+3. **Split only while a thread is idle** (and the queue is empty), instead of "once a solution is
+   known or the job list is exhausted". Aborting a job wastes what it already did. At list
+   exhaustion every running job older than 5 ms was aborted at once (6×9 lost 1.5%).
+
+Timeline on 6×8 now: the first 192 jobs (row-0 words up to "aci…") simply take ~550 ms of real work
+on 32 threads, and the split spreads what's left over all threads. Further gains there need faster tests, not scheduling.
+
+| Benchmark | Before (split long find jobs) | After | Change | vs. before splitting |
+|---|---|---|---|---|
+| B7 find 7×7 | 64 ms | **53 ms** | 1.21× | **1.95×** |
+| B8 find 6×7 | 44 ms | **41 ms** | 1.06× | **1.99×** |
+| B9 find 5×9 | 153 ms | 151 ms | ≈ | ≈ |
+| B12 find 6×8 | 807 ms | **726 ms** | 1.11× | 1.11× |
+| B13 prove no 5×10 | 545 ms | 545 ms | ≈ | ≈ |
+| B16 prove no 6×9 | 6.07 s | 6.05 s | ≈ | ≈ |
+
+The mirror find test now also runs with eager splitting. A deliberate bug that never searches a job whose test part found
+a solution is caught.
+
+**Verdict:** kept.
