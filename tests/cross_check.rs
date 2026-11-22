@@ -161,6 +161,41 @@ fn par_split_jobs_find_naive_first_grid() {
     assert!(some > 0 && none > 0, "want both outcomes: some={some} none={none}");
 }
 
+#[test]
+fn par_aborted_jobs_resume_and_find_naive_first_grid() {
+    // every job aborted at the kernels' first check and split, skipping what it already explored
+    let d = Dict::load("dicts/enable.txt".as_ref()).unwrap();
+    for (r, c) in [(3, 4), (4, 4), (2, 6), (4, 5), (3, 6), (5, 5), (4, 6), (3, 8), (5, 6)] {
+        let want = find("naive", &d, r, c);
+        for threads in [1, 3, 0] {
+            let got = ParSearch::new(r, c, d.words(c), d.words(r), threads).with_seq_budget(0).with_abort_split().find();
+            assert_eq!(got, want, "size={r}x{c} threads={threads}");
+        }
+    }
+    // mirror-tested sizes, with dense 2-letter dictionaries (enough nodes to hit the checks)
+    let mut seed: u64 = 11;
+    let mut next = || {
+        seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        (seed >> 33) as usize
+    };
+    let (mut some, mut none) = (0, 0);
+    for (r, c, n_words) in [(6, 8, 60), (6, 8, 30), (5, 10, 80), (4, 6, 20), (5, 5, 12), (6, 8, 12), (6, 9, 9), (5, 10, 14)] {
+        for _ in 0..4 {
+            let word = |len: usize, next: &mut dyn FnMut() -> usize| -> String { (0..len).map(|_| (b'a' + (next() % 2) as u8) as char).collect() };
+            let mut words: Vec<String> = (0..n_words).map(|_| word(c, &mut next)).collect();
+            words.extend((0..n_words).map(|_| word(r, &mut next)));
+            let d = Dict::from_words(words.iter().map(String::as_str));
+            let want = find("naive", &d, r, c);
+            if want.is_some() { some += 1 } else { none += 1 }
+            for threads in [1, 3, 0] {
+                let got = ParSearch::new(r, c, d.words(c), d.words(r), threads).with_seq_budget(0).with_sync_mirror().with_abort_split().find();
+                assert_eq!(got, want, "size={r}x{c} threads={threads} dict={words:?}");
+            }
+        }
+    }
+    assert!(some > 0 && none > 0, "want both outcomes: some={some} none={none}");
+}
+
 /// Big squares take special count paths in `par` (mirror image + anti-diagonal symmetry from 6×6
 /// up), which the small sizes above never reach. Dense random dictionaries over a 2-letter
 /// alphabet give many solutions, including symmetric ones (the tie paths).

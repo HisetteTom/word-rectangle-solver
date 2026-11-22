@@ -56,6 +56,9 @@ const FIND_JOB_BUDGET_US: u64 = 5_000;
 const S_CAP: usize = 32;
 /// Same, in the second-to-last row (`Kernel::count_pen`), where overflowing is costlier.
 const S_CAP_PEN: usize = 128;
+/// `count::<ANY>` result of a cancelled frame: any non-zero value stops the callers' loops at once
+/// (no extra test on the hot path), and this one is recognizable.
+const CANCEL: u64 = 1 << 63;
 /// `pm` value meaning "`ps` is the set itself" (bit 31 is never a letter).
 const SELF: u32 = 1 << 31;
 
@@ -82,6 +85,8 @@ pub struct ParSearch {
     sync_mirror: bool,
     /// `find`: split every job at once, as if all were over budget (for tests).
     eager_split: bool,
+    /// `find`: zero time budget, splitting always allowed: kernels abort at their first check (tests).
+    abort_split: bool,
     stats: Stats,
 }
 
@@ -134,11 +139,14 @@ struct Worker<'a> {
     limit: u64,
     /// The last `count_job` was cut short (its result is a lower bound).
     cancelled: bool,
+    /// After a cut-short `count_job` or `search`: the letters of the cells after the job prefix
+    /// that were being explored (see `Kernel::trail`); everything before that path is done.
+    trail: Vec<u8>,
 }
 
 impl<'a> Worker<'a> {
     fn new(s: &'a ParSearch) -> Self {
-        Worker { s, row_state: vec![0; s.rows], col_state: vec![0; s.cols], grid: vec![0; s.rows * s.cols], nodes: 0, limit: u64::MAX, cancelled: false }
+        Worker { s, row_state: vec![0; s.rows], col_state: vec![0; s.cols], grid: vec![0; s.rows * s.cols], nodes: 0, limit: u64::MAX, cancelled: false, trail: Vec::new() }
     }
 
     /// Reset to the empty grid and replay a job prefix.
@@ -202,7 +210,10 @@ impl<'a> Worker<'a> {
         };
         self.nodes += nodes;
         self.cancelled = k.cancelled.get();
-        total
+        if total >= CANCEL {
+            self.trail = k.trail_letters();
+        }
+        if total >= CANCEL { 0 } else { total }
     }
 
     /// Calls `on` on every solution of the loaded job prefix (`cell` = first empty cell);
@@ -223,8 +234,14 @@ impl<'a> Worker<'a> {
             grid: std::mem::take(&mut self.grid),
             nodes: self.nodes,
             limit: self.limit,
+            stopped_at: usize::MAX,
         };
         let done = k.search(r, c, s.row_trie.node(self.row_state[r]), &mut st, on, stop, !0);
+        self.trail.clear();
+        if st.stopped_at != usize::MAX {
+            // the cells cell..stopped_at hold the letters of the path being explored
+            self.trail.extend(st.grid[cell..st.stopped_at].iter().map(|g| g - b'a'));
+        }
         self.grid = st.grid;
         self.nodes = st.nodes;
         done
@@ -249,13 +266,17 @@ struct Kernel<'t, const W: usize> {
     /// return at once.
     cut: Option<Cut<'t>>,
     cancelled: std::cell::Cell<bool>,
+    /// After a cancellation: the letters of the cells being explored when it hit (the shallowest
+    /// 12, 5 bits each, the shallowest in the low bits) and how many. Everything before that path
+    /// (lexicographically) was fully explored without a solution.
+    trail: std::cell::Cell<(u64, u8)>,
 
 }
 
 impl<'t, const W: usize> Kernel<'t, W> {
     fn new(s: &'t ParSearch) -> Self {
         let bi = s.bigrams.as_slice().try_into().expect("one bigram table per column");
-        Kernel { rt: s.row_trie.nodes(), bi, ct: s.col_trie.nodes(), root: s.row_trie.node(0), last_r: s.rows - 1, cut: None, cancelled: std::cell::Cell::new(false) }
+        Kernel { rt: s.row_trie.nodes(), bi, ct: s.col_trie.nodes(), root: s.row_trie.node(0), last_r: s.rows - 1, cut: None, cancelled: std::cell::Cell::new(false), trail: std::cell::Cell::new((0, 0)) }
     }
 
     /// Row child of `n` for letter `l`, without a bounds check (rust-skills `opt-bounds-check`).
@@ -444,6 +465,8 @@ struct SearchState<const W: usize> {
     grid: Vec<u8>,
     nodes: u64,
     limit: u64,
+    /// Cell where the search was stopped (limit or `stop()`), if it was.
+    stopped_at: usize,
 }
 
 impl<const W: usize> Kernel<'_, W> {
@@ -454,6 +477,7 @@ impl<const W: usize> Kernel<'_, W> {
         st.nodes += 1;
         crate::probe::hit(r, c);
         if st.nodes & 255 == 0 && (st.nodes > st.limit || stop()) {
+            st.stopped_at = r * W + c;
             return false;
         }
         let col = st.colv[c];
@@ -530,7 +554,7 @@ impl<const W: usize> Kernel<'_, W> {
                 self.cancelled.set(true);
             }
             if self.cancelled.get() {
-                return 0;
+                return CANCEL;
             }
         }
         let col = colv[c];
@@ -591,6 +615,9 @@ impl<const W: usize> Kernel<'_, W> {
                 colv[c] = cn;
                 total += self.count::<ANY, P>(r + 1, 0, self.root, colv, nodes, !0, std::slice::from_ref(&self.root), SELF);
                 if ANY && total > 0 {
+                    if total >= CANCEL {
+                        self.push_trail(col, colv[c]);
+                    }
                     break;
                 }
             }
@@ -610,6 +637,9 @@ impl<const W: usize> Kernel<'_, W> {
             // SAFETY: `l` comes from `good`, a subset of this node's mask.
             total += self.count::<ANY, P>(r, c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc, s, cn.mask);
             if ANY && total > 0 {
+                if total >= CANCEL {
+                    self.push_trail(col, colv[c]);
+                }
                 break;
             }
         }
@@ -634,7 +664,7 @@ impl<const W: usize> Kernel<'_, W> {
                 self.cancelled.set(true);
             }
             if self.cancelled.get() {
-                return 0;
+                return CANCEL;
             }
         }
         let col = colv[c];
@@ -741,11 +771,43 @@ impl<const W: usize> Kernel<'_, W> {
             // SAFETY: as above.
             total += self.count_pen::<ANY, P>(c + 1, unsafe { self.rstep(row, l) }, colv, nodes, fc, s, cn.mask);
             if ANY && total > 0 {
+                if total >= CANCEL {
+                    self.push_trail(col, colv[c]);
+                }
                 break;
             }
         }
         colv[c] = col;
         total
+    }
+
+    /// A cancelled frame's letter (frames unwind deepest first; see `trail`), recovered from the
+    /// column node it stepped to (`cn`, a child of `col`): keeping the letter itself alive across
+    /// the recursive call cost the hot loop 3–4%. Children of one node have distinct `first`
+    /// (below the last row they all have children).
+    #[cold]
+    #[inline(never)]
+    fn push_trail(&self, col: CNode, cn: CNode) {
+        let mut m = col.mask;
+        let mut l = 0;
+        let mut found = false;
+        for j in 0..col.mask.count_ones() {
+            l = m.trailing_zeros();
+            m &= m - 1;
+            if self.ct[(col.first + j) as usize].first == cn.first {
+                found = true;
+                break;
+            }
+        }
+        debug_assert!(found, "cancelled frame's column node is not a child of its parent");
+        let (bits, n) = self.trail.get();
+        self.trail.set(((bits << 5) | l as u64, (n + 1).min(12)));
+    }
+
+    /// The cancelled path, shallowest letter first.
+    fn trail_letters(&self) -> Vec<u8> {
+        let (bits, n) = self.trail.get();
+        (0..n as u64).map(|i| (bits >> (5 * i) & 31) as u8).collect()
     }
 
     /// Letters a row word can have at position k + 1, given its letter at k is in `f`.
@@ -842,6 +904,7 @@ impl ParSearch {
             anti: false,
             sync_mirror: false,
             eager_split: false,
+            abort_split: false,
             row_trie: Trie::new(row_words),
             col_trie: CTrie::new(&Trie::new(col_words)),
             threads,
@@ -862,6 +925,13 @@ impl ParSearch {
     /// `find` splits every job into sub-jobs, recursively (tests the split path; see `find`).
     pub fn with_eager_split(mut self) -> Self {
         self.eager_split = true;
+        self
+    }
+
+    /// `find` aborts every job at the kernels' first budget check and splits the rest (tests the
+    /// resume-after-abort path; see `find`).
+    pub fn with_abort_split(mut self) -> Self {
+        self.abort_split = true;
         self
     }
 
@@ -981,7 +1051,7 @@ impl ParSearch {
         } else {
             kn.count::<true, false>(q, 0, row, &mut colv, nodes, !0, ps, SELF)
         };
-        if total > 0 { Some(true) } else if kn.cancelled.get() { None } else { Some(false) }
+        if kn.cancelled.get() { None } else { Some(total > 0) }
     }
 
     /// Breadth-first split of one job prefix into at least `target` sub-jobs (fewer if the tree is
@@ -1075,15 +1145,18 @@ impl Solver for ParSearch {
         //    redo most of the parent's test in every sub-job (6×9: 6.0 -> 12.2 s). The parts only
         //    decide whether the job has a solution; the first part that finds one starts the job's
         //    search.
+        //    An aborted run reports the path it was exploring (`Worker::trail`): everything before it
+        //    was searched without a solution, so the sub-jobs before that path are dropped (7×7:
+        //    54 -> 48 ms, 6×7: 41 -> 34 ms, 6×8: 723 -> 642 ms).
         const SPAN: u64 = 1 << 40;
         let count = jobs.len().checked_div(depth).unwrap_or(1);
-        let budget = Duration::from_micros(if self.eager_split { 0 } else { FIND_JOB_BUDGET_US });
+        let budget = Duration::from_micros(if self.eager_split || self.abort_split { 0 } else { FIND_JOB_BUDGET_US });
         // `bound`: everything ranked at or above it is useless, because an earlier interval is known
         // to hold a solution (min `hi` over jobs whose test or search found one)
         let bound = AtomicU64::new(u64::MAX);
         // set while some thread is idle and the queue is empty: only then is work split (aborting a
         // job wastes what it did, which only pays if a thread would otherwise wait)
-        let hurry = AtomicBool::new(self.eager_split);
+        let hurry = AtomicBool::new(self.eager_split || self.abort_split);
         let (next, inflight) = (AtomicUsize::new(0), AtomicUsize::new(self.threads.min(count)));
         let queue = Mutex::new(std::collections::BinaryHeap::<Task>::new());
         let queued = AtomicUsize::new(0);
@@ -1098,8 +1171,8 @@ impl Solver for ParSearch {
         };
         // `subs` (lexicographic order) as tasks with sub-intervals of [lo, hi); None if they can't be ranked
         let ranked = |lo: u64, hi: u64, budget: Duration, subs: Vec<Vec<u8>>| -> Option<Vec<Task>> {
-            let step = (hi - lo) / subs.len() as u64;
-            if step == 0 || subs.len() < 2 {
+            let step = (hi - lo) / subs.len().max(1) as u64;
+            if step == 0 || subs.is_empty() {
                 return None;
             }
             let last = subs.len() - 1;
@@ -1107,6 +1180,14 @@ impl Solver for ParSearch {
                 let a = lo + i as u64 * step;
                 Task { lo: a, hi: if i == last { hi } else { a + step }, budget: budget * 2, kind: TaskKind::Job { prefix, mirror_ok: false } }
             }).collect())
+        };
+        // sub-jobs of `base` (lexicographic order) not yet explored: the aborted run was exploring
+        // `trail` (letters after `base`) when it stopped, and found nothing before it
+        let fresh = |subs: Vec<Vec<u8>>, base: usize, trail: &[u8]| -> Vec<Vec<u8>> {
+            subs.into_iter().filter(|s| {
+                let k = (s.len() - base).min(trail.len());
+                s[base..base + k] >= trail[..k]
+            }).collect()
         };
         let deadline = |split: bool, budget: Duration| split.then(|| (Instant::now() + budget, &hurry));
         // probe builds only: timeline events, and WR_NO_SPLIT=1 turns splitting off (for the chart)
@@ -1142,11 +1223,13 @@ impl Solver for ParSearch {
                     return;
                 }
                 ev(2, t, lo);
+                let trail = std::mem::take(&mut w.trail);
                 let (subs, n) = this.expand(w, prefix, 4 * this.threads);
                 extra.fetch_add(n, Relaxed);
+                let subs = fresh(subs, prefix.len(), &trail);
                 match ranked(lo, hi, budget, subs) {
-                    Some(t) => return push(t),
-                    None => split = false, // can't split (rank space or tree exhausted): finish here
+                    Some(t) if !(t.len() == 1 && matches!(&t[0].kind, TaskKind::Job { prefix: p, .. } if p == prefix)) => return push(t),
+                    _ => split = false, // can't split (rank space or tree exhausted): finish here
                 }
             }
         };
@@ -1172,16 +1255,18 @@ impl Solver for ParSearch {
                     Some(mw) if mirror_ok => {
                         // full rows: test on the mirror's own worker (each row reversed)
                         let m: Vec<u8> = prefix.chunks(w_cols).flat_map(|r| r.iter().rev().copied()).collect();
-                        let any = if eager { None } else {
+                        let any = if eager { mw.trail.clear(); None } else {
                             mw.load(&m);
                             let any = mw.count_job(m.len(), Some(cut)) > 0;
                             tri(any, mw.cancelled)
                         };
                         if any.is_none() && split && bound.load(Relaxed) > lo {
                             ev(2, t, lo);
+                            let trail = std::mem::take(&mut mw.trail);
                             let (parts, n) = mw.s.expand(mw, &m, 4 * this.threads);
                             extra.fetch_add(n, Relaxed);
-                            if parts.len() >= 2 {
+                            let parts = fresh(parts, m.len(), &trail);
+                            if !parts.is_empty() && parts[0] != m {
                                 let group = std::sync::Arc::new(AtomicBool::new(false));
                                 return push(parts.into_iter().map(|m| Task { lo, hi, budget: budget * 2, kind: TaskKind::Part { group: group.clone(), prefix: prefix.to_vec(), m } }).collect());
                             }
@@ -1191,7 +1276,7 @@ impl Solver for ParSearch {
                         any
                     }
                     _ => {
-                        if eager { None } else {
+                        if eager { w.trail.clear(); None } else {
                             w.load(prefix);
                             let any = w.count_job(prefix.len(), Some(cut)) > 0;
                             tri(any, w.cancelled)
@@ -1209,11 +1294,13 @@ impl Solver for ParSearch {
                     return search(w, lo, hi, prefix, budget);
                 }
                 // over budget: split into sub-jobs
+                let trail = std::mem::take(&mut w.trail);
                 let (subs, n) = this.expand(w, prefix, 4 * this.threads);
                 extra.fetch_add(n, Relaxed);
+                let subs = fresh(subs, prefix.len(), &trail);
                 match ranked(lo, hi, budget, subs) {
-                    Some(t) => return push(t),
-                    None => split = false,
+                    Some(t) if !(t.len() == 1 && matches!(&t[0].kind, TaskKind::Job { prefix: p, .. } if p == prefix)) => return push(t),
+                    _ => split = false,
                 }
             }
         };
@@ -1225,7 +1312,7 @@ impl Solver for ParSearch {
                 if bound.load(Relaxed) <= t.lo || group.load(Relaxed) {
                     return; // the job is settled
                 }
-                let any = if split && this.eager_split { None } else {
+                let any = if split && this.eager_split { mw.trail.clear(); None } else {
                     mw.load(m);
                     let any = mw.count_job(m.len(), Some((&bound, t.lo, deadline(split, t.budget)))) > 0;
                     tri(any, mw.cancelled)
@@ -1242,9 +1329,11 @@ impl Solver for ParSearch {
                     }
                     None if bound.load(Relaxed) <= t.lo => return,
                     None => {
+                        let trail = std::mem::take(&mut mw.trail);
                         let (parts, n) = mw.s.expand(mw, m, 4 * this.threads);
                         extra.fetch_add(n, Relaxed);
-                        if parts.len() < 2 {
+                        let parts = fresh(parts, m.len(), &trail);
+                        if parts.is_empty() || parts[0] == m {
                             split = false;
                             continue;
                         }
@@ -1289,7 +1378,7 @@ impl Solver for ParSearch {
                         loop {
                             if queued.load(SeqCst) > 0 {
                                 if inflight.fetch_add(1, SeqCst) + 1 == this.threads.min(count) {
-                                    hurry.store(this.eager_split, Relaxed); // nobody idle any more
+                                    hurry.store(this.eager_split || this.abort_split, Relaxed); // nobody idle any more
                                 }
                                 continue 'work;
                             }
