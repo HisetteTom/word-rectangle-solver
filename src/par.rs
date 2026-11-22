@@ -1302,7 +1302,19 @@ impl Solver for ParSearch {
             Some(ParSearch::new(self.cols, self.rows, &self.col_words, &self.row_words, self.threads))
         } else if !self.mirrored && (!self.sym || self.cols >= 6) {
             let rev: Vec<String> = self.row_words.iter().map(|w| w.chars().rev().collect()).collect();
-            let mut m = ParSearch::new(self.rows, self.cols, &rev, &self.col_words, self.threads);
+            // 3. without a symmetry to keep, also swap the first two rows (each column word's first two
+            //    letters): of all 24 row orders of 4×5, 4×6 and 4×7 this is the fastest, 0.5–4% faster
+            //    than top-down (3×7 5%, 5×6 0.3%)
+            let cols: Vec<String> = if self.sym || self.rows < 3 {
+                self.col_words.clone()
+            } else {
+                self.col_words.iter().map(|w| {
+                    let mut b = w.clone().into_bytes();
+                    b.swap(0, 1);
+                    String::from_utf8(b).unwrap()
+                }).collect()
+            };
+            let mut m = ParSearch::new(self.rows, self.cols, &rev, &cols, self.threads);
             m.mirrored = true;
             m.anti = self.sym; // the mirror of a square keeps a symmetry: the anti-diagonal one
             Some(m)
