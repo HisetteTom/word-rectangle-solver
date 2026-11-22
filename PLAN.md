@@ -4,13 +4,13 @@ Working notes for the next optimization sessions. Every item that gets tried bec
 benchmarked step (see CLAUDE.md). Failures too, labelled `(failed)`. Details of past steps:
 [`results/journal.md`](results/journal.md). Main machine: **hephaestus** (Ryzen 9 3950X, 32 threads).
 
-## Where we are (2026-11-22 day, after "resume aborted jobs")
+## Where we are (2026-11-22 day, after "next2 only from 6 letters")
 
 | | B5 count 4×5 | B10 count 5×5 | B15 count 5×6 | B18 count 6×6 | B7 find 7×7 | B8 find 6×7 | B12 find 6×8 | B13 prove no 5×10 | B16 prove no 6×9 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | start of the night 11-21 | 1.20 s | 3.91 s | 13.47 s | 20.9 s | 134 ms | 117 ms | 1.01 s | 0.99 s | 9.93 s |
 | morning 11-22 | 0.718 s | 3.96 s | 10.1 s | 18.0 s | 103 ms | 82 ms | 803 ms | 0.538 s | 6.04 s |
-| now | **0.684 s** | 3.93 s | **9.86 s** | 17.8 s | **43 ms** | **33 ms** | **641 ms** | **0.445 s** | **4.64 s** |
+| now | **0.660 s** | **3.83 s** | **9.88 s** | 17.8 s | **44 ms** | **33 ms** | **643 ms** | **0.449 s** | **4.76 s** |
 
 Where the time goes now:
 - **counts:** throughput-bound (31× CPU use on 32 threads), the second-to-last row's first cells
@@ -39,13 +39,12 @@ Where the time goes now:
    `ANY` mode. Any per-node gain in `count` shows up in every benchmark.
 2. **A cheaper next-row set for wide rows** (still open): the DAWG multiset prunes 2× on 6×9 but costs
    2.7× per node; needs a layout where a child step costs about one trie step.
-3. **Abort latency** (see the timeline): the cancel check runs when `nodes & 1023 == 0`, which the bulk
-   node adds of the last rows skip over. A cheaper trigger (e.g. a per-thread flag set by the idle
-   thread, checked only in shallow frames) might close the 5 ms gap.
-4. **12-byte row node, `next2` dropped only where it doesn't prune** (it helped 4×6/5×6, not
-   4×5/5×5). A per-width const choice, like `TRACK`.
-5. **The second-to-last row on 5-row grids** (`count_pen` lost 3% there; maybe register pressure too,
-   see "learned today").
+3. **Abort latency** (see the timeline): ~5 ms between "a thread is idle" and long jobs aborting.
+   Tried checking every 1024 nodes for sure: costs more than it saves. Needs a trigger that adds no
+   work to the hot path.
+4. ~~12-byte row node / `next2` per width~~: done as a per-width const (`NEXT2`, from 6 letters).
+   Skipping `next` too loses everywhere.
+5. ~~Second-to-last-row kernel on 5-row grids~~: re-measured, still 2.4% slower. Dropped.
 6. **Bigger benchmarks:** B5–B8 are now under 0.7 s. Candidates: count 5×7 (9.9 s), count 7×7
    (30 s), prove no 7×8 (36 s), count 8×8 (18 s).
 7. **The last two rows' dead ends** (was #0): strong pruning is easy, but every check measured so far
