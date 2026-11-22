@@ -22,7 +22,7 @@ use crate::trie::{CNode, CTrie, Node, Trie};
 const _: () = assert!(size_of::<Node>() == 16 && size_of::<CNode>() == 8);
 use crate::{Grid, Solver, Stats};
 use std::sync::Mutex;
-use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
+use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed, Ordering::SeqCst};
 
 /// Calls `$body` with the const generic `$W` = `$w` (1..=32): the kernels are monomorphized per
 /// row width, so column loops, `c + k < W` tests and array bounds are compile-time constants.
@@ -45,6 +45,9 @@ const FIND_JOBS_PER_THREAD: usize = 4096;
 /// `find` first searches sequentially for this many nodes (~0.5 ms); small instances finish
 /// there without paying for threads and job expansion.
 const FIND_SEQ_BUDGET: u64 = 30_000;
+/// Time budget of one parallel `find` job before it is split (see `find`), in µs. Measured: 1 ms
+/// splits too often, 2–10 ms are about equal.
+const FIND_JOB_BUDGET_US: u64 = 5_000;
 /// Largest exact next-row set the count kernel tracks (see `Kernel::count`). 32 since the buffer is
 /// uninitialized (5×6: 12.44 s at 16, 11.99 s at 32; 5×5 unchanged).
 const S_CAP: usize = 32;
@@ -74,8 +77,13 @@ pub struct ParSearch {
     /// `find`: build the mirror for the job tests before starting (for tests; normally it is
     /// built on a detached thread and used once ready).
     sync_mirror: bool,
+    /// `find`: split every job at once, as if all were over budget (for tests).
+    eager_split: bool,
     stats: Stats,
 }
+
+/// `find`'s job cut: (rank of the best job with a solution so far, this job's rank, deadline).
+type Cut<'a> = (&'a AtomicU64, u64, Option<(std::time::Instant, &'a std::sync::atomic::AtomicBool)>);
 
 /// Per-thread search state.
 struct Worker<'a> {
@@ -86,11 +94,13 @@ struct Worker<'a> {
     nodes: u64,
     /// `search` gives up once `nodes` exceeds this (checked every 256 nodes, with `stop`).
     limit: u64,
+    /// The last `count_job` was cut short (its result is a lower bound).
+    cancelled: bool,
 }
 
 impl<'a> Worker<'a> {
     fn new(s: &'a ParSearch) -> Self {
-        Worker { s, row_state: vec![0; s.rows], col_state: vec![0; s.cols], grid: vec![0; s.rows * s.cols], nodes: 0, limit: u64::MAX }
+        Worker { s, row_state: vec![0; s.rows], col_state: vec![0; s.cols], grid: vec![0; s.rows * s.cols], nodes: 0, limit: u64::MAX, cancelled: false }
     }
 
     /// Reset to the empty grid and replay a job prefix.
@@ -113,13 +123,13 @@ impl<'a> Worker<'a> {
     }
 
     /// Count all completions of the loaded job prefix (`cell` = first empty cell).
-    /// `plain` = Some((best, job)) for `find`: no square symmetry (prefixes leave row 0), stop at the
+    /// `plain` = Some((best, job, budget)) for `find`: no square symmetry (prefixes leave row 0), stop at the
     /// first solution (the result is then only "0" or "some"), and give up (0) once `best` < job.
-    fn count_job(&mut self, cell: usize, plain: Option<(&AtomicUsize, usize)>) -> u64 {
+    fn count_job(&mut self, cell: usize, plain: Option<Cut>) -> u64 {
         by_width!(self.s.cols, |W| self.count_job_w::<W>(cell, plain))
     }
 
-    fn count_job_w<const W: usize>(&mut self, cell: usize, plain: Option<(&AtomicUsize, usize)>) -> u64 {
+    fn count_job_w<const W: usize>(&mut self, cell: usize, plain: Option<Cut>) -> u64 {
         let s = self.s;
         let (r, c) = (cell / W, cell % W);
         let mut colv: [CNode; W] = std::array::from_fn(|i| s.col_trie.node(self.col_state[i]));
@@ -152,6 +162,7 @@ impl<'a> Worker<'a> {
             }
         };
         self.nodes += nodes;
+        self.cancelled = k.cancelled.get();
         total
     }
 
@@ -194,9 +205,10 @@ struct Kernel<'t, const W: usize> {
     /// Row trie root, cached (no load + bounds check at every row start).
     root: Node,
     last_r: usize,
-    /// `count::<ANY>` only: (best job so far, this job). The job is cancelled once an earlier job
-    /// has a solution; `cancelled` then makes every frame return at once.
-    cut: Option<(&'t AtomicUsize, usize)>,
+    /// `count::<ANY>` only: (best job so far, this job, deadline). The job is cancelled once an
+    /// earlier job has a solution or the deadline passed; `cancelled` then makes every frame return
+    /// at once.
+    cut: Option<Cut<'t>>,
     cancelled: std::cell::Cell<bool>,
 
 }
@@ -471,8 +483,8 @@ impl<const W: usize> Kernel<'_, W> {
         crate::probe::hit(r, c);
         if ANY {
             if *nodes & 1023 == 0
-                && let Some((best, j)) = self.cut
-                && best.load(Relaxed) < j
+                && let Some((best, j, deadline)) = self.cut
+                && (best.load(Relaxed) < j || deadline.is_some_and(|(d, hurry)| hurry.load(Relaxed) && std::time::Instant::now() > d))
             {
                 self.cancelled.set(true);
             }
@@ -575,8 +587,8 @@ impl<const W: usize> Kernel<'_, W> {
         crate::probe::hit(self.last_r - 1, c);
         if ANY {
             if *nodes & 1023 == 0
-                && let Some((best, j)) = self.cut
-                && best.load(Relaxed) < j
+                && let Some((best, j, deadline)) = self.cut
+                && (best.load(Relaxed) < j || deadline.is_some_and(|(d, hurry)| hurry.load(Relaxed) && std::time::Instant::now() > d))
             {
                 self.cancelled.set(true);
             }
@@ -788,6 +800,7 @@ impl ParSearch {
             mirrored: false,
             anti: false,
             sync_mirror: false,
+            eager_split: false,
             row_trie: Trie::new(row_words),
             col_trie: CTrie::new(&Trie::new(col_words)),
             threads,
@@ -802,6 +815,12 @@ impl ParSearch {
     /// tested on it (tests use this; see `find`).
     pub fn with_sync_mirror(mut self) -> Self {
         self.sync_mirror = true;
+        self
+    }
+
+    /// `find` splits every job into sub-jobs, recursively (tests the split path; see `find`).
+    pub fn with_eager_split(mut self) -> Self {
+        self.eager_split = true;
         self
     }
 
@@ -883,34 +902,73 @@ impl ParSearch {
         r
     }
 
-    /// On a mirrored search (row words reversed): is there a grid whose *original* row 0 starts
-    /// with `prefix` (letters 0..26)? In the mirror image those letters are the end of row 0,
-    /// right to left. They are forced by starting their columns at virtual nodes
-    /// `{mask: 1 << l, first: index of the real child}`: the only letter allowed is `l`, and
-    /// stepping it lands on the real column-trie child. No kernel change needed.
-    fn exists_with_row0_prefix(&self, prefix: &[u8], cut: (&AtomicUsize, usize), nodes: &mut u64) -> bool {
+    /// On a mirrored search (row words reversed): is there a grid whose *original* first cells
+    /// (row-major) are `prefix` (letters 0..26)? `None` = cut short (see `Cut`). In the mirror image,
+    /// the prefix's full rows are placed directly (only the columns need them) and the letters of
+    /// its partial row q are the end of row q, right to left. Those are forced by starting their
+    /// columns at virtual nodes `{mask: 1 << l, first: index of the real child}`: the only letter
+    /// allowed is `l`, and stepping it lands on the real column-trie child. No kernel change needed.
+    fn exists_with_prefix(&self, prefix: &[u8], cut: Cut, nodes: &mut u64) -> Option<bool> {
         by_width!(self.cols, |W| self.exists_w::<W>(prefix, cut, nodes))
     }
 
-    fn exists_w<const W: usize>(&self, prefix: &[u8], cut: (&AtomicUsize, usize), nodes: &mut u64) -> bool {
-        let root = self.col_trie.node(0);
-        let mut colv = [root; W];
-        for (k, &l) in prefix.iter().enumerate() {
-            if root.mask >> l & 1 == 0 {
-                return false;
+    fn exists_w<const W: usize>(&self, prefix: &[u8], cut: Cut, nodes: &mut u64) -> Option<bool> {
+        let (q, k) = (prefix.len() / W, prefix.len() % W);
+        let mut col = [0u32; W]; // column-trie node indices after the full rows
+        for (cell, &l) in prefix[..q * W].iter().enumerate() {
+            let c = W - 1 - cell % W;
+            if self.col_trie.mask(col[c]) >> l & 1 == 0 {
+                return Some(false);
             }
-            colv[W - 1 - k] = CNode { mask: 1 << l, first: self.col_trie.child(0, l as usize) };
+            col[c] = self.col_trie.child(col[c], l as usize);
         }
-        let mut k = Kernel::<W>::new(self);
-        k.cut = Some(cut);
-        let row = k.root;
-        let ps = std::slice::from_ref(&k.root);
+        let mut colv: [CNode; W] = std::array::from_fn(|c| self.col_trie.node(col[c]));
+        for (i, &l) in prefix[q * W..].iter().enumerate() {
+            let c = W - 1 - i;
+            if colv[c].mask >> l & 1 == 0 {
+                return Some(false);
+            }
+            colv[c] = CNode { mask: 1 << l, first: self.col_trie.child(col[c], l as usize) };
+        }
+        debug_assert!(q < self.rows && (q + 1 < self.rows || k < W));
+        let mut kn = Kernel::<W>::new(self);
+        kn.cut = Some(cut);
+        let row = kn.root;
+        let ps = std::slice::from_ref(&kn.root);
         let total = if Kernel::<W>::PEN && self.rows <= 4 {
-            k.count::<true, true>(0, 0, row, &mut colv, nodes, !0, ps, SELF)
+            kn.count::<true, true>(q, 0, row, &mut colv, nodes, !0, ps, SELF)
         } else {
-            k.count::<true, false>(0, 0, row, &mut colv, nodes, !0, ps, SELF)
+            kn.count::<true, false>(q, 0, row, &mut colv, nodes, !0, ps, SELF)
         };
-        total > 0
+        if total > 0 { Some(true) } else if kn.cancelled.get() { None } else { Some(false) }
+    }
+
+    /// Breadth-first split of one job prefix into at least `target` sub-jobs (fewer if the tree is
+    /// small), in lexicographic order. Never expands the last cell. Also returns the nodes expanded.
+    fn expand(&self, w: &mut Worker, prefix: &[u8], target: usize) -> (Vec<Vec<u8>>, u64) {
+        let n = self.rows * self.cols;
+        let mut jobs = vec![prefix.to_vec()];
+        let mut expanded = 0;
+        while jobs.len() < target && jobs[0].len() + 1 < n {
+            let mut next = Vec::new();
+            for p in &jobs {
+                w.load(p);
+                expanded += 1;
+                let (_, _, _, _, mut allowed) = w.allowed(p.len());
+                while allowed != 0 {
+                    let l = allowed.trailing_zeros() as u8;
+                    allowed &= allowed - 1;
+                    let mut q = p.clone();
+                    q.push(l);
+                    next.push(q);
+                }
+            }
+            if next.is_empty() {
+                break;
+            }
+            jobs = next;
+        }
+        (jobs, expanded)
     }
 
     fn to_grid(&self, g: &[u8]) -> Grid {
@@ -924,11 +982,13 @@ impl Solver for ParSearch {
         let mut w = Worker::new(self);
         w.limit = self.seq_budget;
         let mut sol = None;
-        w.search(0, &mut |g: &[u8]| {
-            sol = Some(g.to_vec());
-            false
-        }, &|| false);
-        let (nodes, out_of_budget) = (w.nodes, w.nodes > w.limit);
+        if self.seq_budget > 0 {
+            w.search(0, &mut |g: &[u8]| {
+                sol = Some(g.to_vec());
+                false
+            }, &|| false);
+        }
+        let (nodes, out_of_budget) = (w.nodes, self.seq_budget == 0 || w.nodes > w.limit);
         self.stats.nodes += nodes;
         if !out_of_budget || sol.is_some() {
             let g = sol.map(|g| self.to_grid(&g));
@@ -947,7 +1007,7 @@ impl Solver for ParSearch {
         //    kernel, and once it is built (on a detached thread: it takes tens of ms, and a short find
         //    must not wait for it), on the mirror image (rows reversed: 1.4–1.7× faster on exhaustive
         //    work). There the job's prefix is the *end* of row 0, forced through virtual column nodes
-        //    (`exists_with_row0_prefix`).
+        //    (`exists_with_prefix`).
         let mirror: std::sync::Arc<std::sync::OnceLock<ParSearch>> = Default::default();
         if use_mirror && depth <= self.cols {
             let (m, rw, cw) = (mirror.clone(), self.row_words.clone(), self.col_words.clone());
@@ -962,38 +1022,134 @@ impl Solver for ParSearch {
                 std::thread::spawn(build);
             }
         }
-        let mirror_nodes = AtomicU64::new(0);
-        let best = AtomicUsize::new(usize::MAX);
-        let found = {
-            self.run(depth, &jobs, |w, j, prefix| {
-                if best.load(Relaxed) < j {
-                    return None; // an earlier job already has a solution
-                }
+        // 4. every job gets a time budget (test, then search; enforced only once a solution is known
+        //    or every job has started: before that, other threads have work of their own). A job over
+        //    budget is split into sub-jobs (budget doubled), which go to a shared queue that workers
+        //    serve first, so all threads help on a huge subtree instead of one walking it while the
+        //    others wait (7×7: 104 -> 62 ms, 6×7: 82 -> 43 ms). Jobs are ranked by
+        //    disjoint intervals [lo, hi) in lexicographic order (top job j: [j·SPAN, (j+1)·SPAN),
+        //    sub-jobs split their parent's interval), so the solution of the lowest-ranked job that
+        //    has one is the first grid, and jobs ranked above a found solution are skipped.
+        const SPAN: u64 = 1 << 40;
+        let count = jobs.len().checked_div(depth).unwrap_or(1);
+        let budget = std::time::Duration::from_micros(if self.eager_split { 0 } else { FIND_JOB_BUDGET_US });
+        let best = AtomicU64::new(u64::MAX);
+        // set once a solution is known or all top-level jobs are taken: only then are long jobs split
+        let hurry = std::sync::atomic::AtomicBool::new(self.eager_split);
+        let (next, inflight) = (AtomicUsize::new(0), AtomicUsize::new(self.threads.min(count)));
+        let queue = Mutex::new(std::collections::BinaryHeap::new());
+        let queued = AtomicUsize::new(0);
+        let (nodes, extra) = (AtomicU64::new(0), AtomicU64::new(0));
+        let results = Mutex::new(Vec::new());
+        let this: &ParSearch = self;
+        let process = |w: &mut Worker, lo: u64, hi: u64, prefix: &[u8], budget: std::time::Duration| {
+            if best.load(Relaxed) < lo {
+                return; // an earlier job already has a solution
+            }
+            // mirror-tested jobs are not split: their sub-jobs would force letters at the *end* of a
+            // mirror row, so each would redo most of its parent's test (6×9: 6.0 -> 12.2 s)
+            let mut split = !use_mirror;
+            loop {
+                let deadline = split.then(|| (std::time::Instant::now() + budget, &hurry));
+                let late = || deadline.is_some_and(|(d, h)| h.load(Relaxed) && std::time::Instant::now() > d);
+                let cut = (&best, lo, deadline);
                 let any = match mirror.get() {
+                    _ if split && this.eager_split => None, // tests: split without trying
                     Some(m) => {
                         let mut n = 0;
-                        let any = m.exists_with_row0_prefix(prefix, (&best, j), &mut n);
-                        mirror_nodes.fetch_add(n, Relaxed);
+                        let any = m.exists_with_prefix(prefix, cut, &mut n);
+                        extra.fetch_add(n, Relaxed);
                         any
                     }
-                    None => w.count_job(depth, Some((&best, j))) > 0,
+                    None => {
+                        w.load(prefix);
+                        let any = w.count_job(prefix.len(), Some(cut)) > 0;
+                        if any { Some(true) } else if w.cancelled { None } else { Some(false) }
+                    }
                 };
-                if !any || best.load(Relaxed) < j {
-                    return None;
+                if best.load(Relaxed) < lo || any == Some(false) {
+                    return;
                 }
-                let mut sol = None;
-                w.search(depth, &mut |g: &[u8]| {
-                    sol = Some(g.to_vec());
-                    false
-                }, &|| best.load(Relaxed) < j);
-                if sol.is_some() {
-                    best.fetch_min(j, Relaxed);
+                if any.is_some() {
+                    let mut sol = None;
+                    w.load(prefix);
+                    w.search(prefix.len(), &mut |g: &[u8]| {
+                        sol = Some(g.to_vec());
+                        false
+                    }, &|| best.load(Relaxed) < lo || late());
+                    if let Some(g) = sol {
+                        best.fetch_min(lo, Relaxed);
+                        hurry.store(true, Relaxed);
+                        results.lock().unwrap().push((lo, g));
+                        return;
+                    }
+                    if best.load(Relaxed) < lo {
+                        return;
+                    }
                 }
-                sol
-            })
+                // over budget: split into sub-jobs with sub-intervals of [lo, hi)
+                let (subs, expanded) = this.expand(w, prefix, 4 * this.threads);
+                extra.fetch_add(expanded, Relaxed);
+                let step = (hi - lo) / subs.len() as u64;
+                if step == 0 || subs.len() == 1 {
+                    split = false; // can't split (rank space or tree exhausted): finish it here
+                    continue;
+                }
+                let mut q = queue.lock().unwrap();
+                let last = subs.len() - 1;
+                for (i, sub) in subs.into_iter().enumerate() {
+                    let a = lo + i as u64 * step;
+                    q.push(std::cmp::Reverse((a, if i == last { hi } else { a + step }, budget * 2, sub)));
+                }
+                queued.store(q.len(), Relaxed);
+                return;
+            }
         };
-        self.stats.nodes += mirror_nodes.into_inner();
-        let g = found.into_iter().next().map(|(_, g)| self.to_grid(&g));
+        std::thread::scope(|scope| {
+            for _ in 0..this.threads.min(count) {
+                scope.spawn(|| {
+                    let mut w = Worker::new(this);
+                    // `inflight` counts the threads that are not idle (only they add to the queue)
+                    'work: loop {
+                        let urgent = if queued.load(Relaxed) > 0 {
+                            let mut q = queue.lock().unwrap();
+                            let job = q.pop();
+                            queued.store(q.len(), SeqCst);
+                            job
+                        } else {
+                            None
+                        };
+                        if let Some(std::cmp::Reverse((lo, hi, budget, prefix))) = urgent {
+                            process(&mut w, lo, hi, &prefix, budget);
+                            continue;
+                        }
+                        let j = next.fetch_add(1, Relaxed);
+                        if j < count {
+                            let prefix = &jobs[j * depth..(j + 1) * depth];
+                            process(&mut w, j as u64 * SPAN, (j as u64 + 1) * SPAN, prefix, budget);
+                            continue;
+                        }
+                        hurry.store(true, Relaxed);
+                        inflight.fetch_sub(1, SeqCst);
+                        loop {
+                            if queued.load(SeqCst) > 0 {
+                                inflight.fetch_add(1, SeqCst);
+                                continue 'work;
+                            }
+                            if inflight.load(SeqCst) == 0 && queued.load(SeqCst) == 0 {
+                                break 'work;
+                            }
+                            std::thread::yield_now();
+                        }
+                    }
+                    nodes.fetch_add(w.nodes, Relaxed);
+                    crate::probe::flush();
+                });
+            }
+        });
+        self.stats.nodes += nodes.into_inner() + extra.into_inner();
+        let answer = results.into_inner().unwrap().into_iter().min_by_key(|(lo, _)| *lo).map(|(_, g)| g);
+        let g = answer.map(|g| self.to_grid(&g));
         self.stats.solutions = g.is_some() as u64;
         g
     }

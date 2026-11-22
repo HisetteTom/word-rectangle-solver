@@ -127,6 +127,40 @@ fn par_parallel_find_path_is_deterministic() {
     assert!(ParSearch::new(3, 3, d.words(3), d.words(3), 0).with_seq_budget(0).find().is_none());
 }
 
+#[test]
+fn par_split_jobs_find_naive_first_grid() {
+    // every job split into sub-jobs, recursively: the answer must still be naive's first grid
+    let d = Dict::load("dicts/enable.txt".as_ref()).unwrap();
+    for (r, c) in [(3, 3), (3, 4), (4, 4), (2, 6), (4, 5)] {
+        let want = find("naive", &d, r, c);
+        for threads in [1, 3, 0] {
+            let got = ParSearch::new(r, c, d.words(c), d.words(r), threads).with_seq_budget(0).with_eager_split().find();
+            assert_eq!(got, want, "size={r}x{c} threads={threads}");
+        }
+    }
+    let mut seed: u64 = 7;
+    let mut next = || {
+        seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+        (seed >> 33) as usize
+    };
+    let (mut some, mut none) = (0, 0);
+    for (r, c, n_words) in [(4, 5, 6), (5, 5, 5), (3, 7, 4), (5, 6, 6)] {
+        for _ in 0..8 {
+            let word = |len: usize, next: &mut dyn FnMut() -> usize| -> String { (0..len).map(|_| (b'a' + (next() % 2) as u8) as char).collect() };
+            let mut words: Vec<String> = (0..n_words).map(|_| word(c, &mut next)).collect();
+            words.extend((0..n_words).map(|_| word(r, &mut next)));
+            let d = Dict::from_words(words.iter().map(String::as_str));
+            let want = find("naive", &d, r, c);
+            if want.is_some() { some += 1 } else { none += 1 }
+            for threads in [1, 3, 0] {
+                let got = ParSearch::new(r, c, d.words(c), d.words(r), threads).with_seq_budget(0).with_eager_split().find();
+                assert_eq!(got, want, "size={r}x{c} threads={threads} dict={words:?}");
+            }
+        }
+    }
+    assert!(some > 0 && none > 0, "want both outcomes: some={some} none={none}");
+}
+
 /// Big squares take special count paths in `par` (mirror image + anti-diagonal symmetry from 6×6
 /// up), which the small sizes above never reach. Dense random dictionaries over a 2-letter
 /// alphabet give many solutions, including symmetric ones (the tie paths).
