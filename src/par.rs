@@ -467,6 +467,11 @@ impl<const W: usize> Kernel<'_, W> {
         if P && r + 1 == self.last_r && !ps.is_empty() {
             return self.count_pen::<ANY, P>(c, row, colv, nodes, f, ps, pm);
         }
+        if !P && Self::TRACK && r + 1 == self.last_r && c == 0 && pm == SELF && !ps.is_empty()
+            && let Some(t) = self.count_last2::<ANY>(colv, nodes)
+        {
+            return t;
+        }
         *nodes += 1;
         crate::probe::hit(r, c);
         if ANY {
@@ -692,6 +697,93 @@ impl<const W: usize> Kernel<'_, W> {
             }
         }
         colv[c] = col;
+        total
+    }
+
+    /// The last two rows together, **last row first**. Each column c only constrains the pair
+    /// (A_c, B_c) (A = second-to-last row, B = last row) to the column's two-letter endings. B's
+    /// letters are column-word *endings*, the more selective side, so B is enumerated (with the
+    /// usual look-ahead) while the possible A prefixes are tracked as a set. `None` if that set
+    /// overflows (the caller then counts the rows the usual way).
+    #[inline(never)]
+    fn count_last2<const ANY: bool>(&self, colv: &[CNode; W], nodes: &mut u64) -> Option<u64> {
+        // per column: x_of[c][y] = A letters x such that the column allows (x, y); bmask[c] = B letters
+        let mut x_of = [[0u32; 26]; W];
+        let mut bmask = [0u32; W];
+        for c in 0..W {
+            let col = colv[c];
+            let mut xs = col.mask;
+            while xs != 0 {
+                let x = xs.trailing_zeros();
+                xs &= xs - 1;
+                // SAFETY: `x` is a bit of `col.mask`.
+                let mut ys = unsafe { self.cstep(col, x) }.mask;
+                bmask[c] |= ys;
+                while ys != 0 {
+                    let y = ys.trailing_zeros() as usize;
+                    ys &= ys - 1;
+                    x_of[c][y] |= 1 << x;
+                }
+            }
+            if bmask[c] == 0 {
+                return Some(0);
+            }
+        }
+        let mut over = false;
+        let t = self.last2_cell::<ANY>(0, self.root, std::slice::from_ref(&self.root), &x_of, &bmask, nodes, &mut over);
+        if over { None } else { Some(t) }
+    }
+
+    /// Cell c of the last row, `b` = its trie node, `sa` = the possible second-to-last-row prefixes
+    /// (depth c).
+    #[allow(clippy::too_many_arguments)]
+    fn last2_cell<const ANY: bool>(&self, c: usize, b: Node, sa: &[Node], x_of: &[[u32; 26]; W], bmask: &[u32; W], nodes: &mut u64, over: &mut bool) -> u64 {
+        *nodes += 1;
+        let ra = sa.iter().fold(0, |a, n| a | n.mask); // A letters possible here
+        let allowed = b.mask & bmask[c];
+        let mut total = 0;
+        if c == W - 1 {
+            let mut ys = allowed;
+            while ys != 0 {
+                let y = ys.trailing_zeros() as usize;
+                ys &= ys - 1;
+                let xm = x_of[c][y];
+                total += sa.iter().map(|n| (n.mask & xm).count_ones() as u64).sum::<u64>();
+            }
+            return total;
+        }
+        let m = |k: usize| if k < W { bmask[k] } else { !0 };
+        let mut good = self.good(b, allowed, c, m(c + 1), m(c + 2), m(c + 3));
+        while good != 0 {
+            let y = good.trailing_zeros();
+            good &= good - 1;
+            let xm = x_of[c][y as usize] & ra;
+            if xm == 0 {
+                continue;
+            }
+            // A prefixes extended by the letters column c allows above y
+            let mut buf = SetBuf::<S_CAP_PEN>::new();
+            let mut n = 0;
+            for an in sa {
+                let mut xs = an.mask & xm;
+                while xs != 0 {
+                    let x = xs.trailing_zeros();
+                    xs &= xs - 1;
+                    if n == S_CAP_PEN {
+                        *over = true;
+                        return 0;
+                    }
+                    // SAFETY: `x` is a bit of `an.mask`.
+                    buf.set(n, unsafe { self.rstep(*an, x) });
+                    n += 1;
+                }
+            }
+            // SAFETY: `y` comes from `good`, a subset of `b.mask`.
+            total += self.last2_cell::<ANY>(c + 1, unsafe { self.rstep(b, y) }, buf.first(n), x_of, bmask, nodes, over);
+            if *over || (ANY && total > 0) {
+                return total;
+            }
+        }
         total
     }
 
