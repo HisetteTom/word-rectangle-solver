@@ -722,3 +722,21 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,bbfcd10,fast,par,B16,find --rows 6 --cols 9,6.1274,7234642959,no solution: 6x9 exhausted,6.015106,pair look-ahead (failed),hephaestus
 2026-11-22,bbfcd10,fast,par,B17,count --rows 4 --cols 7,2.6296,913558942,solutions=7139499,2.527663,pair look-ahead (failed),hephaestus
 2026-11-22,bbfcd10,fast,par,B18,count --rows 6 --cols 6,18.6596,15599545843,solutions=1584465,18.576532,pair look-ahead (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B1,count --rows 3 --cols 3,0.0719,994996,solutions=1909732,0.001656,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B2,find --rows 5 --cols 6,0.0852,7220,found,0.000150,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B3,find --rows 6 --cols 6,0.0872,12839,found,0.000231,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B4,count --rows 4 --cols 4,0.1905,170637018,solutions=136245247,0.113098,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B5,count --rows 4 --cols 5,0.8230,414768985,solutions=114846713,0.741013,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B6,count --rows 3 --cols 7,0.1832,73694947,solutions=4453472,0.088599,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B7,find --rows 7 --cols 7,0.2062,27664437,found,0.109871,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B8,find --rows 6 --cols 7,0.1807,15376212,found,0.082852,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B9,find --rows 5 --cols 9,0.2600,157462043,found,0.155015,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B10,count --rows 5 --cols 5,4.1691,2580297915,solutions=80364530,4.089028,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B11,count --rows 4 --cols 6,1.5101,774415735,solutions=37812638,1.424465,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B12,find --rows 6 --cols 8,0.9355,435882985,found,0.824489,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B13,find --rows 5 --cols 10,0.6583,605269014,no solution: 5x10 exhausted,0.553434,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B14,count --rows 6 --cols 4,1.5127,774415735,solutions=37812638,1.432444,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B15,count --rows 5 --cols 6,10.5338,4154854672,solutions=7424362,10.450408,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B16,find --rows 6 --cols 9,6.2617,7234755664,no solution: 6x9 exhausted,6.149963,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B17,count --rows 4 --cols 7,2.0164,947315421,solutions=7139499,1.920300,whole-word last-row check (failed),hephaestus
+2026-11-22,ee7042b,fast,par,B18,count --rows 6 --cols 6,18.1346,15343179249,solutions=1584465,18.031711,whole-word last-row check (failed),hephaestus

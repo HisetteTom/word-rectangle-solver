@@ -1183,3 +1183,26 @@ That set replaces the plain column mask in `good()`'s first look-ahead slot.
 **Verdict:** reverted. It prunes only 2–3% of nodes: the dead ends aren't visible one column ahead. They
 come from whole words further right. The probe numbers stay as a guide: there's a lot of room in the last two
 rows, but it takes a check that sees whole words (PLAN.md).
+
+### 2026-11-22: whole-word last-row check (`ee7042b`) ❌ reverted
+
+**Idea:** the dead ends are whole-word failures, so check whole words. In the second-to-last row, let
+U_k be the last-row letters column k allows after any letter this row could still put there (exact
+at the current cell, the column's "one row down" mask beyond it). Then some prefix in the last-row
+set must complete to a **whole word** with every letter inside U. That's a depth-first walk with early
+exit (`word_fits`). If none does, the node is dead now instead of several columns later.
+
+| Variant | 5×5 | 5×6 | 4×7 | nodes 5×6 |
+|---|---:|---:|---:|---:|
+| baseline | 3.91 s | 10.0 s | 1.72 s | 5.95 G |
+| check at c ≤ 1, U from child loads | 4.95 s | 12.25 s | 2.49 s | **3.64 G** |
+| check at c = 0, U from child loads | 4.16 s | 10.51 s | 1.89 s | 4.15 G |
+| check at c ≤ 1, U from a column `next` field (12-byte nodes) | 4.43 s | 11.56 s | 2.35 s | 3.64 G |
+| check at c = 0, column `next` field (benched) | 4.08 s | 10.47 s | 1.93 s | 4.15 G |
+
+Bench of the last variant: B10 4.089028s, B15 10.450408s, B17 1.920300s (before: 3.91 s, 9.99 s, 1.72 s).
+
+**Verdict:** reverted. This is the strongest pruning tried tonight: **39% fewer nodes** on 5×6 and 26%
+on 5×5. But a dead node has to walk *all* fitting last-row prefixes to prove it's dead, and that costs
+more than the subtree it saves. Worth retrying with a cheaper existence test (e.g. per-position
+letter bitsets over the last-row words, or a memo of U-tuples → yes/no).
