@@ -1280,3 +1280,43 @@ The last column adds popcounts. If the A set overflows 128 slots, the row is rec
 **Verdict:** reverted. The node counts barely move: the pair constraints prune the same from either
 side, and the per-row tables add cost. The selectivity of word endings had already been used up by
 the mirror image.
+
+### 2026-11-22: summary of the night (hephaestus)
+
+From "unchecked trie steps" (the code at the start of the night) to "second-to-last-row set cap 128"
+(the code now). Same machine, median search times:
+
+| Benchmark | Task | Start of night | Now | Change |
+|---|---|---:|---:|---:|
+| B4 | count 4×4 | 157 ms | 113 ms | 1.39× |
+| B5 | count 4×5 | 1.20 s | 718 ms | **1.68×** |
+| B7 | find 7×7 | 134 ms | 103 ms | 1.29× |
+| B8 | find 6×7 | 117 ms | 82 ms | 1.42× |
+| B9 | find 5×9 | 195 ms | 151 ms | 1.30× |
+| B10 | count 5×5 | 3.91 s | 3.96 s | ≈ |
+| B11 | count 4×6 | 2.19 s | 1.39 s | 1.58× |
+| B12 | find 6×8 | 1.01 s | 803 ms | 1.26× |
+| B13 | prove no 5×10 | 985 ms | 538 ms | **1.83×** |
+| B14 | count 6×4 | 2.18 s | 1.39 s | 1.56× |
+| B15 | count 5×6 | 13.5 s | 10.1 s | 1.33× |
+| B16 | prove no 6×9 | 9.93 s | 6.04 s | **1.64×** |
+| B17 | count 4×7 | 2.89 s | 1.75 s | 1.65× |
+| B18 | count 6×6 | 20.9 s | 18.0 s | 1.16× |
+| B1–B3, B6 | tiny (≤ 0.1 s) | | | ≈ |
+
+Geometric mean over all 18: **1.31×**. Bigger instances gained more: 8×8 counted in 18 s (28 s
+before), 7×7 in 30 s (42 s), "no 7×8 exists" proven in 36 s (59 s).
+
+What worked: the exact next-row set; counting the **mirror image** (rows from their last letter);
+the anti-diagonal symmetry of mirrored squares; testing find's jobs on the mirror via virtual
+column nodes; a specialized second-to-last-row kernel for small grids; retuned constants (find's
+sequential budget, set caps).
+
+What didn't (12 bars): sets in the find kernel or on wide rows, DAWG sets, packed nodes, loose bounds
+(column look-ahead, skip-grams, pair look-ahead, bigram paths), and the whole-word last-row checks,
+which prune up to 40% of nodes but cost more than they save. The open lead is in PLAN.md: the
+second-to-last row's nodes are 90–100% dead ends, so a cheap whole-word test would pay off big.
+
+Not speed: the whole history replayed on hephaestus; B15–B18; the atlas (every size to 10×22
+settled for two dictionaries; ENABLE's largest is 8×8, five symmetric squares); `wordrect squares`;
+charts: progress, anatomy, impact ranking, heatmap, thread scaling, atlas, gallery, squares.
