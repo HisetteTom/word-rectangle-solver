@@ -686,3 +686,21 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,f23ce1d,fast,par,B16,find --rows 6 --cols 9,10.0489,10394973114,no solution: 6x9 exhausted,9.945620,skip-gram forward bound (failed),hephaestus
 2026-11-22,f23ce1d,fast,par,B17,count --rows 4 --cols 7,1.8657,996039979,solutions=7139499,1.764273,skip-gram forward bound (failed),hephaestus
 2026-11-22,f23ce1d,fast,par,B18,count --rows 6 --cols 6,17.9670,15602166452,solutions=1584465,17.864434,skip-gram forward bound (failed),hephaestus
+2026-11-22,096a1a9,fast,par,B1,count --rows 3 --cols 3,0.0746,994996,solutions=1909732,0.001758,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B2,find --rows 5 --cols 6,0.0863,7220,found,0.000145,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B3,find --rows 6 --cols 6,0.0845,12839,found,0.000229,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B4,count --rows 4 --cols 4,0.1916,170637018,solutions=136245247,0.114341,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B5,count --rows 4 --cols 5,0.8088,414768985,solutions=114846713,0.728122,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B6,count --rows 3 --cols 7,0.1883,73695021,solutions=4453472,0.087997,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B7,find --rows 7 --cols 7,0.1996,27624575,found,0.103195,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B8,find --rows 6 --cols 7,0.1775,15251571,found,0.080430,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B9,find --rows 5 --cols 9,0.2477,157462185,found,0.148546,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B10,count --rows 5 --cols 5,3.9885,3129472451,solutions=80364530,3.910056,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B11,count --rows 4 --cols 6,1.5072,774415735,solutions=37812638,1.418322,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B12,find --rows 6 --cols 8,0.9108,428275453,found,0.802480,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B13,find --rows 5 --cols 10,0.6549,620920008,no solution: 5x10 exhausted,0.546441,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B14,count --rows 6 --cols 4,1.5020,774415735,solutions=37812638,1.422487,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B15,count --rows 5 --cols 6,10.0848,5947012110,solutions=7424362,9.991882,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B16,find --rows 6 --cols 9,6.1211,7253401853,no solution: 6x9 exhausted,6.008947,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B17,count --rows 4 --cols 7,1.8186,996185895,solutions=7139499,1.719824,mirror-image job test in find,hephaestus
+2026-11-22,096a1a9,fast,par,B18,count --rows 6 --cols 6,17.8911,15605237112,solutions=1584465,17.805150,mirror-image job test in find,hephaestus

@@ -1088,3 +1088,39 @@ lookups; the two forward masks travel packed in one `u64`).
 
 **Verdict:** reverted. Like every loose bound tried so far (backward bound, column look-ahead), it
 prunes too little to pay for the lookups. A cheap bound has to depend on the letters actually placed.
+
+### 2026-11-22: mirror-image job test in find (`096a1a9`) ✅ kept
+
+**Why:** counts got 1.07–1.7× faster on the mirror image (rows from their last letter), but `find`
+couldn't use it: its answer must be the first grid in the asked orientation, and its parallel jobs are
+prefixes of row 0 in that orientation.
+
+**Idea:** a job only needs a yes/no test ("does any grid start with this prefix?") before it is
+searched, and that test can run on the mirror image. There the job's prefix is the **end** of row 0,
+read right to left. Those cells are forced with no kernel change at all: their columns start at a
+*virtual node* `{mask: 1 << l, first: index of the real child}`, so the only letter allowed is
+`l`, and stepping it lands on the real column-trie child. Same set of grids, so same answer:
+determinism unchanged.
+
+Details that mattered:
+- The mirror (tries over ~28 k reversed words) takes tens of ms to build, so it is built on a
+  **detached thread**. Jobs are tested in the asked orientation until it's ready. Building it up
+  front made 7×7 go 0.10 → 0.32 s.
+- Mirror tests need jobs inside row 0. Capping jobs there hurts satisfiable finds with early
+  solutions (5×8: 25 → 100 ms, 5×9: 150 → 187 ms): one thread walks the whole row-0 job that holds
+  the first solution. A node budget for a first test in the asked orientation didn't fix it (the
+  cap is the cause). So the mirror is used for **big grids only: area ≥ 48, rows of 8+ letters**,
+  where solutions are rare and proving jobs empty dominates.
+- New test `par_mirror_job_test_matches_naive_first_grid`: 24 dense random dictionaries at
+  6×8, 5×10 and 6×9 (some with solutions, some without), 1/3/all threads, mirror built synchronously or
+  not, against naive's first grid. Mutation-checked: making the mirror test always say "no" fails it.
+
+| Benchmark | Before (anti-diagonal symmetry) | After | Change |
+|---|---|---|---|
+| B12 find 6×8 | 0.916 s | 0.802 s | 1.14× faster |
+| B13 prove no 5×10 | 0.913 s | 0.546 s | **1.67× faster** |
+| B16 prove no 6×9 | 9.23 s | 6.01 s | **1.54× faster** |
+| prove no 7×8 (not a benchmark) | 59.4 s | 36.3 s | 1.64× faster |
+| B7, B8, B9 (smaller finds) | | | unchanged |
+
+**Verdict:** kept. "Prove it doesn't exist" is the long-running query of the atlas frontier.
