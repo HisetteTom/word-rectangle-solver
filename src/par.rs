@@ -19,7 +19,7 @@
 use crate::trie::{CNode, CTrie, Node, Trie};
 
 // Layout guard (rust-skills `mem-assert-type-size`): the kernels are tuned for these sizes.
-const _: () = assert!(size_of::<Node>() == 16 && size_of::<CNode>() == 8);
+const _: () = assert!(size_of::<Node>() == 16 && size_of::<CNode>() == 12);
 use crate::{Grid, Solver, Stats};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
@@ -518,6 +518,28 @@ impl<const W: usize> Kernel<'_, W> {
             }
             if n == 0 { (&[], self.uni(c - 1, f)) } else { (buf.first(n), base) }
         };
+        // Bigram path check for the last row (second-to-last row, known set): U_k = letters column
+        // k allows one row down (exact at c); the last row's letters must form a bigram path
+        // through U_c..U_{W-1}, starting from what the set S allows at c.
+        if Self::TRACK && r + 1 == self.last_r && c + 2 < W && !s.is_empty() {
+            let mut uc = 0;
+            let mut xs = col.mask & good;
+            while xs != 0 {
+                let x = xs.trailing_zeros();
+                xs &= xs - 1;
+                // SAFETY: `x` is a bit of `col.mask`.
+                uc |= unsafe { self.cstep(col, x) }.mask;
+            }
+            let mut a = uc & base;
+            let mut k = c;
+            while a != 0 && k + 1 < W {
+                a = self.uni(k, a) & colv[k + 1].next;
+                k += 1;
+            }
+            if a == 0 {
+                return 0;
+            }
+        }
         let mut total = 0;
         if c == (W - 1) {
             // the letter completes this row: next cell is (r + 1, 0) with a fresh row
@@ -899,7 +921,7 @@ impl ParSearch {
             if root.mask >> l & 1 == 0 {
                 return false;
             }
-            colv[W - 1 - k] = CNode { mask: 1 << l, first: self.col_trie.child(0, l as usize) };
+            colv[W - 1 - k] = CNode { mask: 1 << l, first: self.col_trie.child(0, l as usize), next: self.col_trie.node(self.col_trie.child(0, l as usize)).mask };
         }
         let mut k = Kernel::<W>::new(self);
         k.cut = Some(cut);
