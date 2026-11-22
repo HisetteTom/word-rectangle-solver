@@ -709,3 +709,85 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 9.23 s | 2.81× | 1.00× | 10,487,997,156 | no solution: 6x9 exhausted |
 | ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 9.23 s | 2.81× | 1.00× | 10,487,997,156 | no solution: 6x9 exhausted |
 | ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 9.39 s | 2.77× | 0.98× | 10,487,997,156 | no solution: 6x9 exhausted |
+
+## B17 · count all 4×7 (exhaustive)
+
+![B17](charts/B17.svg)
+
+| | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
+|---|---|---|---|---|---:|---:|---:|---:|---|
+| ✅ | parallel (all cores) | `ecc8a36` | 2026-11-07 | fast | 6.93 s | — | — | 12,971,670,477 | solutions=7139499 |
+| ❌ | ~~DAWG (failed)~~ | `ad3fb0c` | 2026-11-07 | fast | 7.81 s | 0.89× | 0.89× | 12,971,670,477 | solutions=7139499 |
+| ❌ | ~~DAWG + row memo (failed)~~ | `7a14702` | 2026-11-07 | fast | 8.71 s | 0.80× | 0.80× | 12,957,618,313 | solutions=7139499 |
+| ✅ | by-value node kernel | `1449b66` | 2026-11-07 | fast | 5.55 s | 1.25× | 1.25× | 12,971,670,477 | solutions=7139499 |
+| ✅ | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 5.30 s | 1.31× | 1.05× | 12,971,670,477 | solutions=7139499 |
+| ✅ | square symmetry | `43cfaf9` | 2026-11-07 | fast | 5.28 s | 1.31× | 1.00× | 12,971,670,477 | solutions=7139499 |
+| ✅ | row look-ahead | `e5a081e` | 2026-11-07 | fast | 3.75 s | 1.85× | 1.41× | 5,682,604,241 | solutions=7139499 |
+| ✅ | compact column trie | `86cf07a` | 2026-11-07 | fast | 3.83 s | 1.81× | 0.98× | 5,682,604,241 | solutions=7139499 |
+| ❌ | ~~last-row search (failed)~~ | `ddbf60b` | 2026-11-07 | fast | 3.67 s | 1.89× | 1.04× | 5,682,604,241 | solutions=7139499 |
+| ✅ | const-generic width | `1f12ee3` | 2026-11-07 | fast | 3.55 s | 1.95× | 1.08× | 5,682,604,241 | solutions=7139499 |
+| ✅ | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 3.56 s | 1.95× | 1.00× | 5,682,604,241 | solutions=7139499 |
+| ✅ | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 3.14 s | 2.21× | 1.13× | 4,383,025,090 | solutions=7139499 |
+| ❌ | ~~iterative DFS (failed)~~ | `e25590c` | 2026-11-07 | fast | 3.20 s | 2.17× | 0.98× | 4,383,025,090 | solutions=7139499 |
+| ❌ | ~~DFS trie layout (failed)~~ | `2c1dbf2` | 2026-11-07 | fast | 3.18 s | 2.18× | 0.99× | 4,383,025,090 | solutions=7139499 |
+| ✅ | next-row forward check | `022d173` | 2026-11-07 | fast | 3.04 s | 2.28× | 1.03× | 3,779,802,456 | solutions=7139499 |
+| ❌ | ~~two-rows-ahead check (failed)~~ | `bd0c975` | 2026-11-07 | fast | 3.29 s | 2.11× | 0.93× | 3,777,184,228 | solutions=7139499 |
+| ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 3.12 s | 2.22× | 0.98× | 3,779,802,456 | solutions=7139499 |
+| ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 3.05 s | 2.27× | 1.00× | 3,779,802,456 | solutions=7139499 |
+| ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 3.75 s | 1.85× | 0.81× | 2,258,626,641 | solutions=7139499 |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 3.07 s | 2.26× | 0.99× | 3,772,693,851 | solutions=7139499 |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 2.89 s | 2.40× | 1.05× | 3,779,802,456 | solutions=7139499 |
+| ✅ | exact next-row set | `a651f45` | 2026-11-21 | fast | 2.21 s | 3.14× | 1.31× | 1,436,122,644 | solutions=7139499 |
+| ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 2.22 s | 3.13× | 1.00× | 1,436,122,644 | solutions=7139499 |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 2.27 s | 3.06× | 0.97× | 1,230,876,227 | solutions=7139499 |
+| ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 2.27 s | 3.05× | 0.97× | 1,436,122,644 | solutions=7139499 |
+| ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 2.34 s | 2.96× | 0.94× | 1,436,122,644 | solutions=7139499 |
+| ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 2.18 s | 3.17× | 1.01× | 1,436,122,644 | solutions=7139499 |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 2.24 s | 3.09× | 0.97× | 1,436,122,644 | solutions=7139499 |
+| ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 2.23 s | 3.11× | 0.98× | 1,259,028,983 | solutions=7139499 |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 2.19 s | 3.17× | 1.00× | 1,436,122,644 | solutions=7139499 |
+| ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 2.15 s | 3.22× | 1.02× | 1,251,599,245 | solutions=7139499 |
+| ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 2.14 s | 3.23× | 1.00× | 1,251,599,245 | solutions=7139499 |
+| ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 2.57 s | 2.70× | 0.83× | 1,249,419,802 | solutions=7139499 |
+| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 1.76 s | 3.93× | 1.22× | 996,185,895 | solutions=7139499 |
+
+## B18 · count all 6×6 (exhaustive)
+
+![B18](charts/B18.svg)
+
+| | Step | Commit | Date | Profile | Time | vs baseline | vs previous | Nodes | Result |
+|---|---|---|---|---|---:|---:|---:|---:|---|
+| ✅ | parallel (all cores) | `ecc8a36` | 2026-11-07 | fast | 89.1 s | — | — | 169,629,707,118 | solutions=1584465 |
+| ❌ | ~~DAWG (failed)~~ | `ad3fb0c` | 2026-11-07 | fast | 100 s | 0.89× | 0.89× | 169,629,707,118 | solutions=1584465 |
+| ❌ | ~~DAWG + row memo (failed)~~ | `7a14702` | 2026-11-07 | fast | 107 s | 0.83× | 0.83× | 169,625,278,296 | solutions=1584465 |
+| ✅ | by-value node kernel | `1449b66` | 2026-11-07 | fast | 70.3 s | 1.27× | 1.27× | 169,629,707,118 | solutions=1584465 |
+| ✅ | last-row count kernel | `04bbb6c` | 2026-11-07 | fast | 74.9 s | 1.19× | 0.94× | 169,629,707,118 | solutions=1584465 |
+| ✅ | square symmetry | `43cfaf9` | 2026-11-07 | fast | 36.6 s | 2.43× | 2.05× | 84,747,253,520 | solutions=1584465 |
+| ✅ | row look-ahead | `e5a081e` | 2026-11-07 | fast | 27.4 s | 3.25× | 1.33× | 38,142,518,622 | solutions=1584465 |
+| ✅ | compact column trie | `86cf07a` | 2026-11-07 | fast | 27.2 s | 3.27× | 1.01× | 38,142,518,622 | solutions=1584465 |
+| ❌ | ~~last-row search (failed)~~ | `ddbf60b` | 2026-11-07 | fast | 25.9 s | 3.44× | 1.05× | 38,142,518,622 | solutions=1584465 |
+| ✅ | const-generic width | `1f12ee3` | 2026-11-07 | fast | 23.7 s | 3.75× | 1.15× | 38,142,518,622 | solutions=1584465 |
+| ✅ | throttled stop check | `d8a5b29` | 2026-11-07 | fast | 23.8 s | 3.75× | 1.00× | 38,142,518,622 | solutions=1584465 |
+| ✅ | branch-free look-ahead | `c8af9d0` | 2026-11-07 | fast | 22.2 s | 4.02× | 1.07× | 29,599,568,658 | solutions=1584465 |
+| ❌ | ~~iterative DFS (failed)~~ | `e25590c` | 2026-11-07 | fast | 23.6 s | 3.78× | 0.94× | 29,599,568,658 | solutions=1584465 |
+| ❌ | ~~DFS trie layout (failed)~~ | `2c1dbf2` | 2026-11-07 | fast | 22.2 s | 4.00× | 1.00× | 29,599,568,658 | solutions=1584465 |
+| ✅ | next-row forward check | `022d173` | 2026-11-07 | fast | 22.1 s | 4.03× | 1.00× | 25,590,643,482 | solutions=1584465 |
+| ❌ | ~~two-rows-ahead check (failed)~~ | `bd0c975` | 2026-11-07 | fast | 21.8 s | 4.08× | 1.01× | 20,922,561,867 | solutions=1584465 |
+| ❌ | ~~branch-free forward check (failed)~~ | `1a4c1f0` | 2026-11-07 | fast | 23.9 s | 3.72× | 0.92× | 25,590,643,482 | solutions=1584465 |
+| ✅ | tall grids transposed | `e9dd7bb` | 2026-11-07 | fast | 22.1 s | 4.03× | 1.00× | 25,590,643,482 | solutions=1584465 |
+| ❌ | ~~paired last two rows (failed)~~ | `864443e` | 2026-11-07 | fast | 24.0 s | 3.71× | 0.92× | 24,893,943,309 | solutions=1584465 |
+| ❌ | ~~backward next-row bound (failed)~~ | `7901ad2` | 2026-11-07 | fast | 26.2 s | 3.39× | 0.84× | 23,627,245,732 | solutions=1584465 |
+| ✅ | unchecked trie steps | `b1b1b4e` | 2026-11-07 | fast | 20.9 s | 4.26× | 1.06× | 25,590,643,482 | solutions=1584465 |
+| ✅ | exact next-row set | `a651f45` | 2026-11-21 | fast | 20.5 s | 4.35× | 1.02× | 16,678,696,765 | solutions=1584465 |
+| ❌ | ~~next-row set in find (failed)~~ | `be5eb79` | 2026-11-21 | fast | 20.7 s | 4.30× | 0.99× | 16,678,696,765 | solutions=1584465 |
+| ❌ | ~~column look-ahead on next-row set (failed)~~ | `ab2d8f3` | 2026-11-21 | fast | 21.5 s | 4.15× | 0.95× | 15,665,375,074 | solutions=1584465 |
+| ❌ | ~~reuse look-ahead children (failed)~~ | `009f4fe` | 2026-11-21 | fast | 21.3 s | 4.17× | 0.96× | 16,678,696,765 | solutions=1584465 |
+| ❌ | ~~12-byte packed row nodes (failed)~~ | `d9ff337` | 2026-11-21 | fast | 22.1 s | 4.04× | 0.93× | 16,678,696,765 | solutions=1584465 |
+| ✅ | count-kernel job test in find | `759d725` | 2026-11-21 | fast | 20.6 s | 4.33× | 0.99× | 16,678,696,765 | solutions=1584465 |
+| ❌ | ~~next-row set on wide rows (failed)~~ | `9618022` | 2026-11-22 | fast | 20.5 s | 4.35× | 1.01× | 16,678,696,765 | solutions=1584465 |
+| ❌ | ~~second-to-last-row kernel (failed)~~ | `a3bbca3` | 2026-11-22 | fast | 21.4 s | 4.17× | 0.96× | 16,678,674,419 | solutions=1584465 |
+| ✅ | second-to-last-row kernel + uninit buffers | `38ed419` | 2026-11-22 | fast | 20.4 s | 4.36× | 1.01× | 16,678,696,765 | solutions=1584465 |
+| ✅ | next-row set cap 32 | `a182ecf` | 2026-11-22 | fast | 20.1 s | 4.44× | 1.02× | 15,293,452,988 | solutions=1584465 |
+| ✅ | short sequential find budget | `ae085c4` | 2026-11-22 | fast | 20.1 s | 4.43× | 1.00× | 15,293,452,988 | solutions=1584465 |
+| ❌ | ~~DAWG next-row set (failed)~~ | `631c1c3` | 2026-11-22 | fast | 24.0 s | 3.72× | 0.84× | 15,243,002,746 | solutions=1584465 |
+| ⭐ | **mirrored rows for counts** | `ad20594` | 2026-11-22 | fast | 20.3 s | 4.40× | 0.99× | 15,293,452,988 | solutions=1584465 |

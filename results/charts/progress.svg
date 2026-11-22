@@ -29,9 +29,9 @@
 <text class="t" x="481.3" y="143" font-size="13" font-weight="600">faster than trie + masks</text>
 <text class="m" x="481.3" y="158" font-size="11">B4–B9 · geometric mean</text>
 <rect class="tile" x="902.7" y="78" width="423.3" height="86" rx="8"/>
-<text class="big" x="920.7" y="122" font-size="34">3.50×</text>
+<text class="big" x="920.7" y="122" font-size="34">3.63×</text>
 <text class="t" x="920.7" y="143" font-size="13" font-weight="600">faster than parallel (all cores)</text>
-<text class="m" x="920.7" y="158" font-size="11">B10–B16 · geometric mean</text>
+<text class="m" x="920.7" y="158" font-size="11">B10–B18 · geometric mean</text>
 <line class="g" x1="70" x2="1180" y1="530.0" y2="530.0" stroke-dasharray="2 3"/>
 <text class="m" x="60" y="534.0" font-size="11" text-anchor="end">0.10×</text>
 <line class="g" x1="70" x2="1180" y1="447.5" y2="447.5" stroke-dasharray="2 3"/>

@@ -77,6 +77,8 @@ Full tables: [`results/BENCHMARKS.md`](results/BENCHMARKS.md), story of each ste
 ![B14](results/charts/B14.svg)
 ![B15](results/charts/B15.svg)
 ![B16](results/charts/B16.svg)
+![B17](results/charts/B17.svg)
+![B18](results/charts/B18.svg)
 
 ---
 
@@ -90,7 +92,7 @@ Full tables: [`results/BENCHMARKS.md`](results/BENCHMARKS.md), story of each ste
 ./wr count 3x3    # count all 3×3
 ./wr test         # tests
 ./wr bench        # full benchmark suite (~1 min now)
-./wr bench quick  # B1–B3 only (seconds); ./wr bench heavy = B4–B9; ./wr bench huge = B10–B16; ./wr bench B2 = one
+./wr bench quick  # B1–B3 only (seconds); ./wr bench heavy = B4–B9; ./wr bench huge = B10–B18; ./wr bench B2 = one
 ./wr bench --label "my step"   # record an optimization step → charts
 ./wr charts       # regenerate charts from results/bench-log.csv
 ./wr release      # benchmark with full release build (official numbers)
@@ -442,9 +444,12 @@ when the code gets too fast for a suite, a bigger one is added.
 | `B14` | `count --rows 6 --cols 4` (tall shape) | parallel 9.63 s | 1.42 s |
 | `B15` | `count --rows 5 --cols 6` (7,424,362 solutions) | parallel 30.0 s | 10.1 s |
 | `B16` | `find --rows 6 --cols 9` (no 6×9 exists: exhaustive proof) | parallel 26.0 s | 9.39 s |
+| `B17` | `count --rows 4 --cols 7` (7,139,499 solutions) | parallel (filled in by the replay) | 1.7 s |
+| `B18` | `count --rows 6 --cols 6` (1,584,465 solutions) | parallel (filled in by the replay) | 20 s |
 
 Suite history: B1–B3 were sized for naive; B4–B9 were added when B2/B3 hit ~1 ms; B10–B13 when the heavy
-suite hit ~8 s; B14 to cover tall grids; B15–B16 when hephaestus became the main machine.
+suite hit ~8 s; B14 to cover tall grids; B15–B16 when hephaestus became the main machine; B17–B18 when
+B5–B8 dropped under 0.2 s (`scripts/replay.py` then re-ran every past step on them).
 Heavy and huge benchmarks report the median of 3 runs (since 2026-11-22; one run before).
 
 **One machine.** `bench.sh` refuses to log on any host other than `MAIN_MACHINE` (hephaestus). Runs from
