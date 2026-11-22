@@ -974,3 +974,21 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,6764763,fast,par,B16,find --rows 6 --cols 9,4.8813,2507970427,no solution: 6x9 exhausted,4.773245,mirror tests for tall 7-letter grids,hephaestus
 2026-11-22,6764763,fast,par,B17,count --rows 4 --cols 7,1.7659,993187402,solutions=7139499,1.670127,mirror tests for tall 7-letter grids,hephaestus
 2026-11-22,6764763,fast,par,B18,count --rows 6 --cols 6,18.0139,15605237112,solutions=1584465,17.922634,mirror tests for tall 7-letter grids,hephaestus
+2026-11-22,42e206c,fast,par,B1,count --rows 3 --cols 3,0.0810,994996,solutions=1909732,0.001704,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B2,find --rows 5 --cols 6,0.0960,7220,found,0.000153,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B3,find --rows 6 --cols 6,0.0928,12839,found,0.000229,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B4,count --rows 4 --cols 4,0.1885,170766995,solutions=136245247,0.107171,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B5,count --rows 4 --cols 5,0.7477,394534371,solutions=114846713,0.659713,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B6,count --rows 3 --cols 7,0.1803,72352263,solutions=4453472,0.085555,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B7,find --rows 7 --cols 7,0.1521,22956986,found,0.044020,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B8,find --rows 6 --cols 7,0.1346,14654331,found,0.033013,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B9,find --rows 5 --cols 9,0.2264,58589581,found,0.118313,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B10,count --rows 5 --cols 5,3.9196,3251031697,solutions=80364530,3.834426,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B11,count --rows 4 --cols 6,1.4238,722346874,solutions=37812638,1.334108,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B12,find --rows 6 --cols 8,0.7520,377009120,found,0.643098,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B13,find --rows 5 --cols 10,0.5652,232666724,no solution: 5x10 exhausted,0.449084,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B14,count --rows 6 --cols 4,1.4294,722346874,solutions=37812638,1.343309,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B15,count --rows 5 --cols 6,9.9786,5948229468,solutions=7424362,9.877827,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B16,find --rows 6 --cols 9,4.8591,2514334402,no solution: 6x9 exhausted,4.764341,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B17,count --rows 4 --cols 7,1.7841,993187402,solutions=7139499,1.689095,next2 only from 6 letters,hephaestus
+2026-11-22,42e206c,fast,par,B18,count --rows 6 --cols 6,17.8527,15605237112,solutions=1584465,17.763087,next2 only from 6 letters,hephaestus

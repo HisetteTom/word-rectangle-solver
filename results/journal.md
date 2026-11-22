@@ -1633,3 +1633,29 @@ which changes only counts) → 4.63 (resume) → 4.72 (mirror rule, same path fo
 **code layout**: unrelated edits move the hot loops. Forcing 64-byte function alignment
 (`-C llvm-args=-align-all-functions=6`) made it *worse* everywhere (6×9 5.8 s). So differences of
 ±3% on a single benchmark are within layout noise unless the step touches that path.
+
+### 2026-11-22: next2 look-ahead only from 6 letters (`42e206c`) ✅ kept (small)
+
+PLAN idea 4, cheapest form: the 12-byte node without `next2` was ~6% cheaper per node but pruned less
+on 6-letter rows. Instead of two node layouts, the look-ahead skips the `next2` test per width (a
+const, like `TRACK`); the node stays 16 bytes. Sweep, skipping it on one width at a time (median of 3):
+
+| skip next2 on | 4×4 | 4×5 | 5×5 | 4×6 | 4×7 | 3×7 | 6×8 find | 7×7 find |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| nothing (before) | 113.5 ms | 679 ms | 3.93 s | 1.339 s | 1.664 s | 86 ms | 632 ms | 47 ms |
+| 4 letters | **106.6 ms** | | | | | | | |
+| 5 letters | | **667 ms** | **3.87 s** | | | | | |
+| 6 letters | | | | 1.358 s ✗ | | | | |
+| 7 letters | | | | | 1.843 s ✗ | 91 ms ✗ | | 53 ms ✗ |
+| 8 letters | | | | | | | 736 ms ✗ | |
+
+| Benchmark | Before | After | Change |
+|---|---|---|---|
+| B4 count 4×4 | 112 ms | 107 ms | 1.04× |
+| B5 count 4×5 | 672 ms | 660 ms | 1.02× |
+| B10 count 5×5 | 3.92 s | 3.83 s | 1.02× |
+
+**Verdict:** kept (small). Also measured, no change: the specialized second-to-last-row kernel on
+5-row grids (still 2.4% slower on 5×5), and letter orders for 5×5 that keep its transpose symmetry
+(same permutation on rows and columns: identity is the best of 7 tried; swapping the first two letters 1%
+slower, reversal 1.9× slower).

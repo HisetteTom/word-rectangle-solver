@@ -77,7 +77,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 1.79 ms | 3,285× | 0.98× | 994,996 | solutions=1909732 |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 1.92 ms | 3,055× | 0.93× | 994,996 | solutions=1909732 |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 1.93 ms | 3,043× | 1.00× | 994,996 | solutions=1909732 |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 1.69 ms | 3,469× | 1.14× | 994,996 | solutions=1909732 |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 1.69 ms | 3,469× | 1.14× | 994,996 | solutions=1909732 |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 1.7 ms | 3,443× | 0.99× | 994,996 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -141,7 +142,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 151 µs | 7,642× | 0.96× | 7,220 | found |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 152 µs | 7,592× | 0.99× | 7,220 | found |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 151 µs | 7,642× | 1.01× | 7,220 | found |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 142 µs | 8,126× | 1.06× | 7,220 | found |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 142 µs | 8,126× | 1.06× | 7,220 | found |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 153 µs | 7,542× | 0.93× | 7,220 | found |
 
 ## B3 · find first 6×6
 
@@ -205,7 +207,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 230 µs | 11,791× | 0.98× | 12,839 | found |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 230 µs | 11,791× | 1.00× | 12,839 | found |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 232 µs | 11,689× | 0.99× | 12,839 | found |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 227 µs | 11,947× | 1.02× | 12,839 | found |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 227 µs | 11,947× | 1.02× | 12,839 | found |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 229 µs | 11,842× | 0.99× | 12,839 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -268,7 +271,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 114 ms | 126× | 0.99× | 170,485,926 | solutions=136245247 |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 113 ms | 126× | 1.00× | 170,485,926 | solutions=136245247 |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 113 ms | 126× | 1.00× | 170,485,926 | solutions=136245247 |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 112 ms | 128× | 1.01× | 170,485,926 | solutions=136245247 |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 112 ms | 128× | 1.01× | 170,485,926 | solutions=136245247 |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 107 ms | 134× | 1.04× | 170,766,995 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -331,7 +335,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 684 ms | 84.4× | 1.00× | 376,530,299 | solutions=114846713 |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 685 ms | 84.3× | 1.00× | 376,530,299 | solutions=114846713 |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 675 ms | 85.5× | 1.01× | 376,530,299 | solutions=114846713 |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 672 ms | 85.9× | 1.00× | 376,530,299 | solutions=114846713 |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 672 ms | 85.9× | 1.00× | 376,530,299 | solutions=114846713 |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 660 ms | 87.5× | 1.02× | 394,534,371 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -394,7 +399,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 84.3 ms | 69.6× | 1.02× | 72,352,263 | solutions=4453472 |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 84.7 ms | 69.2× | 0.99× | 72,352,263 | solutions=4453472 |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 86.5 ms | 67.8× | 0.98× | 72,352,263 | solutions=4453472 |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 84.2 ms | 69.7× | 1.03× | 72,352,263 | solutions=4453472 |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 84.2 ms | 69.7× | 1.03× | 72,352,263 | solutions=4453472 |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 85.6 ms | 68.6× | 0.98× | 72,352,263 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -457,7 +463,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 47.1 ms | 38.4× | 1.14× | 22,273,602 | found |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 42.8 ms | 42.3× | 1.10× | 22,539,921 | found |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 43.3 ms | 41.7× | 0.99× | 22,582,726 | found |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 43.2 ms | 41.9× | 1.00× | 22,463,631 | found |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 43.2 ms | 41.9× | 1.00× | 22,463,631 | found |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 44 ms | 41.1× | 0.98× | 22,956,986 | found |
 
 ## B8 · find first 6×7
 
@@ -520,7 +527,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 33.2 ms | 44.2× | 1.18× | 14,955,899 | found |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 32.5 ms | 45.1× | 1.02× | 14,574,808 | found |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 32.6 ms | 45.0× | 1.00× | 14,653,918 | found |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 33.6 ms | 43.7× | 0.97× | 14,686,393 | found |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 33.6 ms | 43.7× | 0.97× | 14,686,393 | found |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 33 ms | 44.5× | 1.02× | 14,654,331 | found |
 
 ## B9 · find first 5×9
 
@@ -583,7 +591,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 153 ms | 54.5× | 1.03× | 74,996,350 | found |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 155 ms | 53.8× | 0.99× | 75,168,589 | found |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 118 ms | 70.7× | 1.31× | 55,082,327 | found |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 118 ms | 71.1× | 1.01× | 65,164,682 | found |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 118 ms | 71.1× | 1.01× | 65,164,682 | found |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 118 ms | 70.7× | 0.99× | 58,589,581 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -642,7 +651,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 3.93 s | 4.05× | 1.00× | 3,129,472,451 | solutions=80364530 |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 3.95 s | 4.03× | 1.00× | 3,129,472,451 | solutions=80364530 |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 3.92 s | 4.06× | 1.01× | 3,129,472,451 | solutions=80364530 |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 3.92 s | 4.06× | 1.00× | 3,129,472,451 | solutions=80364530 |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 3.92 s | 4.06× | 1.00× | 3,129,472,451 | solutions=80364530 |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 3.83 s | 4.15× | 1.02× | 3,251,031,697 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -701,7 +711,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 1.33 s | 3.78× | 1.01× | 722,346,874 | solutions=37812638 |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 1.33 s | 3.77× | 1.00× | 722,346,874 | solutions=37812638 |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 1.34 s | 3.75× | 1.00× | 722,346,874 | solutions=37812638 |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 1.33 s | 3.76× | 1.00× | 722,346,874 | solutions=37812638 |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 1.33 s | 3.76× | 1.00× | 722,346,874 | solutions=37812638 |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 1.33 s | 3.76× | 1.00× | 722,346,874 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -760,7 +771,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 647 ms | 4.08× | 1.14× | 374,647,483 | found |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 641 ms | 4.12× | 1.01× | 373,015,962 | found |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 629 ms | 4.20× | 1.02× | 370,877,102 | found |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 630 ms | 4.19× | 1.00× | 375,241,385 | found |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 630 ms | 4.19× | 1.00× | 375,241,385 | found |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 643 ms | 4.11× | 0.98× | 377,009,120 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -819,7 +831,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 445 ms | 5.52× | 0.99× | 241,564,043 | no solution: 5x10 exhausted |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 453 ms | 5.43× | 0.98× | 245,557,917 | no solution: 5x10 exhausted |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 439 ms | 5.59× | 1.03× | 235,123,959 | no solution: 5x10 exhausted |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 444 ms | 5.53× | 0.99× | 232,789,126 | no solution: 5x10 exhausted |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 444 ms | 5.53× | 0.99× | 232,789,126 | no solution: 5x10 exhausted |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 449 ms | 5.47× | 0.99× | 232,666,724 | no solution: 5x10 exhausted |
 
 ## B14 · count all 6×4 (exhaustive)
 
@@ -878,7 +891,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 1.34 s | 7.21× | 1.01× | 722,346,874 | solutions=37812638 |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 1.33 s | 7.22× | 1.00× | 722,346,874 | solutions=37812638 |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 1.34 s | 7.19× | 1.00× | 722,346,874 | solutions=37812638 |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 1.33 s | 7.22× | 1.00× | 722,346,874 | solutions=37812638 |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 1.33 s | 7.22× | 1.00× | 722,346,874 | solutions=37812638 |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 1.34 s | 7.17× | 0.99× | 722,346,874 | solutions=37812638 |
 
 ## B15 · count all 5×6 (exhaustive)
 
@@ -937,7 +951,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 9.86 s | 3.04× | 1.01× | 5,948,229,468 | solutions=7424362 |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 9.91 s | 3.02× | 1.00× | 5,948,229,468 | solutions=7424362 |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 9.94 s | 3.01× | 1.00× | 5,948,229,468 | solutions=7424362 |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 9.97 s | 3.00× | 1.00× | 5,948,229,468 | solutions=7424362 |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 9.97 s | 3.00× | 1.00× | 5,948,229,468 | solutions=7424362 |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 9.88 s | 3.03× | 1.01× | 5,948,229,468 | solutions=7424362 |
 
 ## B16 · prove no 6×9 exists (exhaustive)
 
@@ -996,7 +1011,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 4.64 s | 5.60× | 1.01× | 2,508,124,867 | no solution: 6x9 exhausted |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 4.65 s | 5.59× | 1.00× | 2,508,127,024 | no solution: 6x9 exhausted |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 4.72 s | 5.50× | 0.98× | 2,502,277,255 | no solution: 6x9 exhausted |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 4.77 s | 5.44× | 0.99× | 2,507,970,427 | no solution: 6x9 exhausted |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 4.77 s | 5.44× | 0.99× | 2,507,970,427 | no solution: 6x9 exhausted |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 4.76 s | 5.45× | 1.00× | 2,514,334,402 | no solution: 6x9 exhausted |
 
 ## B17 · count all 4×7 (exhaustive)
 
@@ -1055,7 +1071,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 1.69 s | 4.10× | 1.00× | 993,187,402 | solutions=7139499 |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 1.69 s | 4.10× | 1.00× | 993,187,402 | solutions=7139499 |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 1.67 s | 4.15× | 1.01× | 993,187,402 | solutions=7139499 |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 1.67 s | 4.15× | 1.00× | 993,187,402 | solutions=7139499 |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 1.67 s | 4.15× | 1.00× | 993,187,402 | solutions=7139499 |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 1.69 s | 4.10× | 0.99× | 993,187,402 | solutions=7139499 |
 
 ## B18 · count all 6×6 (exhaustive)
 
@@ -1114,4 +1131,5 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 17.8 s | 5.00× | 1.01× | 15,605,237,112 | solutions=1584465 |
 | ✅ | find budget 2 ms | `4e6d084` | 2026-11-22 | fast | 17.8 s | 5.00× | 1.00× | 15,605,237,112 | solutions=1584465 |
 | ✅ | mirror tests from 8 letters | `ce2c2ec` | 2026-11-22 | fast | 17.9 s | 4.99× | 1.00× | 15,605,237,112 | solutions=1584465 |
-| ⭐ | **mirror tests for tall 7-letter grids** | `6764763` | 2026-11-22 | fast | 17.9 s | 4.97× | 1.00× | 15,605,237,112 | solutions=1584465 |
+| ✅ | mirror tests for tall 7-letter grids | `6764763` | 2026-11-22 | fast | 17.9 s | 4.97× | 1.00× | 15,605,237,112 | solutions=1584465 |
+| ⭐ | **next2 only from 6 letters** | `42e206c` | 2026-11-22 | fast | 17.8 s | 5.01× | 1.01× | 15,605,237,112 | solutions=1584465 |

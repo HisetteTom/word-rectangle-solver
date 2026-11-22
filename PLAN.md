@@ -54,7 +54,7 @@ Where the time goes now:
 ## Done 2026-11-22 (day)
 
 Split long find jobs ✅ · split mirror tests + early cut ✅ · next-row set up to 10 letters ✅ ·
-last-row end check ❌ · first two rows swapped ✅ · count jobs 512 ✅ · resume aborted jobs ✅ · find budget 2 ms ✅ · mirror tests from 8 letters ✅ · mirror tests for tall 7-letter grids ✅.
+last-row end check ❌ · first two rows swapped ✅ · count jobs 512 ✅ · resume aborted jobs ✅ · find budget 2 ms ✅ · mirror tests from 8 letters ✅ · mirror tests for tall 7-letter grids ✅ · next2 only from 6 letters ✅.
 Measured, no bar: PGO, column-tuple memo, letter orders, mirror on small grids, constants re-swept,
 more frequent abort checks. New chart: find timeline (`scripts/timeline.py`).
 
