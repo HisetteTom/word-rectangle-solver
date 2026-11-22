@@ -1071,3 +1071,20 @@ Noise: the compiler already keeps them out of the hot loops.
 | prove no 6×9 | 9.22 s | 10.48 s | 0.88× |
 
 The smaller node only pays on 5-letter rows. From 6 letters on, the lost pruning costs more. Kept as is.
+
+### 2026-11-22: skip-gram forward bound (`f23ce1d`) ❌ reverted
+
+**Idea:** where the next-row set is unknown (rows of 9+ letters, or after an overflow), the next row is
+bounded by bigrams: the letters that can follow the letter set at c−1. Intersect that with a
+skip-gram bound: the letters that can sit two positions after the letter set at c−2 (4 more table
+lookups; the two forward masks travel packed in one `u64`).
+
+| Shape | before | skip-gram | |
+|---|---:|---:|---|
+| prove no 6×9 (B16) | 9.17 s | 9.91 s | 0.92× |
+| prove no 5×10 (B13) | 0.906 s | 0.954 s | 0.95× |
+| count 6×9 | 7.00 s | 7.17 s | 0.98× |
+| count 5×6 · 6×6 | 10.16 · 18.04 s | 10.11 · 17.85 s | ≈ |
+
+**Verdict:** reverted. Like every loose bound tried so far (backward bound, column look-ahead), it
+prunes too little to pay for the lookups. A cheap bound has to depend on the letters actually placed.
