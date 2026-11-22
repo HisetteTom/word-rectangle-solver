@@ -1106,12 +1106,12 @@ impl Solver for ParSearch {
             self.stats.solutions = g.is_some() as u64;
             return g;
         }
-        // 2. parallel: restart from scratch on many small jobs. On big grids (area >= 48, rows of
-        //    8+ letters) jobs stay inside row 0, so the mirror test below applies. Big grids rarely
-        //    have solutions, so proving jobs empty dominates. On smaller ones solutions come early,
-        //    and row-0 jobs are too coarse: one thread walks the job holding the first solution
-        //    (5×8: 25 -> 100 ms, 5×9: 150 -> 187 ms with the cap).
-        let use_mirror = self.cols >= 8 && self.rows * self.cols >= 48;
+        // 2. parallel: restart from scratch on many small jobs. On grids with rows of 8+ letters, jobs
+        //    stay inside row 0, so the mirror test below applies. Until 2026-11-22 it also needed
+        //    area >= 48: on smaller grids row-0 jobs were too coarse when the solution comes early
+        //    (5×8: 25 -> 100 ms). Since long jobs are split, that's gone (5×9 155 -> 115 ms, 3×12
+        //    29 -> 6 ms). On 7-letter rows the mirror still loses (7×7 43 -> 49 ms, 6×7 33 -> 52 ms).
+        let use_mirror = self.cols >= 8;
         let (depth, jobs) = self.jobs(FIND_JOBS_PER_THREAD, if use_mirror { self.cols } else { usize::MAX });
         // 3. each job is first *tested*: does any grid extend its prefix? Only a job with solutions
         //    is searched (from its start, so it still yields its first grid). The test runs the count
