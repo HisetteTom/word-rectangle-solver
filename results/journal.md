@@ -1210,6 +1210,21 @@ Follow-up (not committed): a per-thread direct-mapped memo of U-tuples → yes/n
 full tuple stored so hits are exact) in front of the walk at c = 0: 5×6 10.67 s, 5×5 4.15 s, so no
 better than without it. The U-tuples rarely repeat, so a memo isn't the cheap test.
 
+Follow-up 2 (not committed): memoize per *prefix* instead, for the whole second-to-last row. Columns to
+the right don't change until the row reaches them, so "can this last-row prefix still complete inside
+the columns' one-row-down masks?" has one answer per prefix per row. A per-thread table keyed by
+the node's first-child index, with an epoch per row, and the next-row set drops dead children as it is
+built:
+
+| | 5×5 | 5×6 | 4×7 | nodes 5×6 |
+|---|---:|---:|---:|---:|
+| baseline (set cap 128) | 3.96 s | 10.1 s | 1.75 s | 5.95 G |
+| filter at every cell | 4.77 s | 11.87 s | 2.83 s | **3.56 G** |
+| filter at c ≤ 1 | 4.59 s | 11.78 s | 2.34 s | 3.73 G |
+
+Same story: the pruning is real (40% fewer nodes on 5×6), but each row start still needs one
+walk to learn which prefixes are alive, and table lookups on every set child add more.
+
 ### 2026-11-22: bigram path check for the last row (`96fc6cc`) ❌ reverted
 
 **Idea:** a cheap stand-in for the whole-word check. In the second-to-last row, with U_k = the letters
