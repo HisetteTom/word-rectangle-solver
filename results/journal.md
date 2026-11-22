@@ -1448,3 +1448,42 @@ no time. The removed nodes are almost all last-row nodes, which `count_last` cou
 popcount and which cost nearly nothing. **Node counts overstate where the time goes** for the last
 rows. The 90–100% "dead ends" of the second-to-last row (PLAN 0) are similar: cheap to visit,
 expensive to rule out. PLAN 0 downgraded.
+
+### 2026-11-22: fill orders measured, first two rows swapped (`942a157`) ✅ kept (small)
+
+**Idea:** the mirror image is one *letter order* for the rows (last letter first). For counts any
+fixed order works: permute every row word's letters (and so the columns), or every column word's
+letters (and so the rows), and the count is unchanged. Was the mirror just the first good order found?
+
+**Row-word letter orders** (which column gets filled when), all 120 orders of 4×5, samples of 4×7 and 5×6:
+
+| Shape | top-down (identity) | mirror | best order found | worst |
+|---|---:|---:|---:|---:|
+| count 4×5 | 0.78 s | 0.724 s | 0.716 s (4,3,1,2,0) | 1.33 s |
+| count 4×7 | | 1.73 s | 1.70 s | |
+| count 5×6 | | 10.03 s | 9.94 s | |
+
+The mirror is within 1–2% of the best order everywhere, so nothing to gain here.
+
+**Column-word letter orders** (which row gets filled when), all 24 orders of 4×5, 4×6 and 4×7:
+
+| Shape | top-down | **rows 1, 0, 2, 3** | next best | worst |
+|---|---:|---:|---:|---:|
+| count 4×5 | 0.717 s | **0.690 s** | 0.823 s | 3.74 s (0,3,2,1) |
+| count 4×6 | 1.392 s | **1.347 s** | 1.625 s | 10.8 s |
+| count 4×7 | 1.731 s | **1.723 s** | 1.948 s | 21.7 s |
+| count 3×7 | 0.090 s | **0.085 s** | | 0.32 s |
+| count 5×6 | 10.01 s | **9.98 s** | | 18.1 s (0,2,1,3,4) |
+
+Top-down is already second best, and the order matters up to 12×. Swapping the first two rows
+wins every time, by a little. Squares keep top-down (it would break the anti-diagonal symmetry).
+
+| Benchmark | Before | After | Change |
+|---|---|---|---|
+| B5 count 4×5 | 716 ms | 697 ms | 1.03× |
+| B6 count 3×7 | 89 ms | 86 ms | 1.03× |
+| B11 count 4×6 | 1.394 s | 1.355 s | 1.03× |
+| B14 count 6×4 | 1.397 s | 1.362 s | 1.03× |
+| B15, B17 | | | ≈ |
+
+**Verdict:** kept (small, free: one swap of two letters per column word, once).

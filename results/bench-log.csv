@@ -866,3 +866,21 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,9dadbe1,fast,par,B16,find --rows 6 --cols 9,4.7882,2510250831,no solution: 6x9 exhausted,4.683871,last-row end check (failed),hephaestus
 2026-11-22,9dadbe1,fast,par,B17,count --rows 4 --cols 7,1.9527,897002164,solutions=7139499,1.857493,last-row end check (failed),hephaestus
 2026-11-22,9dadbe1,fast,par,B18,count --rows 6 --cols 6,18.5681,15597632294,solutions=1584465,18.474978,last-row end check (failed),hephaestus
+2026-11-22,942a157,fast,par,B1,count --rows 3 --cols 3,0.0762,994996,solutions=1909732,0.001657,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B2,find --rows 5 --cols 6,0.0883,7220,found,0.000147,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B3,find --rows 6 --cols 6,0.0915,12839,found,0.000230,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B4,count --rows 4 --cols 4,0.1909,170485926,solutions=136245247,0.113446,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B5,count --rows 4 --cols 5,0.7762,374627846,solutions=114846713,0.696576,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B6,count --rows 3 --cols 7,0.1813,72352003,solutions=4453472,0.086222,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B7,find --rows 7 --cols 7,0.1531,28448663,found,0.054016,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B8,find --rows 6 --cols 7,0.1391,19262649,found,0.040570,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B9,find --rows 5 --cols 9,0.2631,75142877,found,0.156715,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B10,count --rows 5 --cols 5,4.0454,3129472451,solutions=80364530,3.967556,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B11,count --rows 4 --cols 6,1.4430,715238433,solutions=37812638,1.354994,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B12,find --rows 6 --cols 8,0.8278,425330412,found,0.720871,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B13,find --rows 5 --cols 10,0.5466,233598206,no solution: 5x10 exhausted,0.440772,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B14,count --rows 6 --cols 4,1.4501,715238433,solutions=37812638,1.362121,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B15,count --rows 5 --cols 6,10.1857,5945519611,solutions=7424362,10.090592,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B16,find --rows 6 --cols 9,4.8082,2510072108,no solution: 6x9 exhausted,4.704867,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B17,count --rows 4 --cols 7,1.8313,993187402,solutions=7139499,1.736944,first two rows swapped,hephaestus
+2026-11-22,942a157,fast,par,B18,count --rows 6 --cols 6,18.1003,15605237112,solutions=1584465,18.012692,first two rows swapped,hephaestus
