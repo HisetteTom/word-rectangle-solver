@@ -55,7 +55,8 @@ case "$cmd" in
   charts)  python3 scripts/charts.py ;;
   info)    build; $BIN info ;;
   count)   build; $BIN count $(size "${2:-}") --stats "${@:3}" ;;
+  squares) build; $BIN squares --rows "${2:?usage: ./wr squares N}" --stats "${@:3}" ;;
   find)    build; $BIN find  $(size "${2:-}") --stats "${@:3}" ;;
-  help|-h|--help) sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//' ;;
+  help|-h|--help) sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//' ;;
   *)       build; $BIN find $(size "$cmd") --stats "${@:2}" ;;   # ./wr 6x6
 esac
