@@ -1385,3 +1385,43 @@ The mirror find test now also runs with eager splitting. A deliberate bug that n
 a solution is caught.
 
 **Verdict:** kept.
+
+### 2026-11-22: three measurements, no change (no commit, no bar)
+
+- **PGO again** (`-Cprofile-generate` on counts 4×5, 5×5, 4×6, 3×7, finds 5×10, 7×7, then
+  `-Cprofile-use`, `fast` profile): **20–27% slower** (4×5 0.72 → 0.89 s, 5×5 3.96 → 4.75 s,
+  5×6 10.0 → 12.7 s). As on 2026-11-07, PGO doesn't help this kernel. Dropped from the plan.
+- **Memo for the last two rows, keyed by the column states** at the second-to-last row's start:
+  on 4×5 and 5×5 every one of the 4.5 M / 187 M keys is distinct. Obvious in hindsight: the column
+  prefixes *are* the grid's first rows. Merging columns into "same 2-letter endings" classes only
+  shrinks each column 1.4× (2212 → 1551 prefixes of 5-letter words), so tuples would still not repeat.
+- **Mirror job tests on all sizes** (now that long jobs are split): 4×9 11 → 7 ms, 5×8 and 5×9 even,
+  7×7 54 → 58 ms, 6×7 42 → 57 ms, 7×6 58 → 128 ms. Not worth it (jobs limited to row 0 are coarse,
+  and the mirror isn't ready for short finds).
+
+### 2026-11-22: next-row set up to 10 letters (`TRACK`) ✅ kept
+
+**Idea:** an "aged constant". The next-row set was limited to rows of ≤ 8 letters because on
+9-letter rows it overflowed and cost more than it saved (6×9 count 10.5 vs 9.4 s). That was measured *before* the mirror
+image. Filling rows from their last letter makes the set much smaller, since word endings are more
+selective. Re-swept:
+
+| Shape | ≤ 8 (before) | ≤ 9 | ≤ 10 | ≤ 12 | all |
+|---|---:|---:|---:|---:|---:|
+| prove no 6×9 | 6.06 s | 4.63 s | **4.61 s** | | |
+| prove no 5×10 | 0.545 s | 0.550 s | **0.445 s** | | |
+| count 6×9 | 6.87 s | | **5.40 s** | | |
+| count 5×9 | 2.40 s | | **1.75 s** | | |
+| count 4×9 | 0.54 s | | 0.48 s | 0.48 s | 0.48 s |
+| counts/finds 4×11, 4×12, 3×13, 5×11 | | | even | even | even |
+
+Benchmarks:
+
+| Benchmark | Before | After | Change |
+|---|---|---|---|
+| B13 prove no 5×10 | 545 ms | **454 ms** | **1.20×** |
+| B16 prove no 6×9 | 6.05 s | **4.61 s** | **1.31×** |
+| others | | | unchanged (rows ≤ 8, or B9's 5×9 find) |
+
+**Verdict:** kept. Lesson again: after a big change (here: the mirror), re-sweep the old
+thresholds.

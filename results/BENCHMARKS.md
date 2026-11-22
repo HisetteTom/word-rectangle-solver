@@ -69,7 +69,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 1.73 ms | 3,389× | 1.02× | 994,996 | solutions=1909732 |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 1.8 ms | 3,252× | 0.96× | 994,996 | solutions=1909732 |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 1.67 ms | 3,515× | 1.04× | 994,996 | solutions=1909732 |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 1.77 ms | 3,311× | 0.94× | 994,996 | solutions=1909732 |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 1.77 ms | 3,311× | 0.94× | 994,996 | solutions=1909732 |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 1.71 ms | 3,439× | 1.04× | 994,996 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -125,7 +126,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 149 µs | 7,745× | 0.97× | 7,220 | found |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 150 µs | 7,693× | 0.99× | 7,220 | found |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 147 µs | 7,850× | 1.01× | 7,220 | found |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 150 µs | 7,693× | 0.98× | 7,220 | found |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 150 µs | 7,693× | 0.98× | 7,220 | found |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 150 µs | 7,693× | 1.00× | 7,220 | found |
 
 ## B3 · find first 6×6
 
@@ -181,7 +183,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 232 µs | 11,689× | 0.99× | 12,839 | found |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 228 µs | 11,894× | 1.02× | 12,839 | found |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 227 µs | 11,947× | 1.02× | 12,839 | found |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 234 µs | 11,589× | 0.97× | 12,839 | found |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 234 µs | 11,589× | 0.97× | 12,839 | found |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 227 µs | 11,947× | 1.03× | 12,839 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -236,7 +239,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 113 ms | 127× | 1.01× | 170,485,926 | solutions=136245247 |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 116 ms | 123× | 0.97× | 170,485,926 | solutions=136245247 |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 115 ms | 124× | 0.98× | 170,485,926 | solutions=136245247 |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 112 ms | 128× | 1.03× | 170,485,926 | solutions=136245247 |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 112 ms | 128× | 1.03× | 170,485,926 | solutions=136245247 |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 112 ms | 127× | 0.99× | 170,485,926 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -291,7 +295,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 718 ms | 80.4× | 1.01× | 375,002,641 | solutions=114846713 |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 724 ms | 79.8× | 0.99× | 375,002,641 | solutions=114846713 |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 711 ms | 81.2× | 1.01× | 375,002,641 | solutions=114846713 |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 717 ms | 80.5× | 0.99× | 375,002,641 | solutions=114846713 |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 717 ms | 80.5× | 0.99× | 375,002,641 | solutions=114846713 |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 716 ms | 80.6× | 1.00× | 375,002,641 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -346,7 +351,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 89.4 ms | 65.6× | 0.98× | 73,695,021 | solutions=4453472 |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 220 ms | 26.7× | 0.41× | 92,856,296 | solutions=4453472 |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 89.7 ms | 65.4× | 1.00× | 73,695,021 | solutions=4453472 |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 88.4 ms | 66.4× | 1.02× | 73,695,021 | solutions=4453472 |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 88.4 ms | 66.4× | 1.02× | 73,695,021 | solutions=4453472 |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 89.3 ms | 65.7× | 0.99× | 73,695,021 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -401,7 +407,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 103 ms | 17.5× | 1.00× | 28,869,782 | found |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 105 ms | 17.3× | 0.99× | 28,159,077 | found |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 64.4 ms | 28.1× | 1.60× | 35,373,336 | found |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 53 ms | 34.1× | 1.22× | 27,371,843 | found |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 53 ms | 34.1× | 1.22× | 27,371,843 | found |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 52.8 ms | 34.3× | 1.00× | 27,330,811 | found |
 
 ## B8 · find first 6×7
 
@@ -456,7 +463,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 82.4 ms | 17.8× | 0.98× | 15,474,634 | found |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 81.1 ms | 18.1× | 1.02× | 15,440,618 | found |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 43.8 ms | 33.5× | 1.88× | 20,077,653 | found |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 41.3 ms | 35.6× | 1.06× | 19,082,373 | found |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 41.3 ms | 35.6× | 1.06× | 19,082,373 | found |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 39.7 ms | 36.9× | 1.04× | 18,934,002 | found |
 
 ## B9 · find first 5×9
 
@@ -511,7 +519,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 151 ms | 55.5× | 0.99× | 157,429,780 | found |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 152 ms | 55.1× | 0.99× | 157,331,935 | found |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 153 ms | 54.5× | 0.98× | 157,611,939 | found |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 151 ms | 55.5× | 1.02× | 155,979,713 | found |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 151 ms | 55.5× | 1.02× | 155,979,713 | found |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 153 ms | 54.7× | 0.99× | 75,286,015 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -562,7 +571,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 3.96 s | 4.02× | 0.99× | 3,129,472,451 | solutions=80364530 |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 4.76 s | 3.35× | 0.83× | 3,167,969,514 | solutions=80364530 |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 3.96 s | 4.02× | 1.00× | 3,129,472,451 | solutions=80364530 |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 3.96 s | 4.02× | 1.00× | 3,129,472,451 | solutions=80364530 |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 3.96 s | 4.02× | 1.00× | 3,129,472,451 | solutions=80364530 |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 3.94 s | 4.04× | 1.00× | 3,129,472,451 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -613,7 +623,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 1.39 s | 3.61× | 1.02× | 716,449,909 | solutions=37812638 |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 1.40 s | 3.59× | 0.99× | 716,449,909 | solutions=37812638 |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 1.38 s | 3.63× | 1.00× | 716,449,909 | solutions=37812638 |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 1.39 s | 3.61× | 0.99× | 716,449,909 | solutions=37812638 |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 1.39 s | 3.61× | 0.99× | 716,449,909 | solutions=37812638 |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 1.39 s | 3.60× | 1.00× | 716,449,909 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -664,7 +675,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 803 ms | 3.29× | 1.00× | 433,144,128 | found |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 793 ms | 3.33× | 1.01× | 432,097,480 | found |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 807 ms | 3.27× | 0.99× | 446,537,398 | found |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 726 ms | 3.64× | 1.11× | 448,705,718 | found |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 726 ms | 3.64× | 1.11× | 448,705,718 | found |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 726 ms | 3.64× | 1.00× | 424,509,137 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -715,7 +727,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 538 ms | 4.57× | 1.02× | 606,400,112 | no solution: 5x10 exhausted |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 534 ms | 4.61× | 1.01× | 608,109,201 | no solution: 5x10 exhausted |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 545 ms | 4.51× | 0.99× | 606,829,356 | no solution: 5x10 exhausted |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 545 ms | 4.51× | 1.00× | 604,069,013 | no solution: 5x10 exhausted |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 545 ms | 4.51× | 1.00× | 604,069,013 | no solution: 5x10 exhausted |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 454 ms | 5.41× | 1.20× | 244,536,080 | no solution: 5x10 exhausted |
 
 ## B14 · count all 6×4 (exhaustive)
 
@@ -766,7 +779,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 1.39 s | 6.91× | 1.02× | 716,449,909 | solutions=37812638 |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 1.40 s | 6.86× | 0.99× | 716,449,909 | solutions=37812638 |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 1.39 s | 6.91× | 1.00× | 716,449,909 | solutions=37812638 |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 1.40 s | 6.90× | 1.00× | 716,449,909 | solutions=37812638 |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 1.40 s | 6.90× | 1.00× | 716,449,909 | solutions=37812638 |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 1.40 s | 6.90× | 1.00× | 716,449,909 | solutions=37812638 |
 
 ## B15 · count all 5×6 (exhaustive)
 
@@ -817,7 +831,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 10.1 s | 2.96× | 0.99× | 5,947,012,110 | solutions=7424362 |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 12.0 s | 2.50× | 0.85× | 5,921,750,409 | solutions=7424362 |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 10.1 s | 2.97× | 1.00× | 5,947,012,110 | solutions=7424362 |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 10.0 s | 3.00× | 1.01× | 5,947,012,110 | solutions=7424362 |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 10.0 s | 3.00× | 1.01× | 5,947,012,110 | solutions=7424362 |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 10.0 s | 2.99× | 1.00× | 5,947,012,110 | solutions=7424362 |
 
 ## B16 · prove no 6×9 exists (exhaustive)
 
@@ -868,7 +883,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 6.04 s | 4.30× | 0.99× | 7,235,095,156 | no solution: 6x9 exhausted |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 6.02 s | 4.31× | 1.00× | 7,234,712,692 | no solution: 6x9 exhausted |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 6.07 s | 4.28× | 1.00× | 7,234,489,546 | no solution: 6x9 exhausted |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 6.05 s | 4.29× | 1.00× | 7,237,682,685 | no solution: 6x9 exhausted |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 6.05 s | 4.29× | 1.00× | 7,237,682,685 | no solution: 6x9 exhausted |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 4.61 s | 5.63× | 1.31× | 2,510,754,061 | no solution: 6x9 exhausted |
 
 ## B17 · count all 4×7 (exhaustive)
 
@@ -919,7 +935,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 1.75 s | 3.96× | 0.98× | 996,185,895 | solutions=7139499 |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 2.34 s | 2.96× | 0.75× | 1,012,479,414 | solutions=7139499 |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 1.73 s | 4.00× | 1.01× | 996,185,895 | solutions=7139499 |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 1.73 s | 4.00× | 1.00× | 996,185,895 | solutions=7139499 |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 1.73 s | 4.00× | 1.00× | 996,185,895 | solutions=7139499 |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 1.73 s | 4.01× | 1.00× | 996,185,895 | solutions=7139499 |
 
 ## B18 · count all 6×6 (exhaustive)
 
@@ -970,4 +987,5 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ✅ | second-to-last-row set cap 128 | `d3b387c` | 2026-11-22 | fast | 18.0 s | 4.94× | 0.99× | 15,605,237,112 | solutions=1584465 |
 | ❌ | ~~last row first (failed)~~ | `acc0a0b` | 2026-11-22 | fast | 19.5 s | 4.56× | 0.92× | 15,583,124,906 | solutions=1584465 |
 | ✅ | split long find jobs | `03b95c7` | 2026-11-22 | fast | 18.0 s | 4.94× | 1.00× | 15,605,237,112 | solutions=1584465 |
-| ⭐ | **split mirror tests + early cut** | `cae250c` | 2026-11-22 | fast | 17.8 s | 5.00× | 1.01× | 15,605,237,112 | solutions=1584465 |
+| ✅ | split mirror tests + early cut | `cae250c` | 2026-11-22 | fast | 17.8 s | 5.00× | 1.01× | 15,605,237,112 | solutions=1584465 |
+| ⭐ | **next-row set up to 10 letters** | `1e9cb96` | 2026-11-22 | fast | 17.7 s | 5.02× | 1.00× | 15,605,237,112 | solutions=1584465 |
