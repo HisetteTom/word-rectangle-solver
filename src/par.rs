@@ -49,7 +49,7 @@ const FIND_SEQ_BUDGET: u64 = 30_000;
 /// uninitialized (5×6: 12.44 s at 16, 11.99 s at 32; 5×5 unchanged).
 const S_CAP: usize = 32;
 /// Same, in the second-to-last row (`Kernel::count_pen`), where overflowing is costlier.
-const S_CAP_PEN: usize = 32;
+const S_CAP_PEN: usize = 128;
 /// `pm` value meaning "`ps` is the set itself" (bit 31 is never a letter).
 const SELF: u32 = 1 << 31;
 
