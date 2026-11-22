@@ -1320,3 +1320,36 @@ second-to-last row's nodes are 90–100% dead ends, so a cheap whole-word test w
 Not speed: the whole history replayed on hephaestus; B15–B18; the atlas (every size to 10×22
 settled for two dictionaries; ENABLE's largest is 8×8, five symmetric squares); `wordrect squares`;
 charts: progress, anatomy, impact ranking, heatmap, thread scaling, atlas, gallery, squares.
+
+### 2026-11-22: split long find jobs (`03b95c7`) ✅ kept
+
+**Idea (PLAN 5, measured first):** on satisfiable finds the time after the first solution is
+dominated by *one* job. On 7×7 the solution is found at 31 ms, but the job before it (job 42) takes
+103 ms on one thread while the other 31 wait. On 6×8 a single mirror test takes 574 ms of 790.
+Fix: every parallel job gets a **time budget** (5 ms). It is enforced only once a solution is known or every
+job has started, because before that the other threads have work of their own. A job over budget is aborted and split
+breadth-first into sub-jobs, which go to a shared priority queue that workers serve first. Jobs are
+ranked by disjoint intervals `[lo, hi)` in lexicographic order (sub-jobs split their parent's
+interval), so the lowest-ranked solution is still exactly naive's first grid. Mirror-tested jobs are
+not split yet: their original-order sub-jobs force letters at the *end* of mirror rows, and each
+would redo most of its parent's test (6×9 went 6.0 → 12.2 s when tried).
+
+Tuning: a node budget didn't work across shapes (5×9 runs 4× more nodes/s than 7×7); a time budget did.
+Splitting before a solution is known cost 5×9 30% (aborted work, no idle threads to win back).
+Counting busy threads only when they run out of work (not per job) removed a 3% loss on 5×9.
+
+| Benchmark | Before (set cap 128) | After | Change |
+|---|---|---|---|
+| B7 find 7×7 | 103 ms | **64 ms** | **1.60×** |
+| B8 find 6×7 | 82 ms | **44 ms** | **1.88×** |
+| B9 find 5×9 | 151 ms | 153 ms | ≈ |
+| B12 find 6×8 | 803 ms | 807 ms | ≈ (mirror tests not split yet) |
+| B13 prove no 5×10 | 538 ms | 545 ms | ≈ |
+| B16 prove no 6×9 | 6.04 s | 6.07 s | ≈ |
+| counts | | | unchanged |
+
+New test `par_split_jobs_find_naive_first_grid` (every job split at once, recursively;
+`with_seq_budget(0)` now skips the sequential attempt entirely). Two deliberate bugs, reversed sub-job ranks and the
+max instead of the min rank, are both caught.
+
+**Verdict:** kept. Next: split mirror tests in the mirror's own order (B12).
