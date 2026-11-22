@@ -920,3 +920,21 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,009297a,fast,par,B16,find --rows 6 --cols 9,4.7447,2508124867,no solution: 6x9 exhausted,4.637134,resume aborted jobs,hephaestus
 2026-11-22,009297a,fast,par,B17,count --rows 4 --cols 7,1.7900,993187402,solutions=7139499,1.689611,resume aborted jobs,hephaestus
 2026-11-22,009297a,fast,par,B18,count --rows 6 --cols 6,17.9192,15605237112,solutions=1584465,17.828509,resume aborted jobs,hephaestus
+2026-11-22,4e6d084,fast,par,B1,count --rows 3 --cols 3,0.0781,994996,solutions=1909732,0.001920,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B2,find --rows 5 --cols 6,0.0841,7220,found,0.000152,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B3,find --rows 6 --cols 6,0.0921,12839,found,0.000230,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B4,count --rows 4 --cols 4,0.1947,170485926,solutions=136245247,0.113363,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B5,count --rows 4 --cols 5,0.7656,376530299,solutions=114846713,0.684871,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B6,count --rows 3 --cols 7,0.1827,72352263,solutions=4453472,0.084749,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B7,find --rows 7 --cols 7,0.1411,22539921,found,0.042766,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B8,find --rows 6 --cols 7,0.1426,14574808,found,0.032523,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B9,find --rows 5 --cols 9,0.2643,75168589,found,0.155275,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B10,count --rows 5 --cols 5,4.0341,3129472451,solutions=80364530,3.952734,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B11,count --rows 4 --cols 6,1.4200,722346874,solutions=37812638,1.330907,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B12,find --rows 6 --cols 8,0.7458,373015962,found,0.641195,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B13,find --rows 5 --cols 10,0.5556,245557917,no solution: 5x10 exhausted,0.452524,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B14,count --rows 6 --cols 4,1.4243,722346874,solutions=37812638,1.334058,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B15,count --rows 5 --cols 6,9.9819,5948229468,solutions=7424362,9.909209,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B16,find --rows 6 --cols 9,4.7567,2508127024,no solution: 6x9 exhausted,4.648140,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B17,count --rows 4 --cols 7,1.7913,993187402,solutions=7139499,1.690782,find budget 2 ms,hephaestus
+2026-11-22,4e6d084,fast,par,B18,count --rows 6 --cols 6,17.8979,15605237112,solutions=1584465,17.802730,find budget 2 ms,hephaestus

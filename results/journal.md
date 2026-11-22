@@ -1553,3 +1553,23 @@ The timeline shows threads idle ~5 ms before long jobs abort. Hypothesis: the co
 `nodes & 1023 == 0` rarely hits, because the last rows add nodes in bulk. Replaced by a "next check at"
 threshold (every 1024 nodes for sure): 7×7 47 → 48 ms, 6×7 33 → 37 ms, 6×9 4.64 → 4.73 s. More checks
 (each an `Instant::now()` plus atomic loads) cost more than the shorter gap saves. Not committed.
+
+### 2026-11-22: find job budget 2 ms (`4e6d084`) ✅ kept (small)
+
+The 5 ms budget was tuned when an abort threw its work away. Now that aborted jobs resume, smaller
+budgets cost little. Median of 5 (of 9 for the second table):
+
+| budget | 7×7 | 6×7 | 5×9 | 6×8 | 5×10 | 5×8 | 6×9 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 1 ms | 42.7 ms | 34.1 ms | 156 ms | 637 ms | 443 ms | 17.9 ms | 4.61 s |
+| **2 ms** | 44.2 ms | 32.2 ms | 154 ms | 634 ms | 447 ms | 18.1 ms | 4.60 s |
+| 5 ms (before) | 47.5 ms | 35.3 ms | 154 ms | 639 ms | 447 ms | 17.6 ms | 4.62 s |
+| 10 ms | 46.4 ms | 34.0 ms | 155 ms | 639 ms | 446 ms | 18.5 ms | 4.65 s |
+
+| Benchmark | Before | After | Change |
+|---|---|---|---|
+| B7 find 7×7 | 47.1 ms | **42.8 ms** | 1.10× |
+| B8 find 6×7 | 33.2 ms | 32.5 ms | 1.02× |
+| others | | | ≈ |
+
+**Verdict:** kept (small). 1 ms and 2 ms measured the same; 2 ms aborts less on big grids.

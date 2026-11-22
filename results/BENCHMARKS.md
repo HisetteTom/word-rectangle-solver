@@ -74,7 +74,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 1.66 ms | 3,536× | 1.03× | 994,996 | solutions=1909732 |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 1.66 ms | 3,540× | 1.03× | 994,996 | solutions=1909732 |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 1.75 ms | 3,346× | 0.95× | 994,996 | solutions=1909732 |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 1.79 ms | 3,285× | 0.98× | 994,996 | solutions=1909732 |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 1.79 ms | 3,285× | 0.98× | 994,996 | solutions=1909732 |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 1.92 ms | 3,055× | 0.93× | 994,996 | solutions=1909732 |
 
 ## B2 · find first 5×6
 
@@ -135,7 +136,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 161 µs | 7,167× | 0.93× | 7,220 | found |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 147 µs | 7,850× | 1.02× | 7,220 | found |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 145 µs | 7,958× | 1.01× | 7,220 | found |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 151 µs | 7,642× | 0.96× | 7,220 | found |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 151 µs | 7,642× | 0.96× | 7,220 | found |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 152 µs | 7,592× | 0.99× | 7,220 | found |
 
 ## B3 · find first 6×6
 
@@ -196,7 +198,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 233 µs | 11,639× | 0.97× | 12,839 | found |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 230 µs | 11,791× | 0.99× | 12,839 | found |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 225 µs | 12,053× | 1.02× | 12,839 | found |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 230 µs | 11,791× | 0.98× | 12,839 | found |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 230 µs | 11,791× | 0.98× | 12,839 | found |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 230 µs | 11,791× | 1.00× | 12,839 | found |
 
 ## B4 · count all 4×4 (exhaustive)
 
@@ -256,7 +259,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 117 ms | 123× | 0.96× | 169,914,985 | solutions=136245247 |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 113 ms | 126× | 0.99× | 170,485,926 | solutions=136245247 |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 113 ms | 127× | 1.01× | 170,485,926 | solutions=136245247 |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 114 ms | 126× | 0.99× | 170,485,926 | solutions=136245247 |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 114 ms | 126× | 0.99× | 170,485,926 | solutions=136245247 |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 113 ms | 126× | 1.00× | 170,485,926 | solutions=136245247 |
 
 ## B5 · count all 4×5 (exhaustive)
 
@@ -316,7 +320,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 763 ms | 75.6× | 0.94× | 362,862,049 | solutions=114846713 |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 697 ms | 82.9× | 1.03× | 374,627,846 | solutions=114846713 |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 683 ms | 84.5× | 1.02× | 376,530,299 | solutions=114846713 |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 684 ms | 84.4× | 1.00× | 376,530,299 | solutions=114846713 |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 684 ms | 84.4× | 1.00× | 376,530,299 | solutions=114846713 |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 685 ms | 84.3× | 1.00× | 376,530,299 | solutions=114846713 |
 
 ## B6 · count all 3×7 (exhaustive)
 
@@ -376,7 +381,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 92.7 ms | 63.3× | 0.96× | 66,545,310 | solutions=4453472 |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 86.2 ms | 68.0× | 1.04× | 72,352,003 | solutions=4453472 |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 86.2 ms | 68.1× | 1.00× | 72,352,263 | solutions=4453472 |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 84.3 ms | 69.6× | 1.02× | 72,352,263 | solutions=4453472 |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 84.3 ms | 69.6× | 1.02× | 72,352,263 | solutions=4453472 |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 84.7 ms | 69.2× | 0.99× | 72,352,263 | solutions=4453472 |
 
 ## B7 · find first 7×7
 
@@ -436,7 +442,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 56.2 ms | 32.2× | 0.94× | 27,582,151 | found |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 54 ms | 33.5× | 0.98× | 28,448,663 | found |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 53.7 ms | 33.7× | 1.01× | 27,248,408 | found |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 47.1 ms | 38.4× | 1.14× | 22,273,602 | found |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 47.1 ms | 38.4× | 1.14× | 22,273,602 | found |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 42.8 ms | 42.3× | 1.10× | 22,539,921 | found |
 
 ## B8 · find first 6×7
 
@@ -496,7 +503,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 46.9 ms | 31.3× | 0.85× | 19,021,917 | found |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 40.6 ms | 36.2× | 0.98× | 19,262,649 | found |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 39.3 ms | 37.3× | 1.03× | 20,182,498 | found |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 33.2 ms | 44.2× | 1.18× | 14,955,899 | found |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 33.2 ms | 44.2× | 1.18× | 14,955,899 | found |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 32.5 ms | 45.1× | 1.02× | 14,574,808 | found |
 
 ## B9 · find first 5×9
 
@@ -556,7 +564,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 156 ms | 53.7× | 0.98× | 74,704,714 | found |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 157 ms | 53.4× | 0.97× | 75,142,877 | found |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 158 ms | 53.0× | 0.99× | 75,154,677 | found |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 153 ms | 54.5× | 1.03× | 74,996,350 | found |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 153 ms | 54.5× | 1.03× | 74,996,350 | found |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 155 ms | 53.8× | 0.99× | 75,168,589 | found |
 
 ## B10 · count all 5×5 (exhaustive)
 
@@ -612,7 +621,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 4.36 s | 3.65× | 0.90× | 3,074,059,908 | solutions=80364530 |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 3.97 s | 4.01× | 0.99× | 3,129,472,451 | solutions=80364530 |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 3.95 s | 4.03× | 1.00× | 3,129,472,451 | solutions=80364530 |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 3.93 s | 4.05× | 1.00× | 3,129,472,451 | solutions=80364530 |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 3.93 s | 4.05× | 1.00× | 3,129,472,451 | solutions=80364530 |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 3.95 s | 4.03× | 1.00× | 3,129,472,451 | solutions=80364530 |
 
 ## B11 · count all 4×6 (exhaustive)
 
@@ -668,7 +678,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 1.48 s | 3.38× | 0.94× | 677,323,263 | solutions=37812638 |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 1.35 s | 3.70× | 1.03× | 715,238,433 | solutions=37812638 |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 1.34 s | 3.74× | 1.01× | 722,346,874 | solutions=37812638 |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 1.33 s | 3.78× | 1.01× | 722,346,874 | solutions=37812638 |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 1.33 s | 3.78× | 1.01× | 722,346,874 | solutions=37812638 |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 1.33 s | 3.77× | 1.00× | 722,346,874 | solutions=37812638 |
 
 ## B12 · find first 6×8
 
@@ -724,7 +735,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 760 ms | 3.48× | 0.96× | 432,356,911 | found |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 721 ms | 3.67× | 1.01× | 425,330,412 | found |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 737 ms | 3.59× | 0.98× | 434,112,527 | found |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 647 ms | 4.08× | 1.14× | 374,647,483 | found |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 647 ms | 4.08× | 1.14× | 374,647,483 | found |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 641 ms | 4.12× | 1.01× | 373,015,962 | found |
 
 ## B13 · prove no 5×10 exists (exhaustive)
 
@@ -780,7 +792,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 442 ms | 5.56× | 1.03× | 233,184,959 | no solution: 5x10 exhausted |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 441 ms | 5.57× | 1.03× | 233,598,206 | no solution: 5x10 exhausted |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 440 ms | 5.58× | 1.00× | 233,203,377 | no solution: 5x10 exhausted |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 445 ms | 5.52× | 0.99× | 241,564,043 | no solution: 5x10 exhausted |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 445 ms | 5.52× | 0.99× | 241,564,043 | no solution: 5x10 exhausted |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 453 ms | 5.43× | 0.98× | 245,557,917 | no solution: 5x10 exhausted |
 
 ## B14 · count all 6×4 (exhaustive)
 
@@ -836,7 +849,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 1.48 s | 6.49× | 0.94× | 677,323,263 | solutions=37812638 |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 1.36 s | 7.07× | 1.03× | 715,238,433 | solutions=37812638 |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 1.35 s | 7.14× | 1.01× | 722,346,874 | solutions=37812638 |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 1.34 s | 7.21× | 1.01× | 722,346,874 | solutions=37812638 |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 1.34 s | 7.21× | 1.01× | 722,346,874 | solutions=37812638 |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 1.33 s | 7.22× | 1.00× | 722,346,874 | solutions=37812638 |
 
 ## B15 · count all 5×6 (exhaustive)
 
@@ -892,7 +906,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 10.7 s | 2.80× | 0.94× | 5,788,976,632 | solutions=7424362 |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 10.1 s | 2.97× | 0.99× | 5,945,519,611 | solutions=7424362 |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 9.99 s | 3.00× | 1.01× | 5,948,229,468 | solutions=7424362 |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 9.86 s | 3.04× | 1.01× | 5,948,229,468 | solutions=7424362 |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 9.86 s | 3.04× | 1.01× | 5,948,229,468 | solutions=7424362 |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 9.91 s | 3.02× | 1.00× | 5,948,229,468 | solutions=7424362 |
 
 ## B16 · prove no 6×9 exists (exhaustive)
 
@@ -948,7 +963,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 4.68 s | 5.54× | 0.98× | 2,510,250,831 | no solution: 6x9 exhausted |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 4.70 s | 5.52× | 0.98× | 2,510,072,108 | no solution: 6x9 exhausted |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 4.70 s | 5.52× | 1.00× | 2,509,817,046 | no solution: 6x9 exhausted |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 4.64 s | 5.60× | 1.01× | 2,508,124,867 | no solution: 6x9 exhausted |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 4.64 s | 5.60× | 1.01× | 2,508,124,867 | no solution: 6x9 exhausted |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 4.65 s | 5.59× | 1.00× | 2,508,127,024 | no solution: 6x9 exhausted |
 
 ## B17 · count all 4×7 (exhaustive)
 
@@ -1004,7 +1020,8 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 1.86 s | 3.73× | 0.93× | 897,002,164 | solutions=7139499 |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 1.74 s | 3.99× | 0.99× | 993,187,402 | solutions=7139499 |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 1.69 s | 4.11× | 1.03× | 993,187,402 | solutions=7139499 |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 1.69 s | 4.10× | 1.00× | 993,187,402 | solutions=7139499 |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 1.69 s | 4.10× | 1.00× | 993,187,402 | solutions=7139499 |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 1.69 s | 4.10× | 1.00× | 993,187,402 | solutions=7139499 |
 
 ## B18 · count all 6×6 (exhaustive)
 
@@ -1060,4 +1077,5 @@ Status: ✅ kept · ❌ failed experiment, reverted (it never stays in the code)
 | ❌ | ~~last-row end check (failed)~~ | `9dadbe1` | 2026-11-22 | fast | 18.5 s | 4.82× | 0.96× | 15,597,632,294 | solutions=1584465 |
 | ✅ | first two rows swapped | `942a157` | 2026-11-22 | fast | 18.0 s | 4.95× | 0.99× | 15,605,237,112 | solutions=1584465 |
 | ✅ | count jobs 512 | `e2679f4` | 2026-11-22 | fast | 18.0 s | 4.94× | 1.00× | 15,605,237,112 | solutions=1584465 |
-| ⭐ | **resume aborted jobs** | `009297a` | 2026-11-22 | fast | 17.8 s | 5.00× | 1.01× | 15,605,237,112 | solutions=1584465 |
+| ✅ | resume aborted jobs | `009297a` | 2026-11-22 | fast | 17.8 s | 5.00× | 1.01× | 15,605,237,112 | solutions=1584465 |
+| ⭐ | **find budget 2 ms** | `4e6d084` | 2026-11-22 | fast | 17.8 s | 5.00× | 1.00× | 15,605,237,112 | solutions=1584465 |

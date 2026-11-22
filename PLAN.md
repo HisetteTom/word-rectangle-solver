@@ -10,7 +10,7 @@ benchmarked step (see CLAUDE.md). Failures too, labelled `(failed)`. Details of 
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | start of the night 11-21 | 1.20 s | 3.91 s | 13.47 s | 20.9 s | 134 ms | 117 ms | 1.01 s | 0.99 s | 9.93 s |
 | morning 11-22 | 0.718 s | 3.96 s | 10.1 s | 18.0 s | 103 ms | 82 ms | 803 ms | 0.538 s | 6.04 s |
-| now | **0.684 s** | 3.93 s | **9.86 s** | 17.8 s | **47 ms** | **33 ms** | **647 ms** | **0.445 s** | **4.64 s** |
+| now | **0.684 s** | 3.93 s | **9.86 s** | 17.8 s | **43 ms** | **33 ms** | **641 ms** | **0.445 s** | **4.64 s** |
 
 Where the time goes now:
 - **counts:** throughput-bound (31× CPU use on 32 threads), the second-to-last row's first cells
@@ -54,7 +54,7 @@ Where the time goes now:
 ## Done 2026-11-22 (day)
 
 Split long find jobs ✅ · split mirror tests + early cut ✅ · next-row set up to 10 letters ✅ ·
-last-row end check ❌ · first two rows swapped ✅ · count jobs 512 ✅ · resume aborted jobs ✅.
+last-row end check ❌ · first two rows swapped ✅ · count jobs 512 ✅ · resume aborted jobs ✅ · find budget 2 ms ✅.
 Measured, no bar: PGO, column-tuple memo, letter orders, mirror on small grids, constants re-swept,
 more frequent abort checks. New chart: find timeline (`scripts/timeline.py`).
 
