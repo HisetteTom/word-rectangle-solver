@@ -36,6 +36,15 @@ grows: 2% of the 4×4s, 58% of the 6×6s, 90% of the 7×7s and all five 8×8s (`
 
 ![squares](results/charts/squares.svg)
 
+**The dictionary decides.** The same atlas with an everyday word list (the system's American English
+list, lowercase entries only, about a third of ENABLE's size) tops out at **7×7: exactly 32 grids, all
+symmetric squares**. Most of ENABLE's big rectangles rely on rare words (`serriednesses`, `strasses`, …).
+
+![atlas american-english](results/charts/atlas-american.svg)
+
+<sub>Regenerate: `grep -x '[a-z]*' /usr/share/dict/american-english > /tmp/american.txt` then
+`python3 scripts/atlas.py --max-rows 10 --max-cols 22 --dict /tmp/american.txt --name american`.</sub>
+
 ---
 
 ## 📈 Progress

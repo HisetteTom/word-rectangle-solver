@@ -327,10 +327,16 @@ def fmt_count(n: int) -> str:
     return str(n)
 
 
-def atlas() -> str | None:
-    if not ATLAS.exists():
+DICT_DESC = {
+    "": "ENABLE dictionary (172,823 words)",
+    "american": "american-english, lowercase entries only (63,875 words: Debian wamerican, /usr/share/dict)",
+}
+
+
+def atlas(path: Path = ATLAS, name: str = "") -> str | None:
+    if not path.exists():
         return None
-    with ATLAS.open(newline="") as f:
+    with path.open(newline="") as f:
         cells = {(int(x["rows"]), int(x["cols"])): x for x in csv.DictReader(f)}
     if not cells:
         return None
@@ -343,7 +349,7 @@ def atlas() -> str | None:
     cells = {k: v for k, v in cells.items() if k[1] <= shown}
     cs = list(range(min(c for _, c in cells), shown + 1))
     cw, ch = 62, 50
-    left, top = 92, 132
+    left, top = 92, 146
     width = left + cw * len(cs) + 24
     legend_y = top + ch * len(rs) + 40
     height = legend_y + 96
@@ -360,8 +366,9 @@ def atlas() -> str | None:
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" font-family="{FONT}">',
            "\n".join(css), f'<rect class="bg" width="{width}" height="{height}" rx="10"/>',
            '<text class="t" x="24" y="38" font-size="22" font-weight="800">Atlas of word rectangles</text>',
-           '<text class="m" x="24" y="60" font-size="12.5">How many R×C grids have a real word in every row and every column? ENABLE dictionary (172,823 words), repeats allowed.</text>',
-           '<text class="m" x="24" y="78" font-size="12.5">Exact counts from exhaustive search. C×R has the same answer as R×C (transpose), so only R ≤ C is shown.</text>']
+           f'<text class="t" x="24" y="60" font-size="13" font-weight="600">{escape(DICT_DESC.get(name, name))}</text>',
+           '<text class="m" x="24" y="78" font-size="12.5">How many R×C grids have a real word in every row and every column? Repeats allowed. Exact counts from</text>',
+           '<text class="m" x="24" y="94" font-size="12.5">exhaustive search. C×R has the same answer as R×C (transpose), so only R ≤ C is shown.</text>']
     # axes
     out.append(f'<text class="m" x="{left + cw * len(cs) / 2:.0f}" y="{top - 26}" font-size="12" text-anchor="middle">columns (letters per row word)</text>')
     for j, c in enumerate(cs):
@@ -818,8 +825,10 @@ def main():
         (CHARTS / "squares.svg").write_text(qv)
     if (gv := gallery()) is not None:
         (CHARTS / "gallery.svg").write_text(gv)
-    if (a := atlas()) is not None:
-        (CHARTS / "atlas.svg").write_text(a)
+    for path in sorted(ROOT.glob("results/atlas*.csv")):
+        name = path.stem.removeprefix("atlas").removeprefix("-")
+        if (a := atlas(path, name)) is not None:
+            (CHARTS / f"atlas{'-' + name if name else ''}.svg").write_text(a)
     REPORT.write_text(report(data))
     print(f"charts: {', '.join(f'results/charts/{b}.svg' for b in data)} + results/BENCHMARKS.md")
 

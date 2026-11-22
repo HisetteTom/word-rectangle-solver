@@ -62,3 +62,15 @@ Re-run 2026-11-22 02:40 with the night's code ("mirror-image job test in find"):
 153 sizes. Times on the slow ones: 8×8 27.8 → **18.1 s**, 7×7 42.4 → **30.4 s**, 7×8 60.1 →
 **35.9 s**, 6×8 39.1 → **21.9 s**, 6×7 50.3 → **32.6 s**, 6×6 20.2 → 17.6 s, 6×9 9.95 → 7.09 s,
 5×7 15.1 → 9.8 s. The whole atlas now takes about 5 minutes.
+
+## Second dictionary: american-english (2026-11-22)
+
+`/usr/share/dict/american-english` (Debian `wamerican`), lowercase entries only: 63,875 words
+(`grep -x '[a-z]*'`). Every size 2×2 to 10×22 settled (`results/atlas-american.csv`, chart
+`charts/atlas-american.svg`).
+
+- **Largest rectangle: 7×7, exactly 32 grids, all symmetric word squares** (`squares-american.csv`:
+  32 symmetric 7×7 squares, 0 at 8×8).
+- Rarest: 2×11 (2: `haemophilia/admonitions`, `hydrophobia/orderliness`), 3×10 (5), 5×8 (39),
+  4×8 (139), 3×9 (94).
+- Nothing at 8×8, 6×7, 5×9, 4×9, 3×11 or 2×12 and beyond.

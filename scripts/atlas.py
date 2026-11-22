@@ -11,6 +11,7 @@ unless --redo). `scripts/charts.py` draws results/charts/atlas.svg from it.
 
 Sizes with at most RARE solutions also get every grid saved (`--print`), for the gallery chart.
 Usage: python3 scripts/atlas.py [--max-rows 8] [--max-cols 15] [--count-s 120] [--find-s 600] [--redo]
+                               [--dict PATH --name NAME]   (another dictionary -> results/atlas-NAME.csv)
 """
 
 import csv
@@ -32,11 +33,17 @@ def arg(name: str, default: int) -> int:
     return int(sys.argv[sys.argv.index(name) + 1]) if name in sys.argv else default
 
 
+DICT = sys.argv[sys.argv.index("--dict") + 1] if "--dict" in sys.argv else "dicts/enable.txt"
+NAME = sys.argv[sys.argv.index("--name") + 1] if "--name" in sys.argv else ""
+if NAME:
+    OUT = ROOT / "results" / f"atlas-{NAME}.csv"
+
+
 def run(cmd: str, r: int, c: int, budget: int):
     """-> (stdout, seconds) or (None, budget) on timeout."""
     s = time.perf_counter()
     try:
-        out = subprocess.run([str(BIN), cmd, "--rows", str(r), "--cols", str(c), "--stats"], cwd=ROOT,
+        out = subprocess.run([str(BIN), cmd, "--rows", str(r), "--cols", str(c), "--stats", "--dict", DICT], cwd=ROOT,
                              capture_output=True, text=True, timeout=budget, check=True).stdout
     except subprocess.TimeoutExpired:
         return None, budget
@@ -47,7 +54,7 @@ RARE = 9  # sizes with at most this many solutions get all their grids saved (th
 
 
 def rare_grids(r: int, c: int) -> str:
-    out = subprocess.run([str(BIN), "count", "--rows", str(r), "--cols", str(c), "--print"], cwd=ROOT,
+    out = subprocess.run([str(BIN), "count", "--rows", str(r), "--cols", str(c), "--print", "--dict", DICT], cwd=ROOT,
                          capture_output=True, text=True, check=True).stdout
     return " ".join(l for l in out.splitlines() if re.fullmatch(r"[a-z]+(/[a-z]+)+", l))
 
@@ -102,11 +109,11 @@ def main():
     sq = []
     for n in range(2, max_r + 1):
         t0 = time.perf_counter()
-        out = subprocess.run([str(BIN), "squares", "--rows", str(n)], cwd=ROOT, capture_output=True, text=True, check=True).stdout
+        out = subprocess.run([str(BIN), "squares", "--rows", str(n), "--dict", DICT], cwd=ROOT, capture_output=True, text=True, check=True).stdout
         sq.append({"n": n, "squares": int(re.search(r"squares=(\d+)", out)[1]), "time_s": f"{time.perf_counter() - t0:.3f}",
                    "commit": commit, "date": date.today().isoformat(), "machine": socket.gethostname()})
         print(f"{n}x{n} symmetric squares: {sq[-1]['squares']}", flush=True)
-    with (ROOT / "results" / "squares.csv").open("w", newline="") as f:
+    with (ROOT / "results" / (f"squares-{NAME}.csv" if NAME else "squares.csv")).open("w", newline="") as f:
         w = csv.DictWriter(f, list(sq[0]))
         w.writeheader()
         w.writerows(sq)
