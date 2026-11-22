@@ -39,9 +39,9 @@ Where the time goes now (`results/charts/heatmap.svg`, `scripts/heatmap.py`):
    solution under them (90–95% on 5×5; 86–91% of the third-to-last row on 6×6). A check that one of
    the last-row prefixes completes to a whole word inside the columns' union masks cuts **39% of
    nodes** on 5×6, but walking the trie to prove a node dead costs more than it saves. Needed: a much
-   cheaper existence test for "a word whose letter at each position k is in U_k". Candidates: memo on
-   U-tuples (they're unions, so they may repeat far more than exact mask tuples did), or two-level
-   tables (position pairs) that reject most dead U's in O(1) before the walk.
+   cheaper existence test for "a word whose letter at each position k is in U_k". A memo on U-tuples was
+   tried (no gain: tuples rarely repeat). Candidate left: two-level tables (letter pairs at position
+   pairs) that reject most dead U's in O(1) before the walk.
 
 1. **Mirror job tests for small grids too.** Today only big grids (area ≥ 48) use them, because their
    jobs must stay in row 0 and coarse jobs hurt finds with early solutions (5×8, 5×9). A dynamic

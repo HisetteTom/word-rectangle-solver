@@ -1204,5 +1204,8 @@ Bench of the last variant: B10 4.089028s, B15 10.450408s, B17 1.920300s (before:
 
 **Verdict:** reverted. This is the strongest pruning tried tonight: **39% fewer nodes** on 5×6 and 26%
 on 5×5. But a dead node has to walk *all* fitting last-row prefixes to prove it's dead, and that costs
-more than the subtree it saves. Worth retrying with a cheaper existence test (e.g. per-position
-letter bitsets over the last-row words, or a memo of U-tuples → yes/no).
+more than the subtree it saves. Worth retrying with a cheaper existence test.
+
+Follow-up (not committed): a per-thread direct-mapped memo of U-tuples → yes/no (4,096 slots,
+full tuple stored so hits are exact) in front of the walk at c = 0: 5×6 10.67 s, 5×5 4.15 s, so no
+better than without it. The U-tuples rarely repeat, so a memo isn't the cheap test.
