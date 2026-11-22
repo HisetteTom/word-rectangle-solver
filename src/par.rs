@@ -19,7 +19,7 @@
 use crate::trie::{CNode, CTrie, Node, Trie};
 
 // Layout guard (rust-skills `mem-assert-type-size`): the kernels are tuned for these sizes.
-const _: () = assert!(size_of::<Node>() == 16 && size_of::<CNode>() == 12);
+const _: () = assert!(size_of::<Node>() == 16 && size_of::<CNode>() == 8);
 use crate::{Grid, Solver, Stats};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering::Relaxed};
@@ -518,25 +518,6 @@ impl<const W: usize> Kernel<'_, W> {
             }
             if n == 0 { (&[], self.uni(c - 1, f)) } else { (buf.first(n), base) }
         };
-        // Whole-word check for the last row (second-to-last row, hot cells only): with U_k = the
-        // last-row letters column k allows after any letter this row may still put there, some
-        // prefix in S must complete to a whole word inside U_c..U_{W-1}. Otherwise the node is dead.
-        if Self::TRACK && r + 1 == self.last_r && c == 0 && !s.is_empty() {
-            let mut u = [0u32; W];
-            for (k, uk) in u.iter_mut().enumerate().skip(c + 1) {
-                *uk = colv[k].next;
-            }
-            let mut xs = col.mask & good;
-            while xs != 0 {
-                let x = xs.trailing_zeros();
-                xs &= xs - 1;
-                // SAFETY: `x` is a bit of `col.mask`.
-                u[c] |= unsafe { self.cstep(col, x) }.mask;
-            }
-            if !s.iter().any(|n| self.word_fits(*n, c, &u)) {
-                return 0;
-            }
-        }
         let mut total = 0;
         if c == (W - 1) {
             // the letter completes this row: next cell is (r + 1, 0) with a fresh row
@@ -712,27 +693,6 @@ impl<const W: usize> Kernel<'_, W> {
         }
         colv[c] = col;
         total
-    }
-
-    /// Does row-trie node `n` (a prefix ending before position `k`) complete to a whole word with
-    /// its letter at every position j >= k inside `u[j]`? Depth-first, stops at the first one.
-    fn word_fits(&self, n: Node, k: usize, u: &[u32; W]) -> bool {
-        if k == W {
-            return true;
-        }
-        let mut m = n.mask & u[k];
-        if k + 1 == W {
-            return m != 0;
-        }
-        while m != 0 {
-            let y = m.trailing_zeros();
-            m &= m - 1;
-            // SAFETY: `y` is a bit of `n.mask`.
-            if self.word_fits(unsafe { self.rstep(n, y) }, k + 1, u) {
-                return true;
-            }
-        }
-        false
     }
 
     /// Letters a row word can have at position k + 1, given its letter at k is in `f`.
@@ -939,7 +899,7 @@ impl ParSearch {
             if root.mask >> l & 1 == 0 {
                 return false;
             }
-            colv[W - 1 - k] = CNode { mask: 1 << l, first: self.col_trie.child(0, l as usize), next: self.col_trie.node(self.col_trie.child(0, l as usize)).mask };
+            colv[W - 1 - k] = CNode { mask: 1 << l, first: self.col_trie.child(0, l as usize) };
         }
         let mut k = Kernel::<W>::new(self);
         k.cut = Some(cut);
