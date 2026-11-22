@@ -1487,3 +1487,29 @@ wins every time, by a little. Squares keep top-down (it would break the anti-dia
 | B15, B17 | | | ≈ |
 
 **Verdict:** kept (small, free: one swap of two letters per column word, once).
+
+### 2026-11-22: count jobs per thread 512 (`e2679f4`) ✅ kept (small)
+
+Another constant re-swept now that the kernels are faster (median of 3):
+
+| jobs/thread | 4×4 | 4×5 | 3×7 | 5×5 | 4×7 | 4×6 | 5×6 | 6×6 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 64 | 114 ms | 690 ms | 85 ms | 5.20 s | 1.747 s | 1.374 s | | |
+| 256 (before) | 113 ms | 692 ms | 85 ms | 3.96 s | 1.735 s | 1.353 s | | |
+| **512** | 115 ms | **676 ms** | 86 ms | **3.91 s** | **1.684 s** | **1.334 s** | 9.96 s | 17.92 s |
+| 1024 | 115 ms | 678 ms | 108 ms | 3.92 s | 1.672 s | 1.337 s | 9.95 s | 17.93 s |
+| 2048 | 114 ms | 680 ms | 107 ms | 3.93 s | 1.678 s | 1.338 s | 9.97 s | 17.94 s |
+
+Above 512, small counts pay for the serial job expansion (3×7 +25%). Also re-swept, unchanged:
+`FIND_JOBS_PER_THREAD` (4096: 256 jobs saves 6 ms on tiny finds but costs 6×8 1.7×), `S_CAP` (32;
+64 helps 6×9 by 3% and loses elsewhere), anti-diagonal symmetry from 6×6 (still slower on 4×4
+and 5×5).
+
+| Benchmark | Before | After | Change |
+|---|---|---|---|
+| B5 count 4×5 | 697 ms | 683 ms | 1.02× |
+| B17 count 4×7 | 1.737 s | 1.688 s | 1.03× |
+| B11 / B14 count 4×6 / 6×4 | 1.355 / 1.362 s | 1.340 / 1.348 s | 1.01× |
+| B15 count 5×6 | 10.09 s | 9.99 s | 1.01× |
+
+**Verdict:** kept (small).
