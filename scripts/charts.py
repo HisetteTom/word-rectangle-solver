@@ -230,7 +230,9 @@ def progress(data: dict[str, list[dict]]):
     step_w = 30
     plot_w = step_w * (len(xs_labels) - 1)
     width = left + plot_w + right
-    height = top + plot_h + 175
+    # rotated (-45°) step names hang below the plot: room for the longest one (~6.2 px per char)
+    longest = max(len(l.replace(" (failed)", "")) + 2 for l in xs_labels)
+    height = top + plot_h + 40 + int(longest * 6.2 * 0.71)
 
     vals = list(sp.values()) + [t[b][core_base] / t[b][l] for b in core for l in xs_labels]
     lo = 10 ** math.floor(math.log10(min(vals)))
@@ -286,7 +288,7 @@ def progress(data: dict[str, list[dict]]):
     for k in range(1, len(ends)):  # keep end labels >= 11 px apart
         ends[k][0] = max(ends[k][0], ends[k - 1][0] + 11)
     for y, b in ends:
-        out.append(f'<text class="ft" x="{X(kx[-1][0]) + 9:.1f}" y="{y:.1f}" font-size="9.5">{b}</text>')
+        out.append(f'<text class="ft" x="{X(len(xs_labels) - 1) + 9:.1f}" y="{y:.1f}" font-size="9.5">{b}</text>')
     # main line + area
     pts = [(X(i), Y(sp[l])) for i, l in kx]
     poly = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
@@ -301,8 +303,9 @@ def progress(data: dict[str, list[dict]]):
             out.append(f'<circle class="lnf ring" cx="{x:.1f}" cy="{y:.1f}" r="{6.5 if l == current else 4.5}" stroke-width="2"/>')
     # direct label on the current point
     i = xs_labels.index(current)
-    out.append(f'<text class="big" x="{X(i) + 40:.1f}" y="{Y(sp[current]) + 2:.1f}" font-size="22">{fmt_x(sp[current])}</text>')
-    out.append(f'<text class="m" x="{X(i) + 40:.1f}" y="{Y(sp[current]) + 18:.1f}" font-size="11">geometric mean</text>')
+    lx = X(len(xs_labels) - 1) + 40  # after the last point (failed experiments may follow the current one)
+    out.append(f'<text class="big" x="{lx:.1f}" y="{Y(sp[current]) + 2:.1f}" font-size="22">{fmt_x(sp[current])}</text>')
+    out.append(f'<text class="m" x="{lx:.1f}" y="{Y(sp[current]) + 18:.1f}" font-size="11">geometric mean</text>')
     # x labels (rotated)
     for i, l in enumerate(xs_labels):
         cls = "ft" if failed(l) else "cur" if l == current else "t"
