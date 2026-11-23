@@ -66,7 +66,7 @@ fn match_naive_on_enable_small_sizes() {
             let got = all(s, &d, r, c);
             assert_eq!(got, want, "solver={s} size={r}x{c}");
             for g in &got {
-                validate(g, &dict).unwrap();
+                validate(g, |w| dict.contains(w)).unwrap();
             }
         }
     }
@@ -80,7 +80,7 @@ fn enable_3x3_count_and_finds_validate() {
         assert_eq!(count(s, &d, 3, 3), 1_909_732, "solver={s}");
         for (r, c) in [(3, 4), (4, 4), (5, 5)] {
             let g = find(s, &d, r, c).unwrap_or_else(|| panic!("solver={s} found nothing for {r}x{c}"));
-            validate(&g, &dict).unwrap();
+            validate(&g, |w| dict.contains(w)).unwrap();
         }
     }
 }

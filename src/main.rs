@@ -1,4 +1,3 @@
-use std::collections::HashSet;
 use std::path::PathBuf;
 use std::process::ExitCode;
 use std::time::Instant;
@@ -78,18 +77,35 @@ fn print_grid(g: &[String]) {
 
 fn run(a: Args) -> Result<(), String> {
     let t_load = Instant::now();
-    let d = Dict::load(&a.dict).map_err(|e| format!("cannot read {}: {e}", a.dict.display()))?;
-    let fp = dict::fingerprint(&a.dict).map_err(|e| e.to_string())?;
+    // The fingerprint hash is one long serial chain: it runs beside loading and setup.
+    let fp = std::thread::spawn({
+        let path = a.dict.clone();
+        move || dict::fingerprint(&path)
+    });
+    // Only the word lengths this command uses are kept (the rest is never touched).
+    let keep: Option<Vec<usize>> = match a.cmd.as_str() {
+        "info" => None,
+        _ => Some(vec![a.rows, a.cols]),
+    };
+    let d = Dict::load_only(&a.dict, keep.as_deref()).map_err(|e| format!("cannot read {}: {e}", a.dict.display()))?;
     let load_time = t_load.elapsed();
 
-    println!(
-        "# dict={} words={} fnv={} | ruleset=rectangle,repeats-ok,a-z | solver={} | commit={}",
-        a.dict.display(),
-        d.total,
-        fp,
-        a.solver,
-        env!("GIT_COMMIT")
-    );
+    let mut fp = Some(fp);
+    let mut header = || -> Result<(), String> {
+        let fp = fp.take().unwrap().join().unwrap().map_err(|e| e.to_string())?;
+        println!(
+            "# dict={} words={} fnv={} | ruleset=rectangle,repeats-ok,a-z | solver={} | commit={}",
+            a.dict.display(),
+            d.total,
+            fp,
+            a.solver,
+            env!("GIT_COMMIT")
+        );
+        Ok(())
+    };
+    if a.cmd != "find" && a.cmd != "count" {
+        header()?;
+    }
 
     if a.cmd == "info" {
         println!("{:>4}  {:>7}", "len", "words");
@@ -121,21 +137,23 @@ fn run(a: Args) -> Result<(), String> {
     }
 
     let (rw, cw) = (d.words(a.cols), d.words(a.rows));
-    println!("# size={}x{}  row words (len {})={}  col words (len {})={}", a.rows, a.cols, a.cols, rw.len(), a.rows, cw.len());
 
-    let all: HashSet<String> = d.by_len.iter().flatten().cloned().collect();
+    // The validator's dictionary: a row or column can only be a word of length cols or rows.
+    let is_word = |w: &str| d.words(w.len()).binary_search_by(|x| x.as_str().cmp(w)).is_ok();
     let mut solver: Box<dyn Solver> = if a.solver == "par" && a.threads > 0 {
         Box::new(ParSearch::new(a.rows, a.cols, rw, cw, a.threads))
     } else {
         make_solver(&a.solver, a.rows, a.cols, rw, cw)
             .ok_or_else(|| format!("unknown solver {} (available: {})", a.solver, SOLVERS.join(", ")))?
     };
+    header()?;
+    println!("# size={}x{}  row words (len {})={}  col words (len {})={}", a.rows, a.cols, a.cols, rw.len(), a.rows, cw.len());
     let t = Instant::now();
 
     if a.cmd == "find" {
         match solver.find() {
             Some(g) => {
-                validate(&g, &all).map_err(|e| format!("VALIDATION FAILED: {e}"))?;
+                validate(&g, is_word).map_err(|e| format!("VALIDATION FAILED: {e}"))?;
                 println!("found (validated):");
                 print_grid(&g);
             }
@@ -144,7 +162,7 @@ fn run(a: Args) -> Result<(), String> {
     } else if a.print {
         let sols = solver.all();
         for g in &sols {
-            validate(g, &all).map_err(|e| format!("VALIDATION FAILED: {e}"))?;
+            validate(g, is_word).map_err(|e| format!("VALIDATION FAILED: {e}"))?;
             println!("{}", g.join("/"));
         }
         println!("solutions={} (all validated)", sols.len());
@@ -177,6 +195,9 @@ fn run(a: Args) -> Result<(), String> {
             }
         }
     }
+    // the process is about to exit: freeing the tries and word lists one by one would only cost time
+    std::mem::forget(solver);
+    std::mem::forget(d);
     Ok(())
 }
 

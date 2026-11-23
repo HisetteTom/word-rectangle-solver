@@ -20,7 +20,7 @@ fn brute_force(rows: usize, cols: usize, words: &[&str]) -> Vec<Vec<String>> {
             g.push(rw[idx % rw.len()].clone());
             idx /= rw.len();
         }
-        if validate(&g, &dict).is_ok() {
+        if validate(&g, |w| dict.contains(w)).is_ok() {
             out.push(g);
         }
     }
@@ -89,6 +89,6 @@ fn every_solution_validates() {
     let words = ["ab", "ba", "aa", "bb", "aba", "bab", "aab", "abb", "bba", "aaa"];
     let dict = set(&words);
     for g in naive_all(3, 3, &words) {
-        validate(&g, &dict).unwrap();
+        validate(&g, |w| dict.contains(w)).unwrap();
     }
 }

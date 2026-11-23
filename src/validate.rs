@@ -1,9 +1,8 @@
 //! Independent, dead-simple checker. Shares no code with any solver.
 
-use std::collections::HashSet;
-
-/// Returns `Err(reason)` if the grid is not a valid word rectangle for `dict`.
-pub fn validate(grid: &[String], dict: &HashSet<String>) -> Result<(), String> {
+/// Returns `Err(reason)` if the grid is not a valid word rectangle, `is_word` being the dictionary
+/// (e.g. `|w| set.contains(w)`).
+pub fn validate(grid: &[String], is_word: impl Fn(&str) -> bool) -> Result<(), String> {
     let rows = grid.len();
     if rows == 0 {
         return Err("empty grid".into());
@@ -13,13 +12,13 @@ pub fn validate(grid: &[String], dict: &HashSet<String>) -> Result<(), String> {
         if row.len() != cols {
             return Err(format!("row {i} has length {} (expected {cols})", row.len()));
         }
-        if !dict.contains(row) {
+        if !is_word(row) {
             return Err(format!("row {i} '{row}' is not a word"));
         }
     }
     for c in 0..cols {
         let col: String = grid.iter().map(|r| r.as_bytes()[c] as char).collect();
-        if !dict.contains(&col) {
+        if !is_word(&col) {
             return Err(format!("column {c} '{col}' is not a word"));
         }
     }

@@ -25,37 +25,45 @@ pub struct Trie {
 }
 
 impl Trie {
-    /// `words` must be lowercase `a–z` (guaranteed by `Dict`).
+    /// `words` must be lowercase `a–z` (guaranteed by `Dict`), all of one length.
+    ///
+    /// BFS order of a trie whose children are sorted by letter is: depth by depth, prefixes in
+    /// sorted order. So with the words sorted, the nodes at depth `d` are just the distinct
+    /// `d`-letter prefixes in order, and one pass builds the final layout directly.
     pub fn new(words: &[String]) -> Trie {
-        // 1. plain pointer trie (build-time only)
-        let mut tmp: Vec<[u32; 26]> = vec![[0; 26]];
-        for w in words {
-            let mut n = 0;
-            for b in w.bytes() {
-                let l = (b - b'a') as usize;
-                if tmp[n][l] == 0 {
-                    tmp[n][l] = tmp.len() as u32;
-                    tmp.push([0; 26]);
-                }
-                n = tmp[n][l] as usize;
-            }
+        let mut sorted: Vec<&[u8]> = words.iter().map(|w| w.as_bytes()).collect();
+        if !sorted.windows(2).all(|p| p[0] < p[1]) {
+            sorted.sort_unstable();
+            sorted.dedup();
         }
-        // 2. BFS renumbering: queue position = new index
-        let mut queue = vec![0usize];
-        let mut nodes = Vec::with_capacity(tmp.len());
-        let mut i = 0;
-        while i < queue.len() {
-            let old = queue[i];
-            let first = queue.len() as u32;
-            let mut mask = 0;
-            for (l, &c) in tmp[old].iter().enumerate() {
-                if c != 0 {
-                    mask |= 1 << l;
-                    queue.push(c as usize);
+        let len = sorted.first().map_or(0, |w| w.len());
+        // lcp[i] = common prefix length of word i with word i-1: word i starts a new node at
+        // every depth d > lcp[i] (word 0 at every depth)
+        let lcp: Vec<usize> = (0..sorted.len())
+            .map(|i| if i == 0 { 0 } else { sorted[i].iter().zip(sorted[i - 1]).take_while(|(a, b)| a == b).count() })
+            .collect();
+        // level sizes, then the index of the first node of each depth
+        let mut start = vec![0usize; len + 2];
+        start[1] = 1; // the root
+        for d in 1..=len {
+            start[d + 1] = start[d] + lcp.iter().filter(|&&l| l < d).count();
+        }
+        let total = start[len + 1];
+        // leaves keep the old builder's `first` (the node count): it is never followed
+        let mut nodes = vec![Node { mask: 0, first: total as u32, next: 0, next2: 0 }; total.max(1)];
+        let mut cur = vec![0usize; len + 1]; // current node at each depth
+        let mut made = start.clone(); // next free index at each depth
+        for (w, &l) in sorted.iter().zip(&lcp) {
+            let new = (l + 1).min(len + 1)..len + 1; // depths where this word starts a node
+            cur[new.clone()].copy_from_slice(&made[new.clone()]);
+            made[new].iter_mut().for_each(|m| *m += 1);
+            for d in 0..len {
+                let n = &mut nodes[cur[d]];
+                if n.mask == 0 {
+                    n.first = cur[d + 1] as u32; // first child = the first one made under it
                 }
+                n.mask |= 1 << (w[d] - b'a');
             }
-            nodes.push(Node { mask, first, next: 0, next2: 0 });
-            i += 1;
         }
         // children come after their parent in BFS order: fill `next` bottom-up
         for i in (0..nodes.len()).rev() {
@@ -108,6 +116,36 @@ impl Trie {
     pub fn is_empty(&self) -> bool {
         self.nodes[0].mask == 0
     }
+
+    /// The words it was built from, sorted and deduplicated.
+    pub fn words(&self) -> Vec<String> {
+        spell(|n| (self.nodes[n as usize].mask, self.nodes[n as usize].first))
+    }
+}
+
+/// Every word of a trie, in sorted order, from its `(mask, first)` pairs.
+fn spell(node: impl Fn(u32) -> (u32, u32)) -> Vec<String> {
+    fn go(node: &impl Fn(u32) -> (u32, u32), n: u32, word: &mut Vec<u8>, out: &mut Vec<String>) {
+        let (mask, first) = node(n);
+        if mask == 0 {
+            out.push(String::from_utf8(word.clone()).unwrap());
+            return;
+        }
+        let mut m = mask;
+        let mut child = first;
+        while m != 0 {
+            word.push(b'a' + m.trailing_zeros() as u8);
+            go(node, child, word, out);
+            word.pop();
+            m &= m - 1;
+            child += 1;
+        }
+    }
+    let mut out = Vec::new();
+    if node(0).0 != 0 {
+        go(&node, 0, &mut Vec::new(), &mut out);
+    }
+    out
 }
 
 /// Compact 8-byte node (no look-ahead masks), for tries that only need `mask` + child steps.
@@ -126,6 +164,11 @@ pub struct CTrie {
 impl CTrie {
     pub fn new(t: &Trie) -> CTrie {
         CTrie { nodes: t.nodes.iter().map(|n| CNode { mask: n.mask, first: n.first }).collect() }
+    }
+
+    /// The words it was built from, sorted and deduplicated.
+    pub fn words(&self) -> Vec<String> {
+        spell(|n| (self.nodes[n as usize].mask, self.nodes[n as usize].first))
     }
 
     #[inline(always)]

@@ -74,8 +74,6 @@ pub struct ParSearch {
     /// Per position k of a row word: which letters can follow at k + 1 (see `Bigram`).
     bigrams: Vec<Bigram>,
     /// The word lists, to build the re-oriented searches `count` uses (see `count`).
-    row_words: Vec<String>,
-    col_words: Vec<String>,
     /// This search counts the horizontal mirror image of the asked grid (row words reversed).
     mirrored: bool,
     /// Mirror image of a square with one word list: count with anti-diagonal symmetry.
@@ -874,16 +872,19 @@ impl<const N: usize> SetBuf<N> {
 type Bigram = [[u32; 128]; 4];
 
 fn bigrams(words: &[String], len: usize) -> Vec<Bigram> {
-    let mut t = vec![[[0u32; 128]; 4]; len.max(1)];
+    // follow[k][a] = letters that come right after letter `a` at position `k` in some word
+    let mut follow = vec![[0u32; 26]; len.max(1)];
     for w in words {
         let b = w.as_bytes();
         for k in 0..len - 1 {
-            let (a, n) = ((b[k] - b'a') as usize, (b[k + 1] - b'a') as u32);
-            let (chunk, bit) = (a / 7, a % 7);
-            for (v, e) in t[k][chunk].iter_mut().enumerate() {
-                if v >> bit & 1 == 1 {
-                    *e |= 1 << n;
-                }
+            follow[k][(b[k] - b'a') as usize] |= 1 << (b[k + 1] - b'a');
+        }
+    }
+    let mut t = vec![[[0u32; 128]; 4]; len.max(1)];
+    for (tk, fk) in t.iter_mut().zip(&follow) {
+        for (chunk, tc) in tk.iter_mut().enumerate() {
+            for (v, e) in tc.iter_mut().enumerate() {
+                *e = (0..7).filter(|bit| v >> bit & 1 == 1).filter_map(|bit| fk.get(chunk * 7 + bit)).fold(0, |a, f| a | f);
             }
         }
     }
@@ -902,8 +903,6 @@ impl ParSearch {
         ParSearch {
             rows,
             cols,
-            row_words: row_words.to_vec(),
-            col_words: col_words.to_vec(),
             mirrored: false,
             anti: false,
             sync_mirror: false,
@@ -1129,7 +1128,8 @@ impl Solver for ParSearch {
         //    (`exists_with_prefix`).
         let mirror: std::sync::Arc<std::sync::OnceLock<ParSearch>> = Default::default();
         if use_mirror {
-            let (m, rw, cw) = (mirror.clone(), self.row_words.clone(), self.col_words.clone());
+            // the word lists are read back from the tries (on the builder thread: `new` stays cheap)
+            let (m, rw, cw) = (mirror.clone(), self.row_trie.words(), self.col_trie.words());
             let (rows, cols, threads) = (self.rows, self.cols, self.threads);
             let build = move || {
                 let rev: Vec<String> = rw.iter().map(|w| w.chars().rev().collect()).collect();
@@ -1416,16 +1416,17 @@ impl Solver for ParSearch {
         //    symmetry when mirrored, but gains an anti-diagonal one (`Kernel::count_anti`): faster
         //    from 6×6 up (1.13× at 6×6, 1.34× at 7×7, 1.50× at 8×8), slightly slower below.
         let other = if self.rows > self.cols && self.rows <= 32 {
-            Some(ParSearch::new(self.cols, self.rows, &self.col_words, &self.row_words, self.threads))
+            Some(ParSearch::new(self.cols, self.rows, &self.col_trie.words(), &self.row_trie.words(), self.threads))
         } else if !self.mirrored && (!self.sym || self.cols >= 6) {
-            let rev: Vec<String> = self.row_words.iter().map(|w| w.chars().rev().collect()).collect();
+            let rev: Vec<String> = self.row_trie.words().iter().map(|w| w.chars().rev().collect()).collect();
             // 3. without a symmetry to keep, also swap the first two rows (each column word's first two
             //    letters): of all 24 row orders of 4×5, 4×6 and 4×7 this is the fastest, 0.5–4% faster
             //    than top-down (3×7 5%, 5×6 0.3%)
+            let col_words = self.col_trie.words();
             let cols: Vec<String> = if self.sym || self.rows < 3 {
-                self.col_words.clone()
+                col_words
             } else {
-                self.col_words.iter().map(|w| {
+                col_words.iter().map(|w| {
                     let mut b = w.clone().into_bytes();
                     b.swap(0, 1);
                     String::from_utf8(b).unwrap()
