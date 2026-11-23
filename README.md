@@ -1,6 +1,6 @@
-# 🔤 Word Rectangles — an ultra-optimized solver in Rust
+# Word rectangles
 
-> Find the **largest grid of letters where every row and every column is a real word** — and make the search absurdly fast.
+A fast solver, in Rust with no dependencies, for grids of letters where every row and every column is a word.
 
 ```
 C A T
@@ -8,127 +8,95 @@ A P E
 T E N
 ```
 
-Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal of this project is to push as far as a single CPU can go.
+The rows read `CAT`, `APE`, `TEN`, and so do the columns. That is a 3×3 word rectangle. Rows and columns can also be different words, and the grid does not have to be square: a 5×9 has five 9-letter rows and nine 5-letter columns.
 
-> **🆕 Latest (2026-11-23):** a **head-to-head race against every public solver I could find**,
-> including **Donald Knuth's own word-rectangle programs** from *The Art of Computer Programming*. Same
-> machine, same dictionary, same task, identical answers: on one core this solver is **5–25× faster
-> than the best of them** on every task longer than a tenth of a second, and **59–345× faster** on all 32
-> threads ([chart below](#-how-it-compares)).
-> The race also found the one place we lost: tiny searches, where we spent ~80 ms starting up for a
-> 0.2 ms search. Startup is now **12× faster** (5×6: 96 → 7.5 ms end to end).
->
-> **2026-11-22 (day):** `find` no longer waits on one long job: jobs that run too long while a thread
-> is idle are **split into pieces that all threads share** (7×7: 104 → 43 ms, 6×7: 82 → 33 ms), and
-> proofs that no grid exists got **1.2–1.3× faster** (no 6×9: 6.0 → 4.6 s). All steps in
-> [`results/journal.md`](results/journal.md).
->
-> **Night of 2026-11-21:** the whole history was re-run on one machine, and **every grid size up to
-> 10×22 is now settled**: the largest word rectangle in the dictionary is **8×8 (exactly five, all
-> symmetric squares)**. New tricks that night: exact next-row sets, counting the **mirror image** of the grid
-> (rows filled from their last letter: up to 1.7× faster), an **anti-diagonal symmetry** for mirrored
-> squares, and mirror-image tests for `find`.
+With the ENABLE word list (172,823 words), this solver has settled every size from 2×2 to 10×22. Each one has an exact count of grids or a proof that none exist. The largest word rectangle in the dictionary is 8×8, and there are exactly five.
 
----
+## Latest results
 
-## 🥊 How it compares
+2026-11-23. I raced every public word-rectangle solver I could find, including the programs Donald Knuth wrote for *The Art of Computer Programming*. On one core this solver is 5 to 25 times faster than the best of them on every task that takes more than a tenth of a second. On all 32 threads it is 59 to 345 times faster. Startup also got 12 times faster: finding a 5×6 now takes 7.5 ms from start to finish, down from 96 ms.
+
+2026-11-22. Long jobs in `find` are now split into pieces as soon as a thread runs out of work, so one slow job no longer holds up the other threads (7×7: 104 ms to 43 ms, 6×7: 82 ms to 33 ms). Proofs that no grid exists got 1.2 to 1.3 times faster (no 6×9: 6.0 s to 4.6 s).
+
+2026-11-21. I re-ran the whole benchmark history on one machine and settled every size up to 10×22. New that night: exact sets of the words the next row can still be, counting the mirror image of the grid (rows filled from their last letter, up to 1.7 times faster), and using the anti-diagonal symmetry of mirrored squares.
+
+Every step, including the failed ones, is in [`results/journal.md`](results/journal.md).
+
+## How it compares
 
 ![head to head with other solvers](results/charts/competitors.svg)
 
-I raced every public word-rectangle solver I could find, on hephaestus, with the same ENABLE word list
-and the same task. The others were built with `gcc`/`g++ -O3 -march=native`, solution printing switched
-off (ours doesn't print either), and only their word list and size settings changed. Every count that
-finished matches ours exactly (4×5: 114,846,713 everywhere):
+All programs ran on the same machine (hephaestus, a Ryzen 9 3950X), with the same ENABLE word list and the same task. I built the C and C++ programs with `-O3 -march=native` and turned off their solution printing (ours does not print either). Only their word list and size settings changed. Every count that finished matches ours exactly. For example, all of them count 114,846,713 grids of size 4×5.
 
-| Program | What it is | Best result vs ours (1 thread) |
+| Program | What it is | Against ours on one thread |
 |---|---|---|
-| [Knuth `back-mxn-words-new` / `-mxn`](https://cs.stanford.edu/~knuth/programs.html) | Donald Knuth's CWEB programs for word rectangles (TAOCP 7.2.2, Algorithm B) | 5–25× slower (4×5 count: 201 s vs 13 s) |
-| [HackerPoet `WordSquares`](https://github.com/HackerPoet/WordSquares) | C++ trie solver from a YouTube video | 8–25× slower (6×8 find: 171 s vs 10 s) |
-| [ikokkari `Wordsquare`](https://github.com/ikokkari/Wordsquare) | C program that proved no 9×9 double word square exists | 6–20× slower on symmetric squares (8×8: 48 s vs 2.4 s) |
-| [Noah Nelson's Python](https://gist.github.com/NoahNelson/eea646be1f5abc859cda1583f1f58a78) | a *Cracking the Coding Interview* 17.25 solution | found no 5×6 in 10 minutes (we: 6 ms) |
+| [Knuth `back-mxn-words-new` and `back-mxn-words-mxn`](https://cs.stanford.edu/~knuth/programs.html) | Knuth's CWEB programs for word rectangles (TAOCP 7.2.2, Algorithm B) | 5 to 25 times slower (4×5 count: 201 s against 13 s) |
+| [HackerPoet `WordSquares`](https://github.com/HackerPoet/WordSquares) | A C++ trie solver from a YouTube video | 8 to 25 times slower (6×8 find: 171 s against 10 s) |
+| [ikokkari `Wordsquare`](https://github.com/ikokkari/Wordsquare) | The C program that showed no 9×9 double word square exists | 6 to 20 times slower on symmetric squares (8×8: 48 s against 2.4 s) |
+| [Noah Nelson's Python](https://gist.github.com/NoahNelson/eea646be1f5abc859cda1583f1f58a78) | A solution to *Cracking the Coding Interview* problem 17.25 | Found no 5×6 in 10 minutes (ours: 6 ms) |
 
-Ranges are over every task longer than a tenth of a second. None of them runs on more than one core;
-with all 32 threads the gap is 59–345×. The only race we don't win: **tiny finds that take a few
-milliseconds in total**. Knuth's program finds a 5×6 in 3.8 ms; we take 5.0 ms from the same input files
-(only the word lengths needed) and 6.1 ms from the whole 1.9 MB dictionary (6×6: 4.5 vs 4.8 / 6.5 ms).
-That is all process startup and loading: our search itself takes 0.1 ms. I found no published solver,
-and no published result, that comes close: as far as I can tell, nobody else has settled every size
-of this dictionary. Data: [`results/competitors.csv`](results/competitors.csv).
+The ranges cover every task that took longer than a tenth of a second. None of the other programs uses more than one core.
 
----
+We lose one race. Knuth's program finds a 5×6 in 3.8 ms. Ours takes 5.0 ms when it reads the same input files, which contain only the word lengths it needs, and 6.1 ms when it reads the whole 1.9 MB dictionary. For 6×6 the times are 4.5 ms for Knuth's program and 4.8 ms or 6.5 ms for ours. Our search itself takes 0.1 ms. The rest is loading the words, about 24,000 small memory allocations plus two tries, where Knuth's C program reads into fixed arrays.
 
-## 🗺️ What the dictionary allows
+I found no other solver or published result that has settled every size for this dictionary. Raw numbers: [`results/competitors.csv`](results/competitors.csv).
+
+## What the dictionary allows
 
 ![atlas](results/charts/atlas.svg)
 
-Every size from 2×2 to 10×22 is settled by this solver ([`scripts/atlas.py`](scripts/atlas.py)): an
-exact count, or a proof that none exists. **The largest word rectangle in the dictionary is 8×8:
-there are exactly five, and all five are symmetric word squares.** 7×8 is impossible even though 8×8
-isn't, and nothing at 9×9 or beyond exists. 3×13 has exactly one solution in the whole dictionary:
+[`scripts/atlas.py`](scripts/atlas.py) produced this map of every size from 2×2 to 10×22. The five 8×8 grids are all symmetric word squares, where row i is the same word as column i. 7×8 has no solution even though 8×8 does, and nothing exists at 9×9 or beyond. 3×13 has exactly one solution:
 
 ![gallery](results/charts/gallery.svg)
 
-Among squares, the classic **symmetric word squares** (row i = column i) become the rule as the size
-grows: 2% of the 4×4s, 58% of the 6×6s, 90% of the 7×7s and all five 8×8s (`wordrect squares --rows N`):
+Among squares, symmetric ones become the rule as the size grows. They are 2% of the 4×4s, 58% of the 6×6s, 90% of the 7×7s and all five 8×8s (`wordrect squares --rows N` counts them):
 
 ![squares](results/charts/squares.svg)
 
-**The dictionary decides.** The same atlas with an everyday word list (the system's American English
-list, lowercase entries only, about a third of ENABLE's size) tops out at **7×7: exactly 32 grids, all
-symmetric squares**. Most of ENABLE's big rectangles rely on rare words (`serriednesses`, `strasses`, …).
+The word list matters more than anything else. With an everyday list (the system's American English dictionary, lowercase entries only, about a third the size of ENABLE), the largest grid is 7×7, and all 32 of them are symmetric squares. Most of ENABLE's large rectangles need rare words such as `serriednesses` and `strasses`.
 
 ![atlas american-english](results/charts/atlas-american.svg)
 
-<sub>Regenerate: `grep -x '[a-z]*' /usr/share/dict/american-english > /tmp/american.txt` then
+<sub>To regenerate: `grep -x '[a-z]*' /usr/share/dict/american-english > /tmp/american.txt`, then
 `python3 scripts/atlas.py --max-rows 10 --max-cols 22 --dict /tmp/american.txt --name american`.</sub>
 
----
-
-## 📈 Progress
+## Progress
 
 ![progress](results/charts/progress.svg)
 
-**Where the speed came from**: every step either visits fewer nodes or makes each node cheaper:
+Each step either visits fewer nodes of the search tree or makes each node cheaper. This chart splits the 4×5 count's gains into those two parts:
 
 ![anatomy](results/charts/anatomy-B5.svg)
 
-**Every idea ever tried, ranked**: kept and failed, by how much each one changed the speed:
+Every idea I tried, kept or reverted, ranked by how much it changed the speed:
 
 ![impact](results/charts/impact.svg)
 
-**Where the search spends its time**: nodes per grid cell, for the current kernel:
+Nodes visited per grid cell with the current code:
 
 ![heatmap](results/charts/heatmap.svg)
 
-**How it uses the machine**: speedup vs number of threads:
+Speedup against the number of threads:
 
 ![scaling](results/charts/scaling.svg)
 
-**What 32 threads actually do during a `find`**: every job, test and abort on a timeline. With
-splitting off, one thread walks a huge early job alone while the rest wait. With splitting on,
-long jobs are cut into pieces as soon as a thread goes idle (2.5× faster here):
+What 32 threads do during one `find`, with every job, test and abort on a timeline. Without splitting, one thread works through a huge early job while the others wait. With splitting, long jobs are cut into pieces as soon as a thread is idle, which is 2.5 times faster here:
 
 ![timeline](results/charts/timeline.svg)
 
-Regenerate with `python3 scripts/heatmap.py`, `python3 scripts/scaling.py` and
-`python3 scripts/timeline.py` (all describe the current code), and `python3 scripts/atlas.py` for the atlas.
+`python3 scripts/heatmap.py`, `scripts/scaling.py`, `scripts/timeline.py` and `scripts/atlas.py` regenerate these from the current code.
 
-### Per-benchmark history
+### Every benchmark, step by step
 
-One bar per step, oldest at the top. Every optimization step ever tried — including the failed ones — was rebuilt from its commit and
-re-run on **one machine** (hephaestus · Ryzen 9 3950X · 32 threads), so every bar below is directly
-comparable. **Solid blue** = kept, **bright blue ◀ current** = the code in the tree now,
-**grey hatched ✗ reverted** = a failed experiment (measured, then undone; never part of the code).
-Full tables: [`results/BENCHMARKS.md`](results/BENCHMARKS.md), story of each step:
-[`results/journal.md`](results/journal.md).
+Each chart has one bar per step, oldest at the top. I rebuilt every step from its commit and ran it on hephaestus (Ryzen 9 3950X, 32 threads), so all bars are comparable. Blue bars are kept steps, and the bright blue one is the code in the tree now. Grey hatched bars are experiments that I measured and then reverted. Tables: [`results/BENCHMARKS.md`](results/BENCHMARKS.md).
 
-**Quick suite** (baseline = naive, the only suite it can finish):
+Quick suite, compared with the naive solver, which can only finish these:
 
 ![B1](results/charts/B1.svg)
 ![B2](results/charts/B2.svg)
 ![B3](results/charts/B3.svg)
 
-**Heavy suite** (baseline = trie + masks; naive can't finish these):
+Heavy suite, compared with the first trie solver (naive cannot finish these):
 
 ![B4](results/charts/B4.svg)
 ![B5](results/charts/B5.svg)
@@ -137,7 +105,7 @@ Full tables: [`results/BENCHMARKS.md`](results/BENCHMARKS.md), story of each ste
 ![B8](results/charts/B8.svg)
 ![B9](results/charts/B9.svg)
 
-**Huge suite** (baseline = the first parallel version; single-threaded steps would take hours):
+Huge suite, compared with the first parallel version (the single-threaded steps would take hours):
 
 ![B10](results/charts/B10.svg)
 ![B11](results/charts/B11.svg)
@@ -149,550 +117,171 @@ Full tables: [`results/BENCHMARKS.md`](results/BENCHMARKS.md), story of each ste
 ![B17](results/charts/B17.svg)
 ![B18](results/charts/B18.svg)
 
----
+## Quick start
 
-## ⚡ Quick start
-
-**Braindead mode** — `./wr` builds automatically, you never call cargo yourself:
+`./wr` builds the code when needed, so you never have to call cargo yourself:
 
 ```bash
-./wr              # do EVERYTHING: build, test, benchmark
-./wr 6x6          # find one 6×6   (./wr 6 works too)
+./wr              # build, test and benchmark
+./wr 6x6          # find one 6×6 (./wr 6 also works)
 ./wr count 3x3    # count all 3×3
-./wr test         # tests
-./wr bench        # full benchmark suite (~1 min now)
-./wr bench quick  # B1–B3 only (seconds); ./wr bench heavy = B4–B9; ./wr bench huge = B10–B18; ./wr bench B2 = one
-./wr bench --label "my step"   # record an optimization step → charts
-./wr charts       # regenerate charts from results/bench-log.csv
-./wr release      # benchmark with full release build (official numbers)
-./wr info         # dictionary stats
+./wr test         # run the tests
+./wr bench        # full benchmark suite (about 1 min)
+./wr bench quick  # B1-B3 only; ./wr bench heavy = B4-B9; ./wr bench huge = B10-B18; ./wr bench B2 = one
+./wr bench --label "my step"   # record an optimization step and redraw the charts
+./wr charts       # redraw the charts from results/bench-log.csv
+./wr release      # benchmark with the full release build (official numbers)
+./wr info         # words per length in the dictionary
 ./wr help
 ```
 
-Underneath, it runs:
+The binary itself:
 
 ```bash
-# Build (fast profile: ~2 s, binary nearly as fast as full release)
-cargo build --profile fast
+cargo build --profile fast            # about 2 s
 B=target/fast/wordrect
 
-$B info                              # words per length in the dictionary
-$B find  --rows 4 --cols 4 --stats   # first 4×4, with nodes / time
-$B count --rows 3 --cols 3 --stats   # exhaustive count (trie: ~0.08 s, naive: ~12 s)
-$B find  --rows 6 --cols 6 --solver naive   # pick a solver (default: trie)
-$B count --rows 3 --cols 3 --print   # list every solution
-
-cargo test                           # naive vs brute force, trie vs naive, validator, transpose
-scripts/bench.sh                     # run B1–B3, append to results/bench-log.csv, redraw charts
-scripts/bench.sh B2 --runs 5         # one benchmark
-scripts/bench.sh --release           # official numbers (full LTO build, slower to compile)
+$B find  --rows 6 --cols 7            # first 6×7 rectangle, checked by the validator
+$B count --rows 5 --cols 5 --stats    # exhaustive count, with nodes visited and time
+$B squares --rows 7                   # count symmetric 7×7 word squares
+$B find  --rows 4 --cols 4 --solver naive   # par (default), trie or naive
+$B count --rows 3 --cols 3 --print    # list every solution
+$B count --rows 5 --cols 5 --threads 8
+$B info                               # words per length
 ```
+
+Every run prints the dictionary fingerprint, the solver and the git commit, so results can be reproduced. `--dict PATH` picks another word list (default `dicts/enable.txt`).
 
 Build profiles:
 
 | Profile | Command | Build time | Use for |
 |---|---|---|---|
-| `dev` | `cargo build` / `cargo test` | fastest | tests, debugging (`opt-level=1`) |
-| `fast` | `cargo build --profile fast` | ~2 s | everyday benchmarking |
-| `release` | `cargo build --release` | slower (fat LTO, 1 codegen unit) | journal / records numbers |
+| `dev` | `cargo build`, `cargo test` | fastest | tests and debugging (`opt-level=1`) |
+| `fast` | `cargo build --profile fast` | about 2 s | everyday benchmarking |
+| `release` | `cargo build --release` | slower (fat LTO, one codegen unit) | numbers in the journal and records |
 
-Compile-speed tricks already in place: **zero dependencies**, linking with **lld** (`.cargo/config.toml`),
-incremental `fast` profile. `target-cpu=native` is set globally.
+Builds stay quick because there are no dependencies, the linker is lld (`.cargo/config.toml`) and the `fast` profile is incremental. `target-cpu=native` is set for every build.
 
-Current status: Levels 0–3 and 5–7 done, Level 4 partly (look-ahead, exact next-row sets). Every size up to 10×22 is settled (see the atlas). Next steps: [`PLAN.md`](PLAN.md).
+## The problem
 
----
+Given a dictionary, find an R×C grid of letters where each of the R rows, read left to right, is a C-letter word, and each of the C columns, read top to bottom, is an R-letter word. A bigger area is a better result.
 
-## Table of contents
+A word square is the case R = C. In a symmetric (or perfect) square, row i equals column i. In a double word square, all rows and columns are different words. A 10×10 square of words from a standard dictionary has never been found; the known large squares use obscure words, place names or old dictionaries.
 
-1. [The problem](#1-the-problem)
-2. [Rules and variants](#2-rules-and-variants)
-3. [Why it's hard](#3-why-its-hard)
-4. [Goals](#4-goals)
-5. [Dictionaries](#5-dictionaries)
-6. [Architecture](#6-architecture)
-7. [Core algorithm](#7-core-algorithm)
-8. [Optimization roadmap](#8-optimization-roadmap)
-9. [Benchmarking](#9-benchmarking)
-10. [Correctness and testing](#10-correctness-and-testing)
-11. [Project layout](#11-project-layout)
-12. [CLI design](#12-cli-design)
-13. [Milestones](#13-milestones)
-14. [Ideas backlog](#14-ideas-backlog)
-15. [Records log](#15-records-log)
-16. [Optimization journal](#16-optimization-journal)
-17. [References and further reading](#17-references-and-further-reading)
+The rules used here: rectangles, words may repeat, ENABLE dictionary, lowercase `a` to `z` only. Results always state the dictionary file and its hash.
 
----
+The search is hard because every letter belongs to one row and one column at once, and the number of partial grids grows very fast. A plain backtracking search spends almost all its time in branches that fail several rows later. Large grids have so few solutions that proving none exist, by exhausting the size, costs the most.
 
-## 1. The problem
+## Dictionary
 
-Given a dictionary, find an `R × C` grid of letters such that:
+`dicts/enable.txt` is ENABLE1 (172,823 words, from `github.com/dolph/dictionary`), SHA-256 `3f16130220645692ed49c7134e24a18504c2ca55b3c012f7290e3e77c63b1a89`. Hashes are kept in `dicts/HASHES.txt`. A changed dictionary gets a new file name.
 
-- each of the `R` rows, read left to right, is a `C`-letter word, and
-- each of the `C` columns, read top to bottom, is an `R`-letter word.
+Loading keeps lowercase words made of `a` to `z`, removes duplicates and splits them by length. A search only loads the two word lengths it needs. When the file is already sorted, as ENABLE is, it is read in parallel chunks without sorting.
 
-**Score = area (`R × C`).** Bigger is better.
+## How it works
 
-The famous special case is the **word square** (`R = C`). In a *perfect* word square, row `i` equals column `i` (the grid is symmetric). In a *double* word square, rows and columns are all different words.
+An R×C search needs only two word lists: C-letter words for the rows and R-letter words for the columns. Each goes into its own trie. Every word in a trie has the same length, so reaching depth L means a complete word, and no end-of-word flags are needed.
 
-A 10×10 square made only from words in a standard dictionary is the long-standing holy grail of word-puzzle enthusiasts. Known big squares usually rely on obscure words, place names, or old dictionaries.
-
----
-
-## 2. Rules and variants
-
-Records only mean something if the rules are fixed. Every result in this repo must state:
-
-| Rule | Options |
-|---|---|
-| Dictionary | Exact file + version + hash (see [§5](#5-dictionaries)) |
-| Shape | Rectangle (`R ≠ C`), perfect square, double square |
-| Repeats | Words may repeat / all words distinct |
-| Case & letters | Lowercase `a–z` only, no accents, no hyphens |
-
-Default ruleset for this project: **rectangles, repeats allowed, ENABLE dictionary, `a–z` only.** Other variants are side quests.
-
----
-
-## 3. Why it's hard
-
-- Every letter belongs to **one row and one column at once**, so each placement constrains two words.
-- The number of candidate grids explodes combinatorially. Even with a trie, naive backtracking spends almost all its time in branches that are doomed several rows later.
-- As size grows, the number of valid words of that length **shrinks**, and the number of valid prefixes shrinks even faster. Big grids are a needle-in-a-haystack problem: solutions are extremely rare, so **proving there is no solution** (exhausting a size) is the expensive part.
-
-The good news: this is exactly the kind of problem where clever pruning and tight data structures give 100×–10,000× speedups, and hardware barely matters.
-
----
-
-## 4. Goals
-
-**Primary**
-
-- [ ] A correct solver for any `R × C` and any dictionary.
-- [ ] Exhaustively search every size up to the limit of a laptop, and record **time to exhaust** each size.
-- [ ] Find the largest-area rectangle for the default ruleset.
-
-**Secondary**
-
-- [ ] Largest perfect word square and largest double word square.
-- [ ] Count *all* solutions for small sizes (great for correctness checks and for comparing algorithms).
-- [ ] Keep every benchmark run **under a few seconds** during development (fast feedback loop).
-
-**Non-goals**
-
-- GPUs, clusters, cloud compute. This is a CPU-only, one-laptop project.
-- Fancy UI. A CLI and a results file are enough.
-
----
-
-## 5. Dictionaries
-
-| Name | Approx. size | Notes |
-|---|---|---|
-| ENABLE | ~173k words | Public domain, standard for word-game research. **Default.** |
-| Small common-words list | ~10k–40k | Fast to search; good for testing and for "human-readable" results |
-| SOWPODS / Collins | ~270k | Huge, but check the license before redistributing |
-
-Rules for dictionaries:
-
-- Store dictionaries in `dicts/` and record a SHA-256 hash of each one in `dicts/HASHES.txt`.
-- Preprocess once: lowercase, strip anything outside `a–z`, deduplicate, then split by length.
-- Never silently change a dictionary. A new version = a new file name.
-
-Current: `dicts/enable.txt` = ENABLE1 (172,823 words, from `github.com/dolph/dictionary`),
-SHA-256 `3f16130220645692ed49c7134e24a18504c2ca55b3c012f7290e3e77c63b1a89`.
-
----
-
-## 6. Architecture
-
-```
-dictionary ──► preprocessing ──► per-length tries ──► search engine ──► results
-                                       │                     │
-                                       │                     ├── single-threaded core
-                                       │                     └── parallel driver (std::thread)
-                                       └── letter masks per node
-```
-
-### Per-length tries
-
-For an `R × C` search we only ever need:
-
-- a trie of all **`C`-letter words** (for rows), and
-- a trie of all **`R`-letter words** (for columns).
-
-Because every word in a per-length trie has the same length, **reaching depth `L` means a complete word**, with no terminal flags needed during search.
-
-### Node layout (starting point)
-
-```rust
-pub struct Trie {
-    nodes: Vec<Node>, // index 0 is the root; 0 is never a valid child, so 0 = "none"
-}
-
-#[derive(Clone)]
-pub struct Node {
-    children: [u32; 26], // child index per letter, 0 = missing
-    mask: u32,           // bit `c` set  <=>  child for letter `c` exists
-}
-
-impl Trie {
-    #[inline]
-    pub fn mask(&self, node: u32) -> u32 {
-        self.nodes[node as usize].mask
-    }
-
-    #[inline]
-    pub fn child(&self, node: u32, letter: usize) -> u32 {
-        self.nodes[node as usize].children[letter]
-    }
-}
-```
-
-The `mask` field is the key to fast search: "which letters can come next?" becomes a single integer, and intersecting constraints becomes a single `&`.
-
-Later, the layout can be compressed (see [§8](#8-optimization-roadmap)).
-
----
-
-## 7. Core algorithm
-
-### Cell-by-cell backtracking with two tries
-
-Fill the grid one cell at a time, in row-major order. Keep, for every row and every column, the trie node reached so far. For the next cell, the legal letters are:
+Each trie node stores a 26-bit mask of the letters that can follow. The search fills the grid one cell at a time in row order and keeps the trie node reached so far for every row and column. The letters allowed in the next cell are one AND:
 
 ```
 allowed = row_trie.mask(row_state[r]) & col_trie.mask(col_state[c])
 ```
 
-If `allowed == 0`, this branch is dead immediately.
+If `allowed` is zero, the branch is dead. Otherwise the search tries each set bit, lowest first (`trailing_zeros`, then `x & (x - 1)`).
 
-```rust
-pub struct Search<'a> {
-    rows: usize,
-    cols: usize,
-    row_trie: &'a Trie, // words of length `cols`
-    col_trie: &'a Trie, // words of length `rows`
-    row_state: Vec<u32>,
-    col_state: Vec<u32>,
-    grid: Vec<u8>,
-}
+This basic version is [`src/search.rs`](src/search.rs). The default solver, [`src/par.rs`](src/par.rs), adds the steps that paid off:
 
-impl<'a> Search<'a> {
-    /// Returns true as soon as one full rectangle is found.
-    pub fn solve(&mut self, cell: usize) -> bool {
-        if cell == self.rows * self.cols {
-            return true;
-        }
-        let (r, c) = (cell / self.cols, cell % self.cols);
-        let row_node = self.row_state[r];
-        let col_node = self.col_state[c];
+- Tries stored as flat arrays in breadth-first order, with only existing children and `u32` indices.
+- One search function per row width (const generics), with trie nodes passed by value and no bounds checks in the inner loop.
+- A look-ahead: a letter is skipped when the row node it leads to cannot fit the columns two and three cells further right.
+- While a row is being filled, the exact set of trie nodes the next row can still be in. This prunes harder than letter pairs, and in the second-to-last row it counts the last row's completions directly.
+- Counts run on the mirror image of the grid, with rows filled from their last letter, which is up to 1.7 times faster. Square counts search only half the grids and use transpose symmetry for the rest.
+- Parallel search on `std::thread::scope`. The first cells are expanded into many jobs that threads take from an atomic counter. `find` returns the same grid as the sequential solver: the first job in order that holds a solution wins, and jobs after it are skipped or aborted. Long jobs are split while a thread is idle.
 
-        let mut allowed = self.row_trie.mask(row_node) & self.col_trie.mask(col_node);
-        while allowed != 0 {
-            let letter = allowed.trailing_zeros() as usize;
-            allowed &= allowed - 1; // clear lowest set bit
+Ideas that measured slower and were reverted include choosing the most constrained cell first (2 times slower), an explicit stack instead of recursion, profile-guided optimization (20 to 27% slower) and remembering column states that failed before (they almost never repeat). About 60 steps have been benchmarked so far, 23 of them reverted. The journal has the numbers for each, and [`PLAN.md`](PLAN.md) lists what is still open.
 
-            self.row_state[r] = self.row_trie.child(row_node, letter);
-            self.col_state[c] = self.col_trie.child(col_node, letter);
-            self.grid[cell] = b'a' + letter as u8;
+## Benchmarks
 
-            if self.solve(cell + 1) {
-                return true;
-            }
-        }
-        // restore state for the caller
-        self.row_state[r] = row_node;
-        self.col_state[c] = col_node;
-        false
-    }
-}
-```
-
-All states start at the root (`0`). When the last cell is filled, every row and column has reached full depth in its trie, so the grid is valid by construction.
-
-### Search strategy for "largest rectangle"
-
-1. Let `L` be the longest word length in the dictionary.
-2. Enumerate all `(R, C)` with `R ≤ C ≤ L`, sorted by **area, descending** (a rectangle and its transpose are the same problem, so only search `R ≤ C`).
-3. Skip any `(R, C)` where there are no words of length `R` or `C`.
-4. The first size that returns a solution is the answer for that area; continue only if you want to *prove* nothing larger exists (you must exhaust every larger area).
-
----
-
-## 8. Optimization roadmap
-
-> Current to-do list with measurements and next ideas: [`PLAN.md`](PLAN.md).
-
-Each step gets its own entry in the [optimization journal](#16-optimization-journal), with before/after numbers.
-
-### Level 0: baseline
-- [x] Naive version: pick whole row words from a list, check column prefixes with a `HashSet` of prefixes.
-- [x] Measure it. It will be slow. That's the point; it's the reference for correctness and speed.
-
-### Level 1: tries and masks
-- [x] Per-length tries with 26-bit child masks.
-- [x] Cell-by-cell search (§7).
-- [x] Iterate letters via `trailing_zeros` + `x & (x - 1)`.
-
-### Level 2: memory layout
-- [x] Store nodes in one flat `Vec`, in **BFS order**, so nodes at the same depth sit close together in memory.
-- [x] Compress children: store only existing children, and find the index of letter `c` with `popcount(mask & ((1 << c) - 1))`. Much smaller trie → better cache behaviour.
-- [x] Use `u32` indices everywhere (never `usize` in hot data).
-- [x] ✅ ("by-value node kernel", "const-generic width") Keep the per-search state in fixed-size arrays on the stack.
-
-### Level 3: smarter search order
-- [x] ❌ tried, reverted ("staircase MRV": 2× slower) — **Most-constrained cell first:** at each step, pick the empty cell whose `allowed` mask has the fewest bits (`count_ones()`), not just the next one in row-major order.
-- [ ] Try a **diagonal or spiral fill order** and compare.
-- [x] ✅ ("row look-ahead", "next-row forward check", "exact next-row set") **Forward checking:** after placing a letter, check that every *unfilled* cell in the affected row and column still has at least one legal letter. Cut the branch early if not.
-- [ ] Fill the **dimension with fewer words** first (e.g. if there are far fewer 9-letter than 7-letter words, constrain on the 9-letter side early).
-
-### Level 4: dictionary pruning (before the search even starts)
-- [ ] Iteratively remove words that can't possibly appear: a row word is only usable if, at every position `j`, its letter is a valid *first* letter... and more generally, if it's compatible with the column trie at every depth. Repeat until nothing changes (arc consistency).
-- [ ] Precompute, per (length, position), the set of letters that ever appear there.
-
-### Level 5: symmetry and duplicates
-- [ ] For perfect squares, exploit symmetry: filling cell `(r, c)` also fills `(c, r)`. Roughly halves the work.
-- [x] For *counting* squares (rows and columns from one word list): transposition symmetry. Search only row₀ ≤ col₀ and count = 2·#{row₀ < col₀} + #{row₀ = col₀}: half the nodes.
-- [x] ✅ ("tall grids transposed") For rectangles, only search `R ≤ C`. Also: counts run on the mirror image (rows from their last letter), 1.07–1.6× faster.
-- [ ] For "all words distinct" variants, track used words cheaply (e.g. a bitset over word IDs at full depth).
-
-### Level 6: parallelism
-- [x] Split the search tree at a fixed depth (e.g. all valid first rows) into independent jobs.
-- [x] Run jobs on `std::thread::scope` workers pulling from an atomic job counter (zero dependencies, so no `rayon`). Load imbalance is handled by splitting into many small jobs (256/thread for count, 4096/thread for find).
-- [x] Stop early when one solution is enough, deterministically: the lowest job index with a solution wins (atomic `fetch_min`), so `find` returns the same grid as the sequential solver.
-
-### Level 7: micro-optimizations (only after profiling!)
-- [x] `#[inline]` on hot functions (`inline(always)` on the look-ahead and trie steps; const-generic kernels).
-- [x] ❌ tried, reverted ("iterative DFS") — Turn the recursion into an explicit loop with a manual stack.
-- [x] ✅ ("unchecked trie steps") Remove bounds checks in the hot loop (prefer iterator patterns or proven-safe indexing; use `unsafe` only with a comment explaining why it's sound).
-- [x] ✅ ("branch-free look-ahead") Branchless tricks where they measurably help.
-
-### Release profile
-
-See `Cargo.toml`: `release` = fat LTO + 1 codegen unit + `panic=abort` + debug symbols;
-`fast` = same without LTO, 16 codegen units, incremental. `target-cpu=native` comes from `.cargo/config.toml`.
-
----
-
-## 9. Benchmarking
-
-**Rule #1: never trust a number you didn't measure the same way twice.**
-
-### Standard benchmark suite
-
-Target suite (once the trie solver exists):
-
-| ID | Task | Why |
-|---|---|---|
-| `B1` | Count all 4×4 rectangles (ENABLE) | Fast, exhaustive, good regression test |
-| `B2` | Count all 5×5 rectangles (ENABLE) | Main development benchmark |
-| `B3` | Exhaust one hard size with no solution | Measures pure pruning power |
-| `B4` | Find first solution of the current record size | Measures "time to record" |
-
-**Current suite in `scripts/bench.sh`.** Times are search times on hephaestus, at the step where each
-suite was introduced and at the current code ("mirrored rows for counts", 2026-11-22). IDs never change meaning:
-when the code gets too fast for a suite, a bigger one is added.
+The suite is in `scripts/bench.sh`. The table gives search times on hephaestus for the step where each benchmark was added and for the current code. A benchmark ID never changes meaning: when the code gets too fast for one, a bigger one is added.
 
 | ID | Task | At its baseline | Now |
 |---|---|---:|---:|
-| `B1` | `count --rows 3 --cols 3` (1,909,732 solutions) | naive 5.87 s | 1.69 ms |
-| `B2` | `find --rows 5 --cols 6` | naive 1.15 s | 0.15 ms |
-| `B3` | `find --rows 6 --cols 6` | naive 2.71 s | 0.23 ms |
-| `B4` | `count --rows 4 --cols 4` | trie + masks 14.3 s | 0.116 s |
-| `B5` | `count --rows 4 --cols 5` | trie + masks 57.7 s | 0.728 s |
-| `B6` | `count --rows 3 --cols 7` | trie + masks 5.87 s | 0.089 s |
-| `B7` | `find --rows 7 --cols 7` | trie + masks 1.81 s | 0.105 s |
-| `B8` | `find --rows 6 --cols 7` | trie + masks 1.47 s | 0.086 s |
-| `B9` | `find --rows 5 --cols 9` | trie + masks 8.36 s | 0.154 s |
-| `B10` | `count --rows 5 --cols 5` (80,364,530 solutions) | parallel 15.9 s | 3.99 s |
-| `B11` | `count --rows 4 --cols 6` | parallel 5.02 s | 1.41 s |
-| `B12` | `find --rows 6 --cols 8` | parallel 2.64 s | 0.907 s |
-| `B13` | `find --rows 5 --cols 10` (no 5×10 exists: exhaustive proof) | parallel 2.46 s | 0.886 s |
-| `B14` | `count --rows 6 --cols 4` (tall shape) | parallel 9.63 s | 1.42 s |
-| `B15` | `count --rows 5 --cols 6` (7,424,362 solutions) | parallel 30.0 s | 10.1 s |
-| `B16` | `find --rows 6 --cols 9` (no 6×9 exists: exhaustive proof) | parallel 26.0 s | 9.39 s |
-| `B17` | `count --rows 4 --cols 7` (7,139,499 solutions) | parallel (filled in by the replay) | 1.7 s |
-| `B18` | `count --rows 6 --cols 6` (1,584,465 solutions) | parallel (filled in by the replay) | 20 s |
+| `B1` | `count --rows 3 --cols 3` (1,909,732 solutions) | naive 5.87 s | 1.16 ms |
+| `B2` | `find --rows 5 --cols 6` | naive 1.15 s | 0.13 ms |
+| `B3` | `find --rows 6 --cols 6` | naive 2.71 s | 0.22 ms |
+| `B4` | `count --rows 4 --cols 4` | trie 14.3 s | 0.107 s |
+| `B5` | `count --rows 4 --cols 5` | trie 57.7 s | 0.658 s |
+| `B6` | `count --rows 3 --cols 7` | trie 5.87 s | 0.074 s |
+| `B7` | `find --rows 7 --cols 7` | trie 1.81 s | 0.045 s |
+| `B8` | `find --rows 6 --cols 7` | trie 1.47 s | 0.035 s |
+| `B9` | `find --rows 5 --cols 9` | trie 8.36 s | 0.094 s |
+| `B10` | `count --rows 5 --cols 5` (80,364,530 solutions) | parallel 15.9 s | 3.84 s |
+| `B11` | `count --rows 4 --cols 6` | parallel 5.02 s | 1.32 s |
+| `B12` | `find --rows 6 --cols 8` | parallel 2.64 s | 0.622 s |
+| `B13` | `find --rows 5 --cols 10` (none exist, exhaustive proof) | parallel 2.46 s | 0.424 s |
+| `B14` | `count --rows 6 --cols 4` (tall shape) | parallel 9.63 s | 1.33 s |
+| `B15` | `count --rows 5 --cols 6` (7,424,362 solutions) | parallel 30.0 s | 9.95 s |
+| `B16` | `find --rows 6 --cols 9` (none exist, exhaustive proof) | parallel 26.0 s | 4.70 s |
+| `B17` | `count --rows 4 --cols 7` (7,139,499 solutions) | parallel | 1.66 s |
+| `B18` | `count --rows 6 --cols 6` (1,584,465 solutions) | parallel | 17.9 s |
 
-Suite history: B1–B3 were sized for naive; B4–B9 were added when B2/B3 hit ~1 ms; B10–B13 when the heavy
-suite hit ~8 s; B14 to cover tall grids; B15–B16 when hephaestus became the main machine; B17–B18 when
-B5–B8 dropped under 0.2 s (`scripts/replay.py` then re-ran every past step on them).
-Heavy and huge benchmarks report the median of 3 runs (since 2026-11-22; one run before).
+"Now" is the "fast startup" step of 2026-11-23. The heavy and huge suites report the median of three runs.
 
-**One machine.** `bench.sh` refuses to log on any host other than `MAIN_MACHINE` (hephaestus). Runs from
-the previous machine are kept in `results/legacy/bench-log.csv` but not charted. If the main machine
-ever changes, `python3 scripts/replay.py` rebuilds every step from its commit and re-runs the whole
-history (about 50 min here).
+Every run is appended to `results/bench-log.csv`. Its `search_s` column is the median search time without dictionary loading, and `label` names the step. `scripts/charts.py` turns the log into `results/charts/*.svg` and [`results/BENCHMARKS.md`](results/BENCHMARKS.md). `CLAUDE.md` describes the workflow for each step.
 
-Every run is appended to `results/bench-log.csv` (`search_s` = median search time, dictionary load
-excluded; `label` = optimization step). `scripts/charts.py` turns it into `results/charts/*.svg` and
-[`results/BENCHMARKS.md`](results/BENCHMARKS.md). Workflow for each step: see `CLAUDE.md`.
+`bench.sh` only records on hephaestus, because numbers from different CPUs cannot be compared. Runs from the previous machine are in `results/legacy/` and are not charted. If the main machine changes, `python3 scripts/replay.py` rebuilds every step from its commit and re-runs the whole history, which takes about 50 minutes.
 
-Pick sizes so that `B1`–`B3` take **≤ 2 seconds** on the current version. When the code gets faster, add a bigger size instead of letting runs drop to microseconds.
+Besides time, `--stats` reports nodes visited. It does not depend on the hardware, so it shows whether a change pruned more or just ran each node faster.
 
-### Tools
+## Correctness
 
-- [`hyperfine`](https://github.com/sharkdp/hyperfine): time whole CLI runs, with warmup and statistics.
-- [`criterion`](https://github.com/bheisler/criterion.rs): micro-benchmarks for trie building and hot functions.
-- [`cargo flamegraph`](https://github.com/flamegraph-rs/flamegraph): see where time actually goes.
-- `perf stat`: cache misses, branch misses, instructions per cycle (Linux).
-- Compiler Explorer / `cargo-show-asm`: check what the hot loop compiles to.
+- `src/validate.rs` checks every printed grid, row by row and column by column, against the dictionary. It shares no code with the solvers.
+- `src/naive.rs` is the reference. It picks whole row words and checks column prefixes against a hash set. It is never optimized, so it stays both the check and the speed baseline.
+- `tests/cross_check.rs` requires every solver to give exactly the same counts and first grids as naive on small sizes, and checks that R×C and C×R have the same count.
+- `tests/small_dicts.rs` uses tiny hand-made dictionaries, such as `cat`, `ape`, `ten`, whose answers can be worked out by hand.
+- `tests/dict_load.rs` checks that the fast loader matches the general one on unsorted lists, duplicates, uppercase words and Windows line endings.
 
-### Metrics to record
-
-- Wall time
-- **Nodes visited** (number of `solve` calls), the best hardware-independent measure of pruning quality
-- Nodes per second (raw speed of the inner loop)
-- Peak memory
-
-Optimizations come in two kinds: those that **visit fewer nodes** (better pruning) and those that **visit nodes faster** (better code). Tracking both numbers tells you which kind you just made.
-
----
-
-## 10. Correctness and testing
-
-A fast wrong answer is worthless. Every optimization must pass all of these:
-
-- **Validator:** an independent, dead-simple function that takes a grid and checks every row and column against a `HashSet<String>` of the dictionary. Run it on every solution found.
-- **Cross-check counts:** for small sizes, the number of solutions must match the naive baseline exactly.
-- **Tiny hand-made dictionaries:** e.g. `["cat", "ape", "ten"]`, where you can work out the answers by hand.
-- **Property tests** (`proptest`): random small dictionaries → optimized solver and naive solver must agree.
-- **Transpose test:** the number of `R × C` solutions must equal the number of `C × R` solutions.
-
----
-
-## 11. Project layout
+## Project layout
 
 ```
 word-rectangle-solver/
-├── Cargo.toml
-├── build.rs             ← embeds git commit into the binary
-├── .cargo/config.toml   ← target-cpu=native, lld linker
-├── README.md            ← this file
-├── dicts/
-│   ├── enable.txt
-│   └── HASHES.txt
+├── wr                   launcher (build, test, bench, charts)
+├── build.rs             embeds the git commit in the binary
+├── .cargo/config.toml   target-cpu=native, lld linker
+├── PLAN.md              open ideas and current measurements
+├── dicts/               enable.txt and HASHES.txt
 ├── scripts/
-│   ├── bench.sh         ← benchmark suite → results/bench-log.csv
-│   ├── replay.py        ← rebuild + re-run every step on a new main machine
-│   └── charts.py        ← bench-log.csv → charts/*.svg (+ progress.svg) + BENCHMARKS.md
+│   ├── bench.sh         benchmark suite, appends to results/bench-log.csv
+│   ├── charts.py        bench-log.csv to charts/*.svg and BENCHMARKS.md
+│   ├── replay.py        rebuilds and re-runs every step on a new machine
+│   ├── atlas.py         settles every size, draws the atlas
+│   └── heatmap.py, scaling.py, timeline.py
 ├── src/
-│   ├── main.rs          ← CLI
-│   ├── lib.rs
-│   ├── dict.rs          ← loading, cleaning, splitting by length
-│   ├── naive.rs         ← reference implementation (never optimize this)
-│   ├── trie.rs          ← per-length trie with child masks
-│   ├── search.rs        ← trie + mask cell-by-cell solver
-│   └── validate.rs      ← independent checker
-├── tests/
-│   ├── small_dicts.rs
-│   └── cross_check.rs   ← every solver must match naive
+│   ├── main.rs          CLI
+│   ├── dict.rs          loading, cleaning, splitting by length
+│   ├── naive.rs         reference solver (never optimized)
+│   ├── trie.rs          per-length tries with letter masks
+│   ├── search.rs        single-threaded trie solver
+│   ├── par.rs           parallel solver (default)
+│   ├── squares.rs       symmetric word squares
+│   ├── probe.rs         optional node counters and find timeline (--features probe)
+│   └── validate.rs      independent checker
+├── tests/               cross_check.rs, small_dicts.rs, dict_load.rs
 └── results/
-    ├── records.md
-    ├── journal.md
-    ├── bench-log.csv    ← every benchmark run on the main machine (source of truth)
-    ├── legacy/          ← runs from the previous machine (not charted)
-    ├── BENCHMARKS.md    ← generated tables
-    └── charts/          ← generated SVG charts
+    ├── bench-log.csv    every benchmark run on the main machine
+    ├── journal.md       one entry per step, failures included
+    ├── records.md       solutions found and sizes proven empty
+    ├── competitors.csv  the race against other solvers
+    ├── BENCHMARKS.md    generated tables
+    ├── charts/          generated SVG charts
+    └── legacy/          runs from the previous machine
 ```
 
-Planned: `src/parallel.rs`, `benches/`.
+## References
 
----
-
-## 12. CLI design
-
-```bash
-# Find one R×C rectangle
-wordrect find --dict dicts/enable.txt --rows 6 --cols 7
-
-# Count all solutions of a size (exhaustive)
-wordrect count --dict dicts/enable.txt --rows 5 --cols 5
-
-# Hunt for the largest rectangle, biggest areas first        (planned)
-wordrect hunt --dict dicts/enable.txt --threads 8
-
-# Perfect word squares only                                   (planned)
-wordrect find --dict dicts/enable.txt --rows 8 --cols 8 --symmetric
-
-# Print search statistics
-wordrect count --rows 5 --cols 5 --stats   # nodes visited, nodes/sec, time
-```
-
-Output always includes the dictionary fingerprint, the ruleset, the solver, and the git commit so results are reproducible.
-
----
-
-## 13. Milestones
-
-| # | Milestone | Done when |
-|---|---|---|
-| M1 | Naive solver | Finds a 3×3 and a 4×4; validator passes ✅ |
-| M2 | Trie + mask solver | Same counts as naive on all small sizes; first big speedup recorded ✅ |
-| M3 | Benchmark harness | `B1`–`B3` scripted with hyperfine; journal started (started ✅) |
-| M4 | Compact trie | Lower memory and faster `B2` ✅ |
-| M5 | Smart ordering + forward checking | Big drop in **nodes visited** |
-| M6 | Dictionary pruning | Faster exhaustion of sizes with no solution |
-| M7 | Parallel search | Near-linear scaling on all cores for `B2`/`B3` |
-| M8 | Record hunt | Largest rectangle found for the default ruleset, with proof that larger sizes were exhausted (where feasible) |
-| M9 | Side quests | Perfect squares, double squares, other dictionaries |
-
-Rough timeline for a few weeks: M1–M3 in week 1, M4–M6 in week 2, M7–M8 in week 3, M9 and write-up in week 4.
-
----
-
-## 14. Ideas backlog
-
-Unsorted ideas to try once the basics are solid:
-
-- **Bidirectional constraints:** maintain for each unfilled cell the intersection of all row/column masks, updated incrementally.
-- **Caching dead states:** if a set of column prefixes provably leads nowhere, remember it (e.g. hash of column states at the start of a row) and skip it next time.
-- **Suffix awareness:** also build tries of reversed words to fill from the bottom-right, and meet in the middle.
-- **Letter frequency ordering:** try rarer or commoner letters first; measure which helps for finding vs. exhausting.
-- **SIMD:** check several candidate letters or several cells at once.
-- **Row-word bitsets:** for each (position, letter), a bitset over all row words; candidate rows = AND of bitsets. Compare against the trie approach.
-- **Dictionary quality filter:** a "human-friendly" ruleset using only common words, so results are actually readable.
-- **Visualizer:** a small terminal or web view of the search filling the grid live (fun for demos, off by default for benchmarks).
-
----
-
-## 15. Records log
-
-See [`results/records.md`](results/records.md): one table of solutions found, one of **exhausted sizes** (proven to have no solution).
-
----
-
-## 16. Optimization journal
-
-See [`results/journal.md`](results/journal.md). One entry per change, failed experiments included; failures are just as informative.
-
-```markdown
-### YYYY-MM-DD: <short name of the change>
-
-**Idea:** what I changed and why I expected it to help.
-
-| Benchmark | Before | After | Change |
-|---|---|---|---|
-| B2 time | 1.84 s | 0.61 s | 3.0× faster |
-| B2 nodes visited | 412M | 133M | 3.1× fewer |
-| B2 nodes/sec | 224M | 218M | ~same |
-
-**Verdict:** kept / reverted. What I learned.
-```
-
----
-
-## 17. References and further reading
-
-- *Cracking the Coding Interview*, problem 17.25 "Word Rectangle": the classic interview framing of this problem.
-- Word Ways (journal of recreational linguistics): many articles on word squares and their history, including the famous 9×9 squares.
-- Donald Knuth, *The Art of Computer Programming*, Vol. 4: backtracking and combinatorial search techniques that apply directly here.
-- Donald Knuth's word-rectangle programs (`back-mxn-words-new.w`, `back-mxn-words-mxn.w`, `word-rect-dlx.w`) at `cs.stanford.edu/~knuth/programs.html`: raced in [How it compares](#-how-it-compares).
-- Dan Vanderkam's Boggle research (`danvk.org`, `hybrid-boggle` on GitHub): a great example of trie tricks, bounds, and writing up a word-puzzle search seriously.
-- The Rust Performance Book (`nnethercote.github.io/perf-book`): practical guide to making Rust fast.
-
----
-
-*Have fun, measure everything, and never optimize the naive solver.* 🚀
+- *Cracking the Coding Interview*, problem 17.25 "Word Rectangle", the usual interview version of this problem.
+- *Word Ways*, the journal of recreational linguistics, which has many articles on word squares and the known 9×9 squares.
+- Donald Knuth, *The Art of Computer Programming*, Volume 4, section 7.2.2 on backtracking. His word-rectangle programs (`back-mxn-words-new.w`, `back-mxn-words-mxn.w`, `word-rect-dlx.w`) are at `cs.stanford.edu/~knuth/programs.html` and are in the race above.
+- Dan Vanderkam's Boggle research (`danvk.org`, `hybrid-boggle` on GitHub), a careful write-up of trie tricks and bounds for a word-puzzle search.
+- The Rust Performance Book (`nnethercote.github.io/perf-book`).
