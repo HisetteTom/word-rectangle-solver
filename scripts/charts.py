@@ -768,6 +768,103 @@ def squares_chart() -> str | None:
     return "\n".join(out) + "\n"
 
 
+def competitors() -> str | None:
+    """Head to head with the other public solvers (results/competitors.csv): best other program vs
+    ours on 1 thread and on 32, per task, log time axis."""
+    path = ROOT / "results" / "competitors.csv"
+    if not path.exists():
+        return None
+    with path.open(newline="") as f:
+        rows = list(csv.DictReader(f))
+    CAP = {"count": 900.0, "find": 600.0, "squares": 600.0}
+    groups = [
+        ("count", "Count every grid", ["3×4", "3×5", "4×4", "4×5", "4×6", "5×5", "5×6"]),
+        ("find", "Find the first grid", ["6×7", "7×7", "5×9", "6×8"]),
+        ("squares", "Count symmetric word squares", ["6×6", "7×7", "8×8", "9×9"]),
+        ("find (same input files)", "Tiny finds, same input files as Knuth's program", ["5×6", "6×6"]),
+    ]
+
+    def pick(task, size):
+        mine = [r for r in rows if r["task"] == task and r["size"] == size]
+        others = [r for r in mine if not r["program"].startswith("ours")]
+        done = [r for r in others if r["timed_out"] == "0"]
+        best = min(done, key=lambda r: float(r["seconds"])) if done else None
+        one = next((r for r in mine if r["program"] == "ours par 1 thread"), None)
+        many = next((r for r in mine if r["program"] == "ours par 32 threads"), None)
+        return best, bool(others) and not done, one, many
+
+    lo, hi = -3, 3  # 1 ms .. 1000 s
+    left, plot_w, right, top = 150, 520, 250, 150
+    bar, gap, row_h, head_h = 11, 2, 50, 34
+    n_rows = sum(len(g[2]) for g in groups)
+    width = left + plot_w + right
+    height = top + n_rows * row_h + len(groups) * head_h + 56
+
+    def X(t):
+        return left + (min(max(math.log10(t), lo), hi) - lo) / (hi - lo) * plot_w
+
+    def fmt(t):
+        return f"{t * 1000:.1f} ms" if t < 0.01 else f"{t * 1000:.0f} ms" if t < 1 else f"{t:.2f} s" if t < 10 else f"{t:.0f} s"
+
+    style = """<style>
+  .c1{fill:#2a78d6} .c2{fill:#eb6834} .c3{fill:#1baf7a}
+  @media (prefers-color-scheme: dark){ .c1{fill:#3987e5} .c2{fill:#d95926} .c3{fill:#199e70} }
+</style>"""
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" font-family="{FONT}">',
+           STYLE, style, f'<rect class="bg" width="{width}" height="{height}" rx="10"/>',
+           '<text class="t" x="24" y="36" font-size="20" font-weight="800">Head to head with every public solver I could find</text>',
+           '<text class="m" x="24" y="57" font-size="12.5">same machine, same ENABLE dictionary, same task · gcc/g++ -O3 -march=native · printing off · every finished count identical · log scale</text>',
+           '<text class="m" x="24" y="74" font-size="11">others: Knuth back-mxn-words (TAOCP 7.2.2) · HackerPoet WordSquares · ikokkari Wordsquare · a Python CtCI 17.25 solution: no 5×6 in 10 min</text>']
+    lx = 24
+    for cls, name in [("c2", "best other program (1 thread: none use more)"), ("c1", "ours, 1 thread"), ("c3", "ours, 32 threads")]:
+        out.append(f'<rect class="{cls}" x="{lx}" y="92" width="14" height="10" rx="2"/>')
+        out.append(f'<text class="t" x="{lx + 20}" y="101" font-size="12">{name}</text>')
+        lx += 30 + len(name) * 6.4
+    for k in range(lo, hi + 1):
+        x = X(10.0**k)
+        out.append(f'<line class="g" x1="{x:.1f}" x2="{x:.1f}" y1="{top - 22}" y2="{height - 40}" stroke-dasharray="2 3"/>')
+        out.append(f'<text class="m" x="{x:.1f}" y="{height - 24}" font-size="11" text-anchor="middle">{fmt_tick(10.0**k)}</text>')
+        out.append(f'<text class="m" x="{x:.1f}" y="{top - 28}" font-size="11" text-anchor="middle">{fmt_tick(10.0**k)}</text>')
+    y = top
+    for task, title, sizes in groups:
+        out.append(f'<text class="t" x="24" y="{y + 20}" font-size="14" font-weight="700">{title}</text>')
+        y += head_h
+        for size in sizes:
+            best, all_out, one, many = pick(task, size)
+            out.append(f'<text class="t" x="{left - 14}" y="{y + 22}" font-size="14" font-weight="700" text-anchor="end">{size}</text>')
+            yy = y + 3
+            if best is not None or all_out:
+                t = float(best["seconds"]) if best else CAP[task.split()[0]]
+                who = best["program"].replace(" back-mxn-words-", " ").replace(" WordSquares", "").replace(" Wordsquare (C)", "") if best else "none finished"
+                w = X(t) - left
+                label = f"{fmt(t)} · {escape(who)}" if best else f"&gt; {fmt(t)} · none finished"
+                out.append(f'<rect class="c2" x="{left}" y="{yy}" width="{w:.1f}" height="{bar}" rx="3"><title>{label}</title></rect>')
+                out.append(f'<text class="m" x="{left + w + 6:.1f}" y="{yy + 10}" font-size="11">{label}</text>')
+                base = t
+            else:
+                base = None
+            yy += bar + gap
+            for r, cls in [(one, "c1"), (many, "c3")]:
+                if r is None:
+                    continue
+                t = float(r["seconds"])
+                w = X(t) - left
+                label = fmt(t)
+                if base:
+                    ratio = base / t
+                    pre = "&gt; " if all_out else ""
+                    times = ratio if ratio >= 1 else 1 / ratio
+                    num = f"{times:.1f}" if times < 10 else f"{times:.0f}"
+                    word = "faster" if ratio >= 1 else "slower"
+                    label += f' · <tspan class="{"x" if ratio >= 1 else "f"}">{pre}{num}× {word}</tspan>'
+                out.append(f'<rect class="{cls}" x="{left}" y="{yy}" width="{max(w, 2):.1f}" height="{bar}" rx="3"><title>{fmt(t)}</title></rect>')
+                out.append(f'<text class="t" x="{left + max(w, 2) + 6:.1f}" y="{yy + 10}" font-size="11">{label}</text>')
+                yy += bar + gap
+            y += row_h
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
 def report(data: dict[str, list[dict]]) -> str:
     lines = [
         "# Benchmark progress",
@@ -901,6 +998,8 @@ def main():
         (CHARTS / "scaling.svg").write_text(sv)
     if (qv := squares_chart()) is not None:
         (CHARTS / "squares.svg").write_text(qv)
+    if (cv := competitors()) is not None:
+        (CHARTS / "competitors.svg").write_text(cv)
     if (tv := timeline()) is not None:
         (CHARTS / "timeline.svg").write_text(tv)
     if (gv := gallery()) is not None:

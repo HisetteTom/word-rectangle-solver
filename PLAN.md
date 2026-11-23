@@ -33,7 +33,16 @@ Where the time goes now:
   orders (the mirror is within 1–2% of the best of all 120 for 4×5), cheap last-row end check (prunes
   65% of nodes on wide rows, saves no time), mirror job tests on small grids (mixed).
 
+**Against other solvers (2026-11-23, `results/competitors.csv`):** 5–25× faster than the best public
+solver on one core, 59–345× on 32 threads. Only tiny finds lose: Knuth's program does 5×6 in 3.8 ms,
+we take 5.0 ms from the same input (6.1 ms from the full file), all startup.
+
 ## Ideas, roughly by expected value
+
+0. **Startup for tiny runs** (the one race we lose, by ~1 ms): what is left is ~24k `String`
+   allocations for the loaded words (~1 ms), building two tries + the bigram table (~1.3 ms) and
+   reading the whole 1.9 MB file (~1 ms). Would need words stored in one buffer (an API change through
+   every solver, `naive.rs` included) or a cached per-length index. Low value: both sides are instant.
 
 1. **Faster job tests = faster everything now.** Finds are throughput-bound on the count kernel's
    `ANY` mode. Any per-node gain in `count` shows up in every benchmark.
@@ -49,6 +58,11 @@ Where the time goes now:
    (30 s), prove no 7×8 (36 s), count 8×8 (18 s).
 7. **The last two rows' dead ends** (was #0): strong pruning is easy, but every check measured so far
    costs more than the nearly free nodes it removes. Low expected value now.
+
+## Done 2026-11-23
+
+Head-to-head race with Knuth's `back-mxn-words`, HackerPoet `WordSquares`, ikokkari `Wordsquare`
+and a CtCI Python solution (chart `competitors.svg`) · fast startup ✅ (small runs 12× faster end to end).
 
 ## Done 2026-11-22 (day)
 

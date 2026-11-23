@@ -10,11 +10,17 @@ T E N
 
 Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal of this project is to push as far as a single CPU can go.
 
-> **🆕 Latest (2026-11-22, day):** `find` no longer waits on one long job. A job that runs too
-> long while a thread is idle is **split into pieces that all threads share**, and the pieces resume
-> where the aborted run stopped. Finds with solutions are **1.25–2.5× faster** (7×7: 104 → 43 ms, 6×7: 82 → 33 ms),
-> and there's a new chart of what the 32 threads do. Re-tuning old limits for the mirror image made proofs
-> that no grid exists **1.2–1.3× faster** (no 6×9: 6.0 → 4.6 s). 11 more benchmarked steps today (10 kept, 1 failed), all in
+> **🆕 Latest (2026-11-23):** a **head-to-head race against every public solver I could find**,
+> including **Donald Knuth's own word-rectangle programs** from *The Art of Computer Programming*. Same
+> machine, same dictionary, same task, identical answers: on one core this solver is **5–25× faster
+> than the best of them** on every task longer than a tenth of a second, and **59–345× faster** on all 32
+> threads ([chart below](#-how-it-compares)).
+> The race also found the one place we lost: tiny searches, where we spent ~80 ms starting up for a
+> 0.2 ms search. Startup is now **12× faster** (5×6: 96 → 7.5 ms end to end).
+>
+> **2026-11-22 (day):** `find` no longer waits on one long job: jobs that run too long while a thread
+> is idle are **split into pieces that all threads share** (7×7: 104 → 43 ms, 6×7: 82 → 33 ms), and
+> proofs that no grid exists got **1.2–1.3× faster** (no 6×9: 6.0 → 4.6 s). All steps in
 > [`results/journal.md`](results/journal.md).
 >
 > **Night of 2026-11-21:** the whole history was re-run on one machine, and **every grid size up to
@@ -22,6 +28,32 @@ Rows: `CAT`, `APE`, `TEN`. Columns: `CAT`, `APE`, `TEN`. That's a 3×3. The goal
 > symmetric squares)**. New tricks that night: exact next-row sets, counting the **mirror image** of the grid
 > (rows filled from their last letter: up to 1.7× faster), an **anti-diagonal symmetry** for mirrored
 > squares, and mirror-image tests for `find`.
+
+---
+
+## 🥊 How it compares
+
+![head to head with other solvers](results/charts/competitors.svg)
+
+I raced every public word-rectangle solver I could find, on hephaestus, with the same ENABLE word list
+and the same task. The others were built with `gcc`/`g++ -O3 -march=native`, solution printing switched
+off (ours doesn't print either), and only their word list and size settings changed. Every count that
+finished matches ours exactly (4×5: 114,846,713 everywhere):
+
+| Program | What it is | Best result vs ours (1 thread) |
+|---|---|---|
+| [Knuth `back-mxn-words-new` / `-mxn`](https://cs.stanford.edu/~knuth/programs.html) | Donald Knuth's CWEB programs for word rectangles (TAOCP 7.2.2, Algorithm B) | 5–25× slower (4×5 count: 201 s vs 13 s) |
+| [HackerPoet `WordSquares`](https://github.com/HackerPoet/WordSquares) | C++ trie solver from a YouTube video | 8–25× slower (6×8 find: 171 s vs 10 s) |
+| [ikokkari `Wordsquare`](https://github.com/ikokkari/Wordsquare) | C program that proved no 9×9 double word square exists | 6–20× slower on symmetric squares (8×8: 48 s vs 2.4 s) |
+| [Noah Nelson's Python](https://gist.github.com/NoahNelson/eea646be1f5abc859cda1583f1f58a78) | a *Cracking the Coding Interview* 17.25 solution | found no 5×6 in 10 minutes (we: 6 ms) |
+
+Ranges are over every task longer than a tenth of a second. None of them runs on more than one core;
+with all 32 threads the gap is 59–345×. The only race we don't win: **tiny finds that take a few
+milliseconds in total**. Knuth's program finds a 5×6 in 3.8 ms; we take 5.0 ms from the same input files
+(only the word lengths needed) and 6.1 ms from the whole 1.9 MB dictionary (6×6: 4.5 vs 4.8 / 6.5 ms).
+That is all process startup and loading: our search itself takes 0.1 ms. I found no published solver,
+and no published result, that comes close: as far as I can tell, nobody else has settled every size
+of this dictionary. Data: [`results/competitors.csv`](results/competitors.csv).
 
 ---
 
@@ -657,6 +689,7 @@ See [`results/journal.md`](results/journal.md). One entry per change, failed exp
 - *Cracking the Coding Interview*, problem 17.25 "Word Rectangle": the classic interview framing of this problem.
 - Word Ways (journal of recreational linguistics): many articles on word squares and their history, including the famous 9×9 squares.
 - Donald Knuth, *The Art of Computer Programming*, Vol. 4: backtracking and combinatorial search techniques that apply directly here.
+- Donald Knuth's word-rectangle programs (`back-mxn-words-new.w`, `back-mxn-words-mxn.w`, `word-rect-dlx.w`) at `cs.stanford.edu/~knuth/programs.html`: raced in [How it compares](#-how-it-compares).
 - Dan Vanderkam's Boggle research (`danvk.org`, `hybrid-boggle` on GitHub): a great example of trie tricks, bounds, and writing up a word-puzzle search seriously.
 - The Rust Performance Book (`nnethercote.github.io/perf-book`): practical guide to making Rust fast.
 

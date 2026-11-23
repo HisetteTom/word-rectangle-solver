@@ -1659,3 +1659,65 @@ const, like `TRACK`); the node stays 16 bytes. Sweep, skipping it on one width a
 5-row grids (still 2.4% slower on 5×5), and letter orders for 5×5 that keep its transpose symmetry
 (same permutation on rows and columns: identity is the best of 7 tried; swapping the first two letters 1%
 slower, reversal 1.9× slower).
+
+### 2026-11-23: fast startup (`21e8d0d`) ✅ kept
+
+Racing other public solvers (below) showed the one place they beat us: tiny searches. Knuth's
+`back-mxn-words` finds a 5×6 grid in 4 ms; we took ~85 ms, of which the search was 0.15 ms. The
+benchmarks time only the search (`search_s`), so this never showed. Where the 80 ms went (6×6, ENABLE):
+building the sorted dictionary of all 173k words 28 ms, a hash set of every word for the validator
+18 ms, `ParSearch::new` 11 ms, freeing it all at exit 11 ms, a second read for the fingerprint 2 ms.
+
+- **Dictionary:** one read; lengths the command doesn't use are never copied; a sorted, clean list
+  (ENABLE) skips the sort and dedup (checked line by line, in up to 8 parallel chunks on big files,
+  any doubt → the general path). The fingerprint hash (a serial chain, 1.8 ms) runs on its own thread.
+- **Trie:** BFS order of a sorted-children trie is "depth by depth, prefixes in sorted order", so the
+  nodes are built straight from the sorted words: 3–5× faster, identical node arrays (checked on
+  every length of ENABLE, unsorted input too).
+- **Bigram table:** per-letter follow sets first, then the 128-entry chunks: was 128 operations per
+  letter pair of every word (5.5 ms at 6 letters).
+- **No copies:** `ParSearch` kept a copy of both word lists only to build the mirror; it reads them
+  back from the tries now (`Trie::words`). The validator looks words up by binary search in the sorted
+  lists instead of a set. Nothing is freed at exit.
+
+| Whole run (wall) | Before | After | Change |
+|---|---:|---:|---:|
+| B1 count 3×3 | 81 ms | 6.7 ms | **12.1×** |
+| B2 find 5×6 | 96 ms | 7.5 ms | **12.8×** |
+| B3 find 6×6 | 93 ms | 7.9 ms | **11.8×** |
+| B7 find 7×7 | 152 ms | 56 ms | 2.7× |
+| B8 find 6×7 | 135 ms | 45 ms | 3.0× |
+
+Search times move only where a trie is built inside the timed part: B9 find 5×9 (the mirror, built
+on a detached thread, is ready sooner) 118 → 94 ms, **1.25×**; B6 count 3×7 (counts build the
+mirror) 86 → 74 ms, 1.15×. The rest within noise. New tests: messy lists (unsorted, duplicates,
+uppercase, CRLF, junk) load the same; chunks out of order with each other fall back (a deliberate bug
+in that check is caught); tries spell back exactly their words.
+
+**Verdict:** kept. With the same input as Knuth's program (a file of only the needed lengths), a
+5×6 find is now 4.8 ms vs his 4.1 ms; the whole ENABLE file costs ~1.5 ms more to read.
+
+### 2026-11-23: head to head with other public solvers (no code change)
+
+Everything I could find that solves this problem, raced on hephaestus with the ENABLE list, each
+compiled `-O3 -march=native`, output switched off, only word-list paths and size constants changed
+(Knuth's limits raised: `maxmwds` 40000, `maxtriesize` 4M, `maxm`/`maxn` 15; ikokkari's "no repeated
+word" rule switched off to match ours: its 4×4 count then equals ours, 2,555,155). Every finished
+count is identical (3×3 1,909,732 … 5×5 80,364,530). Single runs of up to 15 min, median of 7 below
+10 s. Data: `results/competitors.csv`, chart `charts/competitors.svg`.
+
+| Task | Best other | Ours, 1 thread | Ours, 32 threads |
+|---|---:|---:|---:|
+| count 4×4 | 34 s (Knuth mxn) | 2.19 s (15×) | 111 ms (305×) |
+| count 4×5 | 201 s (Knuth mxn) | 12.8 s (16×) | 642 ms (313×) |
+| count 5×5 | 759 s (Knuth mxn) | 74 s (10×) | 3.76 s (202×) |
+| count 5×6 | none in 15 min | 189 s | 9.8 s |
+| find 7×7 | 3.16 s (Knuth mxn) | 586 ms (5.4×) | 54 ms (59×) |
+| find 6×8 | 171 s (HackerPoet) | 10.3 s (17×) | 632 ms (271×) |
+| squares 8×8 | 48 s (ikokkari) | 2.45 s (20×) | 139 ms (345×) |
+| find 5×6, same input files | 3.8 ms (Knuth new) | | 5.0 ms (0.76×) |
+
+Knuth's `-mxn` (cell by cell) is the strongest; his column-at-a-time `-new` is mostly slower
+(up to 58×, find 7×7) but wins the tiny 5×6 find. A Python CtCI solution (word per row, prefix checks) found no 5×6 in 10 minutes. Our own
+naive baseline is slower than all three C/C++ programs (3×3: 4.95 s), so the lead is the
+optimizations, not the language. The race exposed startup (the step above).

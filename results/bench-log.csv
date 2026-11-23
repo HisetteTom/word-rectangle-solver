@@ -992,3 +992,21 @@ date,commit,profile,solver,bench,args,mean_s,nodes,result,search_s,label,machine
 2026-11-22,42e206c,fast,par,B16,find --rows 6 --cols 9,4.8591,2514334402,no solution: 6x9 exhausted,4.764341,next2 only from 6 letters,hephaestus
 2026-11-22,42e206c,fast,par,B17,count --rows 4 --cols 7,1.7841,993187402,solutions=7139499,1.689095,next2 only from 6 letters,hephaestus
 2026-11-22,42e206c,fast,par,B18,count --rows 6 --cols 6,17.8527,15605237112,solutions=1584465,17.763087,next2 only from 6 letters,hephaestus
+2026-11-23,21e8d0d,fast,par,B1,count --rows 3 --cols 3,0.0067,994996,solutions=1909732,0.001157,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B2,find --rows 5 --cols 6,0.0075,7220,found,0.000131,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B3,find --rows 6 --cols 6,0.0079,12839,found,0.000219,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B4,count --rows 4 --cols 4,0.1131,170766995,solutions=136245247,0.107495,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B5,count --rows 4 --cols 5,0.6655,394534371,solutions=114846713,0.657564,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B6,count --rows 3 --cols 7,0.0827,72352263,solutions=4453472,0.074287,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B7,find --rows 7 --cols 7,0.0561,22404802,found,0.045165,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B8,find --rows 6 --cols 7,0.0450,14976677,found,0.034544,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B9,find --rows 5 --cols 9,0.1064,44364858,found,0.094432,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B10,count --rows 5 --cols 5,3.8447,3251031697,solutions=80364530,3.836935,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B11,count --rows 4 --cols 6,1.3306,722346874,solutions=37812638,1.321392,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B12,find --rows 6 --cols 8,0.6326,365918263,found,0.622010,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B13,find --rows 5 --cols 10,0.4342,224493499,no solution: 5x10 exhausted,0.423912,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B14,count --rows 6 --cols 4,1.3357,722346874,solutions=37812638,1.325972,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B15,count --rows 5 --cols 6,9.9601,5948229468,solutions=7424362,9.950148,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B16,find --rows 6 --cols 9,4.7106,2492275968,no solution: 6x9 exhausted,4.700682,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B17,count --rows 4 --cols 7,1.6743,993187402,solutions=7139499,1.663687,fast startup,hephaestus
+2026-11-23,21e8d0d,fast,par,B18,count --rows 6 --cols 6,17.9082,15605237112,solutions=1584465,17.907033,fast startup,hephaestus
