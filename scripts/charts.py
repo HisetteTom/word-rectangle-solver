@@ -865,6 +865,172 @@ def competitors() -> str | None:
     return "\n".join(out) + "\n"
 
 
+
+RIVALS = [  # (program in competitors.csv, file slug, short name)
+    ("Knuth back-mxn-words-mxn", "knuth-mxn", "Knuth back-mxn-words-mxn"),
+    ("Knuth back-mxn-words-new", "knuth-new", "Knuth back-mxn-words-new"),
+    ("HackerPoet WordSquares", "hackerpoet", "HackerPoet WordSquares"),
+    ("ikokkari Wordsquare (C)", "ikokkari", "ikokkari Wordsquare"),
+]
+RACE_TASKS = [
+    ("count", "Count every grid"),
+    ("find", "Find the first grid"),
+    ("squares", "Count symmetric word squares"),
+    ("find (same input files)", "Tiny finds, same input files"),
+]
+RACE_DEFS = ('<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'
+             '<rect class="hb" width="6" height="6"/><line class="hs" x1="0" y1="0" x2="0" y2="6" stroke-width="2.5"/></pattern></defs>')
+RACE_CSS = """<style>
+  .c1{fill:#2a78d6} .c2{fill:#eb6834} .c3{fill:#1baf7a} .ring{stroke:#ffffff} .o1{stroke:#2a78d6} .o3{stroke:#1baf7a}
+  @media (prefers-color-scheme: dark){ .c1{fill:#3987e5} .c2{fill:#d95926} .c3{fill:#199e70} .ring{stroke:#0d1117} .o1{stroke:#3987e5} .o3{stroke:#199e70} }
+</style>"""
+
+
+def _race_rows() -> list[dict] | None:
+    path = ROOT / "results" / "competitors.csv"
+    if not path.exists():
+        return None
+    with path.open(newline="") as f:
+        return list(csv.DictReader(f))
+
+
+def _size_key(size: str) -> tuple[int, int]:
+    r, c = size.split("×")
+    return int(r) * int(c), int(r)
+
+
+def _fmt_t(t: float) -> str:
+    return f"{t * 1000:.1f} ms" if t < 0.01 else f"{t * 1000:.0f} ms" if t < 1 else f"{t:.2f} s" if t < 10 else f"{t:.0f} s"
+
+
+def _times(x: float) -> str:
+    return f"{x:.1f}×" if x < 10 else f"{x:.0f}×"
+
+
+def rival_chart(rows: list[dict], program: str, name: str) -> str:
+    """One program against ours, every task it ran: its time, ours on 1 thread, ours on 32."""
+    mine = [r for r in rows if r["program"] == program]
+    groups = []
+    for task, title in RACE_TASKS:
+        sizes = sorted({r["size"] for r in mine if r["task"] == task}, key=_size_key)
+        if sizes:
+            groups.append((task, title, sizes))
+    lo, hi = -3, 3
+    left, plot_w, right, top = 110, 520, 230, 126
+    bar, gap, row_h, head_h = 11, 2, 48, 32
+    n_rows = sum(len(g[2]) for g in groups)
+    width = left + plot_w + right
+    height = top + n_rows * row_h + len(groups) * head_h + 50
+
+    def X(t):
+        return left + (min(max(math.log10(t), lo), hi) - lo) / (hi - lo) * plot_w
+
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" font-family="{FONT}">',
+           STYLE, RACE_CSS, RACE_DEFS, f'<rect class="bg" width="{width}" height="{height}" rx="10"/>',
+           f'<text class="t" x="24" y="36" font-size="19" font-weight="800">{escape(name)} against ours</text>',
+           '<text class="m" x="24" y="56" font-size="12">time per task on hephaestus, ENABLE word list, log scale; shorter is faster</text>']
+    lx = 24
+    for cls, label in [("c2", name), ("c1", "ours, 1 thread"), ("c3", "ours, 32 threads")]:
+        out.append(f'<rect class="{cls}" x="{lx}" y="72" width="14" height="10" rx="2"/>')
+        out.append(f'<text class="t" x="{lx + 20}" y="81" font-size="12">{escape(label)}</text>')
+        lx += 34 + len(label) * 6.6
+    for k in range(lo, hi + 1):
+        x = X(10.0**k)
+        out.append(f'<line class="g" x1="{x:.1f}" x2="{x:.1f}" y1="{top - 16}" y2="{height - 36}" stroke-dasharray="2 3"/>')
+        out.append(f'<text class="m" x="{x:.1f}" y="{height - 20}" font-size="11" text-anchor="middle">{fmt_tick(10.0**k)}</text>')
+        out.append(f'<text class="m" x="{x:.1f}" y="{top - 22}" font-size="11" text-anchor="middle">{fmt_tick(10.0**k)}</text>')
+    y = top
+    for task, title, sizes in groups:
+        out.append(f'<text class="t" x="24" y="{y + 20}" font-size="14" font-weight="700">{escape(title)}</text>')
+        y += head_h
+        for size in sizes:
+            theirs = next(r for r in mine if r["task"] == task and r["size"] == size)
+            ours = {r["program"]: r for r in rows if r["task"] == task and r["size"] == size and r["program"].startswith("ours par")}
+            out.append(f'<text class="t" x="{left - 14}" y="{y + 21}" font-size="14" font-weight="700" text-anchor="end">{size}</text>')
+            yy = y + 3
+            t0 = float(theirs["seconds"])
+            out_of_time = theirs["timed_out"] == "1"
+            w = X(t0) - left
+            label = f"did not finish in {_fmt_t(t0)}" if out_of_time else _fmt_t(t0)
+            cls = "c2" if not out_of_time else "fail"
+            out.append(f'<rect class="{cls}" x="{left}" y="{yy}" width="{w:.1f}" height="{bar}" rx="3"><title>{escape(name)}: {label}</title></rect>')
+            out.append(f'<text class="m" x="{left + w + 6:.1f}" y="{yy + 10}" font-size="11">{label}</text>')
+            yy += bar + gap
+            for prog, cls in [("ours par 1 thread", "c1"), ("ours par 32 threads", "c3")]:
+                r = ours.get(prog)
+                if r is None:
+                    continue
+                t = float(r["seconds"])
+                w = max(X(t) - left, 2)
+                ratio = t0 / t
+                pre = "more than " if out_of_time else ""
+                word = "faster" if ratio >= 1 else "slower"
+                k = ratio if ratio >= 1 else 1 / ratio
+                tag = f'<tspan class="{"x" if ratio >= 1 else "f"}">{pre}{_times(k)} {word}</tspan>'
+                out.append(f'<rect class="{cls}" x="{left}" y="{yy}" width="{w:.1f}" height="{bar}" rx="3"><title>{prog[5:]}: {_fmt_t(t)}</title></rect>')
+                out.append(f'<text class="t" x="{left + w + 6:.1f}" y="{yy + 10}" font-size="11">{_fmt_t(t)} · {tag}</text>')
+                yy += bar + gap
+            y += row_h
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
+def rival_gaps(rows: list[dict]) -> str:
+    """How many times faster ours is than each program, one dot per task, 1 and 32 threads."""
+    lo, hi = -1, 4  # 0.1x .. 10000x
+    left, plot_w, right, top = 110, 640, 40, 128
+    sub_h, prog_h = 24, 92
+    width = left + plot_w + right
+    height = top + len(RIVALS) * prog_h + 56
+
+    def X(v):
+        return left + (min(max(math.log10(v), lo), hi) - lo) / (hi - lo) * plot_w
+
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" font-family="{FONT}">',
+           STYLE, RACE_CSS, RACE_DEFS, f'<rect class="bg" width="{width}" height="{height}" rx="10"/>',
+           '<text class="t" x="24" y="36" font-size="19" font-weight="800">How many times faster ours is, task by task</text>',
+           '<text class="m" x="24" y="56" font-size="12">their time divided by ours, one dot per task; hollow dot: theirs did not finish, so the gap is at least that; log scale</text>']
+    lx = 24
+    for cls, label in [("c1", "ours on 1 thread"), ("c3", "ours on 32 threads")]:
+        out.append(f'<circle class="{cls}" cx="{lx + 6}" cy="77" r="5"/>')
+        out.append(f'<text class="t" x="{lx + 18}" y="81" font-size="12">{label}</text>')
+        lx += 40 + len(label) * 6.6
+    for v in [0.1, 1, 10, 100, 1000, 10000]:
+        x = X(v)
+        cls = "t" if v == 1 else "m"
+        dash = "" if v == 1 else ' stroke-dasharray="2 3"'
+        out.append(f'<line class="g" x1="{x:.1f}" x2="{x:.1f}" y1="{top - 14}" y2="{height - 40}"{dash}/>')
+        out.append(f'<text class="{cls}" x="{x:.1f}" y="{height - 22}" font-size="11" text-anchor="middle">{v:g}×</text>')
+        out.append(f'<text class="{cls}" x="{x:.1f}" y="{top - 20}" font-size="11" text-anchor="middle">{v:g}×</text>')
+    out.append(f'<text class="m" x="{X(1) - 6:.1f}" y="{height - 6}" font-size="10.5" text-anchor="end">theirs faster</text>')
+    out.append(f'<text class="m" x="{X(1) + 6:.1f}" y="{height - 6}" font-size="10.5">ours faster</text>')
+    y = top
+    for program, _, name in RIVALS:
+        theirs = [r for r in rows if r["program"] == program]
+        out.append(f'<text class="t" x="24" y="{y + 18}" font-size="13.5" font-weight="700">{escape(name)}</text>')
+        for i, (prog, cls, who) in enumerate([("ours par 1 thread", "c1", "1 thread"), ("ours par 32 threads", "c3", "32 threads")]):
+            cy = y + 40 + i * sub_h
+            out.append(f'<text class="m" x="{left - 12}" y="{cy + 4}" font-size="11" text-anchor="end">{who}</text>')
+            out.append(f'<line class="g" x1="{left}" x2="{left + plot_w}" y1="{cy}" y2="{cy}"/>')
+            vals = []
+            for r in theirs:
+                o = next((q for q in rows if q["task"] == r["task"] and q["size"] == r["size"] and q["program"] == prog), None)
+                if o is None:
+                    continue
+                v = float(r["seconds"]) / float(o["seconds"])
+                lower = r["timed_out"] == "1"
+                vals.append((v, lower, f'{r["task"]} {r["size"]}: theirs {_fmt_t(float(r["seconds"]))}{" (did not finish)" if lower else ""}, ours {_fmt_t(float(o["seconds"]))}, {_times(v)}'))
+            for v, lower, tip in sorted(vals):
+                x = X(v)
+                if lower:
+                    out.append(f'<circle class="o{cls[1]}" cx="{x:.1f}" cy="{cy}" r="4.5" fill="none" stroke-width="2"><title>{escape(tip)}</title></circle>')
+                else:
+                    out.append(f'<circle class="{cls} ring" cx="{x:.1f}" cy="{cy}" r="5.5" stroke-width="1.5" fill-opacity="0.85"><title>{escape(tip)}</title></circle>')
+        y += prog_h
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
 def report(data: dict[str, list[dict]]) -> str:
     lines = [
         "# Benchmark progress",
@@ -1000,6 +1166,10 @@ def main():
         (CHARTS / "squares.svg").write_text(qv)
     if (cv := competitors()) is not None:
         (CHARTS / "competitors.svg").write_text(cv)
+    if (rr := _race_rows()) is not None:
+        for program, slug, name in RIVALS:
+            (CHARTS / f"rival-{slug}.svg").write_text(rival_chart(rr, program, name))
+        (CHARTS / "rival-gaps.svg").write_text(rival_gaps(rr))
     if (tv := timeline()) is not None:
         (CHARTS / "timeline.svg").write_text(tv)
     if (gv := gallery()) is not None:

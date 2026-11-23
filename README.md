@@ -30,16 +30,16 @@ All programs ran on the same machine (hephaestus, a Ryzen 9 3950X), with the sam
 
 | Program | What it is | Against ours on one thread |
 |---|---|---|
-| [Knuth `back-mxn-words-new` and `back-mxn-words-mxn`](https://cs.stanford.edu/~knuth/programs.html) | Knuth's CWEB programs for word rectangles (TAOCP 7.2.2, Algorithm B) | 5 to 25 times slower (4×5 count: 201 s against 13 s) |
+| [Knuth `back-mxn-words-new` and `back-mxn-words-mxn`](https://cs.stanford.edu/~knuth/programs.html) | Knuth's CWEB programs for word rectangles (TAOCP 7.2.2, Algorithm B) | 5 to 43 times slower for the faster of the two (4×5 count: 201 s against 13 s) |
 | [HackerPoet `WordSquares`](https://github.com/HackerPoet/WordSquares) | A C++ trie solver from a YouTube video | 8 to 25 times slower (6×8 find: 171 s against 10 s) |
-| [ikokkari `Wordsquare`](https://github.com/ikokkari/Wordsquare) | The C program that showed no 9×9 double word square exists | 6 to 20 times slower on symmetric squares (8×8: 48 s against 2.4 s) |
+| [ikokkari `Wordsquare`](https://github.com/ikokkari/Wordsquare) | The C program that showed no 9×9 double word square exists | 2.4 to 20 times slower on symmetric squares (8×8: 48 s against 2.4 s) |
 | [Noah Nelson's Python](https://gist.github.com/NoahNelson/eea646be1f5abc859cda1583f1f58a78) | A solution to *Cracking the Coding Interview* problem 17.25 | Found no 5×6 in 10 minutes (ours: 6 ms) |
 
 The ranges cover every task that took longer than a tenth of a second. None of the other programs uses more than one core.
 
 We lose one race. Knuth's program finds a 5×6 in 3.8 ms. Ours takes 5.0 ms when it reads the same input files, which contain only the word lengths it needs, and 6.1 ms when it reads the whole 1.9 MB dictionary. For 6×6 the times are 4.5 ms for Knuth's program and 4.8 ms or 6.5 ms for ours. Our search itself takes 0.1 ms. The rest is loading the words, about 24,000 small memory allocations plus two tries, where Knuth's C program reads into fixed arrays.
 
-I found no other solver or published result that has settled every size for this dictionary. Raw numbers: [`results/competitors.csv`](results/competitors.csv).
+I found no other solver or published result that has settled every size for this dictionary. Each program's source, version, changes and per-task charts: [`results/competitors.md`](results/competitors.md). Raw numbers: [`results/competitors.csv`](results/competitors.csv).
 
 ## What the dictionary allows
 

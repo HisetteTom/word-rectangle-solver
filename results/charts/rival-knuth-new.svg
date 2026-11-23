@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="896" viewBox="0 0 860 896" font-family="ui-sans-serif,-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<style>
+  .bg{fill:#ffffff} .t{fill:#1f2328} .m{fill:#59636e} .g{stroke:#d1d9e0}
+  .bar{fill:#8fb8de} .best{fill:#1f6feb} .x{fill:#1a7f37;font-weight:600}
+  .fail{fill:url(#hatch)} .hs{stroke:#afb8c1} .hb{fill:#eaeef2} .f{fill:#cf222e;font-weight:600}
+  .ft{fill:#8c959f} .cur{fill:#1f6feb;font-weight:700}
+  .ln{stroke:#1f6feb;fill:none} .lnf{fill:#1f6feb} .ctx{stroke:#afb8c1;fill:none} .ring{stroke:#ffffff}
+  .fx{stroke:#8c959f;fill:none} .area{fill:#1f6feb;fill-opacity:.08} .tile{fill:#f6f8fa;stroke:#d1d9e0}
+  .big{fill:#1f6feb;font-weight:800}
+  .s2{stroke:#eb6834;fill:none} .s2f{fill:#eb6834} .s3{stroke:#1baf7a;fill:none} .s3f{fill:#1baf7a}
+  @media (prefers-color-scheme: dark){
+    .s2{stroke:#d95926} .s2f{fill:#d95926} .s3{stroke:#199e70} .s3f{fill:#199e70}
+    .bg{fill:#0d1117} .t{fill:#e6edf3} .m{fill:#9198a1} .g{stroke:#30363d}
+    .bar{fill:#2f5f8f} .best{fill:#4493f8} .x{fill:#3fb950}
+    .hs{stroke:#484f58} .hb{fill:#21262d} .f{fill:#f85149} .ft{fill:#6e7681} .cur{fill:#4493f8}
+    .ln{stroke:#4493f8} .lnf{fill:#4493f8} .ctx{stroke:#484f58} .ring{stroke:#0d1117}
+    .fx{stroke:#6e7681} .area{fill:#4493f8;fill-opacity:.10} .tile{fill:#161b22;stroke:#30363d} .big{fill:#4493f8}
+  }
+</style>
+<style>
+  .c1{fill:#2a78d6} .c2{fill:#eb6834} .c3{fill:#1baf7a} .ring{stroke:#ffffff} .o1{stroke:#2a78d6} .o3{stroke:#1baf7a}
+  @media (prefers-color-scheme: dark){ .c1{fill:#3987e5} .c2{fill:#d95926} .c3{fill:#199e70} .ring{stroke:#0d1117} .o1{stroke:#3987e5} .o3{stroke:#199e70} }
+</style>
+<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect class="hb" width="6" height="6"/><line class="hs" x1="0" y1="0" x2="0" y2="6" stroke-width="2.5"/></pattern></defs>
+<rect class="bg" width="860" height="896" rx="10"/>
+<text class="t" x="24" y="36" font-size="19" font-weight="800">Knuth back-mxn-words-new against ours</text>
+<text class="m" x="24" y="56" font-size="12">time per task on hephaestus, ENABLE word list, log scale; shorter is faster</text>
+<rect class="c2" x="24" y="72" width="14" height="10" rx="2"/>
+<text class="t" x="44" y="81" font-size="12">Knuth back-mxn-words-new</text>
+<rect class="c1" x="216.39999999999998" y="72" width="14" height="10" rx="2"/>
+<text class="t" x="236.39999999999998" y="81" font-size="12">ours, 1 thread</text>
+<rect class="c3" x="342.79999999999995" y="72" width="14" height="10" rx="2"/>
+<text class="t" x="362.79999999999995" y="81" font-size="12">ours, 32 threads</text>
+<line class="g" x1="110.0" x2="110.0" y1="110" y2="860" stroke-dasharray="2 3"/>
+<text class="m" x="110.0" y="876" font-size="11" text-anchor="middle">1 ms</text>
+<text class="m" x="110.0" y="104" font-size="11" text-anchor="middle">1 ms</text>
+<line class="g" x1="196.7" x2="196.7" y1="110" y2="860" stroke-dasharray="2 3"/>
+<text class="m" x="196.7" y="876" font-size="11" text-anchor="middle">10 ms</text>
+<text class="m" x="196.7" y="104" font-size="11" text-anchor="middle">10 ms</text>
+<line class="g" x1="283.3" x2="283.3" y1="110" y2="860" stroke-dasharray="2 3"/>
+<text class="m" x="283.3" y="876" font-size="11" text-anchor="middle">100 ms</text>
+<text class="m" x="283.3" y="104" font-size="11" text-anchor="middle">100 ms</text>
+<line class="g" x1="370.0" x2="370.0" y1="110" y2="860" stroke-dasharray="2 3"/>
+<text class="m" x="370.0" y="876" font-size="11" text-anchor="middle">1 s</text>
+<text class="m" x="370.0" y="104" font-size="11" text-anchor="middle">1 s</text>
+<line class="g" x1="456.7" x2="456.7" y1="110" y2="860" stroke-dasharray="2 3"/>
+<text class="m" x="456.7" y="876" font-size="11" text-anchor="middle">10 s</text>
+<text class="m" x="456.7" y="104" font-size="11" text-anchor="middle">10 s</text>
+<line class="g" x1="543.3" x2="543.3" y1="110" y2="860" stroke-dasharray="2 3"/>
+<text class="m" x="543.3" y="876" font-size="11" text-anchor="middle">100 s</text>
+<text class="m" x="543.3" y="104" font-size="11" text-anchor="middle">100 s</text>
+<line class="g" x1="630.0" x2="630.0" y1="110" y2="860" stroke-dasharray="2 3"/>
+<text class="m" x="630.0" y="876" font-size="11" text-anchor="middle">1000 s</text>
+<text class="m" x="630.0" y="104" font-size="11" text-anchor="middle">1000 s</text>
+<text class="t" x="24" y="146" font-size="14" font-weight="700">Count every grid</text>
+<text class="t" x="96" y="179" font-size="14" font-weight="700" text-anchor="end">3×3</text>
+<rect class="c2" x="110" y="161" width="165.7" height="11" rx="3"><title>Knuth back-mxn-words-new: 82 ms</title></rect>
+<text class="m" x="281.7" y="171" font-size="11">82 ms</text>
+<rect class="c1" x="110" y="174" width="79.2" height="11" rx="3"><title>par 1 thread: 8.2 ms</title></rect>
+<text class="t" x="195.2" y="184" font-size="11">8.2 ms · <tspan class="x">9.9× faster</tspan></text>
+<rect class="c3" x="110" y="187" width="62.6" height="11" rx="3"><title>par 32 threads: 5.3 ms</title></rect>
+<text class="t" x="178.6" y="197" font-size="11">5.3 ms · <tspan class="x">15× faster</tspan></text>
+<text class="t" x="96" y="227" font-size="14" font-weight="700" text-anchor="end">3×4</text>
+<rect class="c2" x="110" y="209" width="291.7" height="11" rx="3"><title>Knuth back-mxn-words-new: 2.32 s</title></rect>
+<text class="m" x="407.7" y="219" font-size="11">2.32 s</text>
+<rect class="c1" x="110" y="222" width="157.5" height="11" rx="3"><title>par 1 thread: 66 ms</title></rect>
+<text class="t" x="273.5" y="232" font-size="11">66 ms · <tspan class="x">35× faster</tspan></text>
+<rect class="c3" x="110" y="235" width="99.8" height="11" rx="3"><title>par 32 threads: 14 ms</title></rect>
+<text class="t" x="215.8" y="245" font-size="11">14 ms · <tspan class="x">164× faster</tspan></text>
+<text class="t" x="96" y="275" font-size="14" font-weight="700" text-anchor="end">3×5</text>
+<rect class="c2" x="110" y="257" width="355.0" height="11" rx="3"><title>Knuth back-mxn-words-new: 12 s</title></rect>
+<text class="m" x="471.0" y="267" font-size="11">12 s</text>
+<rect class="c1" x="110" y="270" width="218.7" height="11" rx="3"><title>par 1 thread: 333 ms</title></rect>
+<text class="t" x="334.7" y="280" font-size="11">333 ms · <tspan class="x">37× faster</tspan></text>
+<rect class="c3" x="110" y="283" width="137.0" height="11" rx="3"><title>par 32 threads: 38 ms</title></rect>
+<text class="t" x="253.0" y="293" font-size="11">38 ms · <tspan class="x">327× faster</tspan></text>
+<text class="t" x="96" y="323" font-size="14" font-weight="700" text-anchor="end">4×4</text>
+<rect class="c2" x="110" y="305" width="430.7" height="11" rx="3"><title>Knuth back-mxn-words-new: 93 s</title></rect>
+<text class="m" x="546.7" y="315" font-size="11">93 s</text>
+<rect class="c1" x="110" y="318" width="289.5" height="11" rx="3"><title>par 1 thread: 2.19 s</title></rect>
+<text class="t" x="405.5" y="328" font-size="11">2.19 s · <tspan class="x">43× faster</tspan></text>
+<rect class="c3" x="110" y="331" width="177.3" height="11" rx="3"><title>par 32 threads: 111 ms</title></rect>
+<text class="t" x="293.3" y="341" font-size="11">111 ms · <tspan class="x">838× faster</tspan></text>
+<text class="t" x="96" y="371" font-size="14" font-weight="700" text-anchor="end">4×5</text>
+<rect class="c2" x="110" y="353" width="497.5" height="11" rx="3"><title>Knuth back-mxn-words-new: 550 s</title></rect>
+<text class="m" x="613.5" y="363" font-size="11">550 s</text>
+<rect class="c1" x="110" y="366" width="356.1" height="11" rx="3"><title>par 1 thread: 13 s</title></rect>
+<text class="t" x="472.1" y="376" font-size="11">13 s · <tspan class="x">43× faster</tspan></text>
+<rect class="c3" x="110" y="379" width="243.3" height="11" rx="3"><title>par 32 threads: 642 ms</title></rect>
+<text class="t" x="359.3" y="389" font-size="11">642 ms · <tspan class="x">856× faster</tspan></text>
+<text class="t" x="96" y="419" font-size="14" font-weight="700" text-anchor="end">4×6</text>
+<rect class="fail" x="110" y="401" width="516.0" height="11" rx="3"><title>Knuth back-mxn-words-new: did not finish in 900 s</title></rect>
+<text class="m" x="632.0" y="411" font-size="11">did not finish in 900 s</text>
+<rect class="c1" x="110" y="414" width="381.9" height="11" rx="3"><title>par 1 thread: 25 s</title></rect>
+<text class="t" x="497.9" y="424" font-size="11">25 s · <tspan class="x">more than 35× faster</tspan></text>
+<rect class="c3" x="110" y="427" width="269.3" height="11" rx="3"><title>par 32 threads: 1.28 s</title></rect>
+<text class="t" x="385.3" y="437" font-size="11">1.28 s · <tspan class="x">more than 703× faster</tspan></text>
+<text class="t" x="24" y="466" font-size="14" font-weight="700">Find the first grid</text>
+<text class="t" x="96" y="499" font-size="14" font-weight="700" text-anchor="end">5×6</text>
+<rect class="c2" x="110" y="481" width="55.9" height="11" rx="3"><title>Knuth back-mxn-words-new: 4.4 ms</title></rect>
+<text class="m" x="171.9" y="491" font-size="11">4.4 ms</text>
+<rect class="c1" x="110" y="494" width="68.7" height="11" rx="3"><title>par 1 thread: 6.2 ms</title></rect>
+<text class="t" x="184.7" y="504" font-size="11">6.2 ms · <tspan class="f">1.4× slower</tspan></text>
+<rect class="c3" x="110" y="507" width="69.5" height="11" rx="3"><title>par 32 threads: 6.3 ms</title></rect>
+<text class="t" x="185.5" y="517" font-size="11">6.3 ms · <tspan class="f">1.4× slower</tspan></text>
+<text class="t" x="96" y="547" font-size="14" font-weight="700" text-anchor="end">6×6</text>
+<rect class="c2" x="110" y="529" width="134.0" height="11" rx="3"><title>Knuth back-mxn-words-new: 35 ms</title></rect>
+<text class="m" x="250.0" y="539" font-size="11">35 ms</text>
+<rect class="c1" x="110" y="542" width="69.5" height="11" rx="3"><title>par 1 thread: 6.3 ms</title></rect>
+<text class="t" x="185.5" y="552" font-size="11">6.3 ms · <tspan class="x">5.6× faster</tspan></text>
+<rect class="c3" x="110" y="555" width="68.9" height="11" rx="3"><title>par 32 threads: 6.2 ms</title></rect>
+<text class="t" x="184.9" y="565" font-size="11">6.2 ms · <tspan class="x">5.6× faster</tspan></text>
+<text class="t" x="96" y="595" font-size="14" font-weight="700" text-anchor="end">6×7</text>
+<rect class="c2" x="110" y="577" width="345.9" height="11" rx="3"><title>Knuth back-mxn-words-new: 9.79 s</title></rect>
+<text class="m" x="461.9" y="587" font-size="11">9.79 s</text>
+<rect class="c1" x="110" y="590" width="239.8" height="11" rx="3"><title>par 1 thread: 585 ms</title></rect>
+<text class="t" x="355.8" y="600" font-size="11">585 ms · <tspan class="x">17× faster</tspan></text>
+<rect class="c3" x="110" y="603" width="140.5" height="11" rx="3"><title>par 32 threads: 42 ms</title></rect>
+<text class="t" x="256.5" y="613" font-size="11">42 ms · <tspan class="x">234× faster</tspan></text>
+<text class="t" x="96" y="643" font-size="14" font-weight="700" text-anchor="end">5×9</text>
+<rect class="c2" x="110" y="625" width="421.3" height="11" rx="3"><title>Knuth back-mxn-words-new: 73 s</title></rect>
+<text class="m" x="537.3" y="635" font-size="11">73 s</text>
+<rect class="c1" x="110" y="638" width="273.0" height="11" rx="3"><title>par 1 thread: 1.41 s</title></rect>
+<text class="t" x="389.0" y="648" font-size="11">1.41 s · <tspan class="x">51× faster</tspan></text>
+<rect class="c3" x="110" y="651" width="175.7" height="11" rx="3"><title>par 32 threads: 106 ms</title></rect>
+<text class="t" x="291.7" y="661" font-size="11">106 ms · <tspan class="x">682× faster</tspan></text>
+<text class="t" x="96" y="691" font-size="14" font-weight="700" text-anchor="end">6×8</text>
+<rect class="c2" x="110" y="673" width="466.3" height="11" rx="3"><title>Knuth back-mxn-words-new: 240 s</title></rect>
+<text class="m" x="582.3" y="683" font-size="11">240 s</text>
+<rect class="c1" x="110" y="686" width="347.9" height="11" rx="3"><title>par 1 thread: 10 s</title></rect>
+<text class="t" x="463.9" y="696" font-size="11">10 s · <tspan class="x">23× faster</tspan></text>
+<rect class="c3" x="110" y="699" width="242.7" height="11" rx="3"><title>par 32 threads: 632 ms</title></rect>
+<text class="t" x="358.7" y="709" font-size="11">632 ms · <tspan class="x">380× faster</tspan></text>
+<text class="t" x="96" y="739" font-size="14" font-weight="700" text-anchor="end">7×7</text>
+<rect class="c2" x="110" y="721" width="456.1" height="11" rx="3"><title>Knuth back-mxn-words-new: 183 s</title></rect>
+<text class="m" x="572.1" y="731" font-size="11">183 s</text>
+<rect class="c1" x="110" y="734" width="239.9" height="11" rx="3"><title>par 1 thread: 586 ms</title></rect>
+<text class="t" x="355.9" y="744" font-size="11">586 ms · <tspan class="x">313× faster</tspan></text>
+<rect class="c3" x="110" y="747" width="149.9" height="11" rx="3"><title>par 32 threads: 54 ms</title></rect>
+<text class="t" x="265.9" y="757" font-size="11">54 ms · <tspan class="x">3410× faster</tspan></text>
+<text class="t" x="24" y="786" font-size="14" font-weight="700">Tiny finds, same input files</text>
+<text class="t" x="96" y="819" font-size="14" font-weight="700" text-anchor="end">5×6</text>
+<rect class="c2" x="110" y="801" width="50.2" height="11" rx="3"><title>Knuth back-mxn-words-new: 3.8 ms</title></rect>
+<text class="m" x="166.2" y="811" font-size="11">3.8 ms</text>
+<rect class="c3" x="110" y="814" width="60.3" height="11" rx="3"><title>par 32 threads: 5.0 ms</title></rect>
+<text class="t" x="176.3" y="824" font-size="11">5.0 ms · <tspan class="f">1.3× slower</tspan></text>
+</svg>
